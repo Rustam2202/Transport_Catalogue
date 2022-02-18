@@ -35,8 +35,6 @@ public:
 
 	}
 
-
-private:
 	struct Stop
 	{
 		std::string stop;
@@ -48,6 +46,9 @@ private:
 		int bus;
 		std::unordered_set<Stop*> stops;
 	};
+
+private:
+	
 	
 	std::deque<Bus> buses_;
 	std::deque<Stop> stops_;

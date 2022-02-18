@@ -9,46 +9,75 @@
 using namespace std;
 
 enum class QueryType {
-    Bus,
-    Stop
+	Bus,
+	Stop
 };
 
 struct Query {
-    QueryType type;
-    string bus;
-    string stop;
-    vector<string> stops;
+	QueryType type;
+	string bus;
+	string stop;
+	vector<string> stops;
 };
 
 istream& operator>>(istream& is, Query& q) {
-    string str;
-    is >> str;
-    if (str == "Bus") {
-        q.type = QueryType::Bus;
-        is >> q.bus;
-        int stop_count;
-        is >> stop_count;
-        q.stops.resize(stop_count);
-        for (int i = 0; i < stop_count; ++i)
-            is >> q.stops[i];
-    }
-    else if (str == "Stop") {
-        q.type = QueryType::Stop;
-        is >> q.stop;
-    }
-    return is;
+	string str;
+	is >> str;
+	if (str == "Bus") {
+		q.type = QueryType::Bus;
+		is >> q.bus;
+		int stop_count;
+		is >> stop_count;
+		q.stops.resize(stop_count);
+		for (int i = 0; i < stop_count; ++i)
+			is >> q.stops[i];
+	}
+	else if (str == "Stop") {
+		q.type = QueryType::Stop;
+		is >> q.stop;
+	}
+	return is;
 }
 
-void InputReader (TransportCatalogue& trans_cat) {
+TransportCatalogue::Stop ReadInputStop(istream& query) {
+	TransportCatalogue::Stop result;
+	std::string stop;
+	/*for (char ch : query) {
+		if (ch == ':') {
+			break;
+		}
+		stop.push_back(ch);
+	}
+	result.stop = stop;*/
+
+	getline(query, stop, ':');
+
+	cin.get();
+
+	return result;
+}
+
+void InputReader(TransportCatalogue& trans_cat) {
 	int query_count;
-    cout << "Enter count of queries to input data: ";
+	cout << "Enter count of queries to input data: ";
 	cin >> query_count;
 
-	string query_line;
-	getline(cin, query_line);
+	int query_numb = 0;
+	while (query_numb < query_count) {
+		string query_type;
+		cin >> query_type;
+		if (query_type == "Stop")
+		{
 
-	for (int i = 0; i < query_count; ++i) {
+			query_numb++;
+		}
+		else if (query_type == "Bus") {
 
+			query_numb++;
+		}
+		else {
+			cout << "Incorrected query type (enter Stop or Bus):";
+		}
 	}
 
 }
