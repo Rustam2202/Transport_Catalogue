@@ -4,7 +4,8 @@
 #include "transport_catalogue.h"
 
 int main() {
-	InputReader();
+	TransportCatalogue transport_catalogue;
+	InputReader(transport_catalogue);
 }
 
 //10

@@ -41,5 +41,8 @@
     <ClCompile Include="transport_catalogue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BusMabager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

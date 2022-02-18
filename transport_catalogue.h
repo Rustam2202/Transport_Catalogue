@@ -1,3 +1,5 @@
+#pragma once
+
 #include "geo.h"
 
 #include <deque>
@@ -5,22 +7,33 @@
 #include <string>
 
 class TransportCatalogue {
+
 public:
 
 	//	добавление маршрута в базу
-	void AddBus();
+	void AddBus() {
+
+	}
 
 	//	добавление остановки в базу
-	void AddStop();
+	void AddStop() {
+
+	}
 
 	//	поиск маршрута по имени
-	void FindBus();
+	void FindBus() {
+
+	}
 
 	//	поиск остановки по имени
-	void FindStop();
+	void FindStop() {
+
+	}
 
 	//	получение информации о маршруте
-	void GetBusInfo();
+	void GetBusInfo() {
+
+	}
 
 
 private:

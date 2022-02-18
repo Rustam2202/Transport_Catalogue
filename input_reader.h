@@ -13,9 +13,35 @@ enum class QueryType {
     Stop
 };
 
-void InputReader () {
-	
+struct Query {
+    QueryType type;
+    string bus;
+    string stop;
+    vector<string> stops;
+};
+
+istream& operator>>(istream& is, Query& q) {
+    string str;
+    is >> str;
+    if (str == "Bus") {
+        q.type = QueryType::Bus;
+        is >> q.bus;
+        int stop_count;
+        is >> stop_count;
+        q.stops.resize(stop_count);
+        for (int i = 0; i < stop_count; ++i)
+            is >> q.stops[i];
+    }
+    else if (str == "Stop") {
+        q.type = QueryType::Stop;
+        is >> q.stop;
+    }
+    return is;
+}
+
+void InputReader (TransportCatalogue& trans_cat) {
 	int query_count;
+    cout << "Enter count of queries to input data: ";
 	cin >> query_count;
 
 	string query_line;
