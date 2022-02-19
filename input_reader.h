@@ -13,52 +13,64 @@ enum class QueryType {
 	Stop
 };
 
-struct Query {
-	QueryType type;
-	string bus;
-	string stop;
-	vector<string> stops;
-};
+Stop ReadInputStop(istream& query) {
+	Stop result;
+	std::string stop;
 
-istream& operator>>(istream& is, Query& q) {
-	string str;
-	is >> str;
-	if (str == "Bus") {
-		q.type = QueryType::Bus;
-		is >> q.bus;
-		int stop_count;
-		is >> stop_count;
-		q.stops.resize(stop_count);
-		for (int i = 0; i < stop_count; ++i)
-			is >> q.stops[i];
-	}
-	else if (str == "Stop") {
-		q.type = QueryType::Stop;
-		is >> q.stop;
-	}
-	return is;
+	getline(query, stop, ':'); // убрать пробелы
+	stop.erase(stop.begin());
+	stop.erase(stop.end() - 1);
+	result.stop = stop;
+
+	cin >> result.coodinates.lat;
+	cin.get();
+	cin >> result.coodinates.lng;
+
+	return result;
 }
 
-TransportCatalogue::Stop ReadInputStop(istream& query) {
-	TransportCatalogue::Stop result;
-	std::string stop;
-	/*for (char ch : query) {
-		if (ch == ':') {
-			break;
-		}
-		stop.push_back(ch);
+Bus ReadInputBus(TransportCatalogue trans_cat, string_view str) {
+	Bus result;
+	/*_String_view_iterator*/ auto ch = str.begin();
+
+	// найти номер
+	string num;
+	while (*ch != ':')
+	{
+		num.push_back(*ch);
+		ch++;
 	}
-	result.stop = stop;*/
+	result.bus = stoi(num);
+	ch++;
+	ch++;
 
-	getline(query, stop, ':');
+	// найти остановки
+	/*
+		2
+		Stop Tolstopaltsevo : 55.611087, 37.208290
+		Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
+	*/
 
-	cin.get();
+	_String_view_iterator ch_begin = ch;
+	_String_view_iterator ch_end = ch;
+	while (*ch != '\n') {
+		if (*ch == '>' || *ch == '-') {
+			ch_end = ch;
+			string_view stop(ch_begin, ch_end - 1);
+			trans_cat.FindStop(stop);
+			stop.begin() = ch;
+		}
+		ch++;
+	}
 
 	return result;
 }
 
 void InputReader(TransportCatalogue& trans_cat) {
 	int query_count;
+	//vector<string> stop_queries;
+	vector<string> bus_queries;
+
 	cout << "Enter count of queries to input data: ";
 	cin >> query_count;
 
@@ -68,11 +80,14 @@ void InputReader(TransportCatalogue& trans_cat) {
 		cin >> query_type;
 		if (query_type == "Stop")
 		{
-
+			trans_cat.AddStop(ReadInputStop(cin));
 			query_numb++;
 		}
 		else if (query_type == "Bus") {
-
+			string temp;
+			cin.get();
+			getline(cin, temp);
+			bus_queries.push_back(temp);
 			query_numb++;
 		}
 		else {
@@ -80,17 +95,22 @@ void InputReader(TransportCatalogue& trans_cat) {
 		}
 	}
 
-}
+	for (string query : bus_queries) {
+		trans_cat.AddBus(ReadInputBus(trans_cat, query));
+	}
 
-//10
-// 
-//Stop Tolstopaltsevo : 55.611087, 37.208290
-//Stop Marushkino : 55.595884, 37.209755
-//Bus 256 : Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye
-//Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
-//Stop Rasskazovka : 55.632761, 37.333324
-//Stop Biryulyovo Zapadnoye : 55.574371, 37.651700
-//Stop Biryusinka : 55.581065, 37.648390
-//Stop Universam : 55.587655, 37.645687
-//Stop Biryulyovo Tovarnaya : 55.592028, 37.653656
-//Stop Biryulyovo Passazhirskaya : 55.580999, 37.659164
+}
+/*
+10
+Stop Tolstopaltsevo : 55.611087, 37.208290
+Stop Marushkino : 55.595884, 37.209755
+Bus 256 : Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye
+Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
+Stop Rasskazovka : 55.632761, 37.333324
+Stop Biryulyovo Zapadnoye : 55.574371, 37.651700
+Stop Biryusinka : 55.581065, 37.648390
+Stop Universam : 55.587655, 37.645687
+Stop Biryulyovo Tovarnaya : 55.592028, 37.653656
+Stop Biryulyovo Passazhirskaya : 55.580999, 37.659164
+
+*/

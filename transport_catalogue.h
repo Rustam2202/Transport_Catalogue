@@ -2,22 +2,35 @@
 
 #include "geo.h"
 
+#include <algorithm>
 #include <deque>
 #include <unordered_set>
 #include <string>
+
+struct Stop
+{
+	std::string stop;
+	Coordinates coodinates;
+};
+
+struct Bus
+{
+	int bus;
+	std::unordered_set<Stop*> stops;
+};
 
 class TransportCatalogue {
 
 public:
 
 	//	добавление маршрута в базу
-	void AddBus() {
+	void AddBus(Bus bus) {
 
 	}
 
 	//	добавление остановки в базу
-	void AddStop() {
-
+	void AddStop(Stop stop) {
+		stops_.push_back(stop);
 	}
 
 	//	поиск маршрута по имени
@@ -26,8 +39,14 @@ public:
 	}
 
 	//	поиск остановки по имени
-	void FindStop() {
-
+	Stop* FindStop(std::string_view str) {
+	/*_Deque_iterator*/ auto it = std::find_if(stops_.begin(), stops_.end(),
+			[str](const Stop stop) {
+				return stop.stop == str;
+			}
+		);
+	auto a = *it;
+		return nullptr;
 	}
 
 	//	получение информации о маршруте
@@ -35,21 +54,11 @@ public:
 
 	}
 
-	struct Stop
-	{
-		std::string stop;
-		Coordinates coodinates;
-	};
 
-	struct Bus
-	{
-		int bus;
-		std::unordered_set<Stop*> stops;
-	};
 
 private:
-	
-	
+
+
 	std::deque<Bus> buses_;
 	std::deque<Stop> stops_;
 };
