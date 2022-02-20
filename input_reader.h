@@ -4,20 +4,22 @@
 
 #include "transport_catalogue.h"
 
+#include <algorithm>
 #include <iostream>
+#include <string_view>
 
 using namespace std;
 
-enum class QueryType {
-	Bus,
-	Stop
-};
+void DeleteBourderSpaces(string_view str) {
+	str.remove_prefix(std::min(str.find_first_not_of(" "), str.size()));
+	str.remove_suffix(std::max(str.find_last_not_of(" "), str.size()));
+}
 
 Stop ReadInputStop(istream& query) {
 	Stop result;
 	std::string stop;
 
-	getline(query, stop, ':'); // убрать пробелы
+	getline(query, stop, ':');
 	stop.erase(stop.begin());
 	stop.erase(stop.end() - 1);
 	result.stop = stop;
@@ -31,7 +33,7 @@ Stop ReadInputStop(istream& query) {
 
 Bus ReadInputBus(TransportCatalogue trans_cat, string_view str) {
 	Bus result;
-	/*_String_view_iterator*/ auto ch = str.begin();
+	auto ch = str.begin();
 
 	// найти номер
 	string num;
@@ -44,21 +46,18 @@ Bus ReadInputBus(TransportCatalogue trans_cat, string_view str) {
 	ch++;
 	ch++;
 
-	// найти остановки
-	/*
-		2
-		Stop Tolstopaltsevo : 55.611087, 37.208290
-		Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
-	*/
-
+	// найти остановку в stops_ и вставить указатель в result
 	_String_view_iterator ch_begin = ch;
 	_String_view_iterator ch_end = ch;
 	while (*ch != '\n') {
-		if (*ch == '>' || *ch == '-') {
+		if (*ch == '>' || *ch == '-' || *ch == '\n') {
+			if (*ch == '-') {
+				result.IsRing = true;
+			}
 			ch_end = ch;
 			string_view stop(ch_begin, ch_end - 1);
-			trans_cat.FindStop(stop);
-			stop.begin() = ch;
+			result.stops.insert(trans_cat.FindStop(stop));
+			ch_begin = ch;
 		}
 		ch++;
 	}
@@ -100,6 +99,7 @@ void InputReader(TransportCatalogue& trans_cat) {
 	}
 
 }
+
 /*
 10
 Stop Tolstopaltsevo : 55.611087, 37.208290
