@@ -72,12 +72,13 @@ public:
 	//	получение информации о маршруте
 	BusInfo GetBusInfo(int number) {
 		BusInfo result;
+		result.bus = number;
+
 		Bus* bus_p = FindBus(number);
 		if (bus_p == nullptr) {
 			return result;
 		}
 
-		result.bus = number;
 		auto it = bus_p->stops.begin();
 		auto it_begin = bus_p->stops.begin();
 		it++;
