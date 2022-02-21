@@ -22,10 +22,10 @@ struct Bus
 };
 
 struct BusInfo {
-	// int bus;
-	size_t stops_on_route;
-	size_t unique_stops;
-	double route_length=0.0;
+	int bus;
+	size_t stops_on_route = 0;
+	size_t unique_stops = 0;
+	double route_length = 0.0;
 };
 
 class TransportCatalogue {
@@ -49,8 +49,11 @@ public:
 				return bus.bus == number;
 			}
 		);
+		if (it == buses_.end()) {
+			return nullptr;
+		}
 
-		return &buses_[it - buses_.end()];
+		return &buses_[it - buses_.begin()];
 	}
 
 	//	поиск остановки по имени
@@ -61,27 +64,33 @@ public:
 			}
 		);
 
-		return &stops_[it - stops_.end()];
+		return &stops_[it - stops_.begin()];
 	}
 
 	//	получение информации о маршруте
 	BusInfo GetBusInfo(int number) {
 		BusInfo result;
 		Bus* bus_p = FindBus(number);
+		if (bus_p == nullptr) {
+			return result;
+		}
 
+		result.bus = number;
 		auto it = bus_p->stops.begin();
-		while (it != bus_p->stops.end()--) {
-			result.route_length += ComputeDistance((*it)->coodinates, (*it + 1)->coodinates);
+		auto it_begin = bus_p->stops.begin();
+		it++;
+		while (it != bus_p->stops.end()) {
+			result.route_length += ComputeDistance((*prev(it))->coodinates, (*it)->coodinates);
 			it++;
 		}
 
 		if (bus_p->IsRing == true) {
+			result.route_length += ComputeDistance((*prev(it))->coodinates, (*it_begin)->coodinates);
 			result.stops_on_route = bus_p->stops.size() + 1;
 		}
 		else {
-			result.stops_on_route = bus_p->stops.size() * 2 - 1;
 			result.route_length *= 2;
-
+			result.stops_on_route = bus_p->stops.size() * 2 - 1;
 		}
 		result.unique_stops = bus_p->stops.size();
 
@@ -92,3 +101,23 @@ private:
 	std::deque<Bus> buses_;
 	std::deque<Stop> stops_;
 };
+
+/*
+
+10
+Stop Tolstopaltsevo : 55.611087, 37.208290
+Stop Marushkino : 55.595884, 37.209755
+Bus 256 : Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye
+Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
+Stop Rasskazovka : 55.632761, 37.333324
+Stop Biryulyovo Zapadnoye : 55.574371, 37.651700
+Stop Biryusinka : 55.581065, 37.648390
+Stop Universam : 55.587655, 37.645687
+Stop Biryulyovo Tovarnaya : 55.592028, 37.653656
+Stop Biryulyovo Passazhirskaya : 55.580999, 37.659164
+3
+Bus 256
+Bus 750
+Bus 751
+
+*/

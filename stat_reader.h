@@ -8,34 +8,39 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& os, const BusesForStopResponse& r) {
-    if (r.buses.size() == 0)
-        os << "No bus";
-    else {
-        for (const auto bus : r.buses) {
-            if (bus == r.buses[0])
-                os << bus;
-            else
-                os << " " << bus;
-        }
-    }
-    return os;
+ostream& operator<<(ostream& os, const BusInfo& bus_info) {
+	if (bus_info.stops_on_route == 0)
+		os << bus_info.bus << " : not found";
+	else {
+		os << "Bus " << bus_info.bus << ": ";
+		os << bus_info.stops_on_route << " stops on route, ";
+		os << bus_info.unique_stops << " unique stops, ";
+		os << bus_info.route_length << " route length";
+	}
+	return os;
 }
 
 void OutputReader(TransportCatalogue& trans_cat) {
-    int query_count;
+	int query_count;
+	cout << "Enter count of count to show buses: ";
+	cin >> query_count;
 
-    cout << "Enter count of count to show buses: ";
-    cin >> query_count;
+	string bus;
+	vector<int> bus_queries(query_count);
+	for (int i = 0; i < query_count; ++i) {
+		cin >> bus;
+		cin >> bus_queries[i];
+	}
 
-    int query_numb = 0;
-   
-    while (query_numb < query_count) {
-        int bus_number;
-      //  cout << "Enter Bus number: ";
-        cin >> bus_number;
-
-    }
+	for (int bus : bus_queries) {
+		auto finded = trans_cat.GetBusInfo(bus);
+		if (finded.stops_on_route > 0) {
+			cout << finded << endl;
+		}
+		else {
+			cout << "Bus " << bus << ": not found" << endl;
+		}
+	}
 }
 
 /*
@@ -50,6 +55,10 @@ Stop Biryusinka : 55.581065, 37.648390
 Stop Universam : 55.587655, 37.645687
 Stop Biryulyovo Tovarnaya : 55.592028, 37.653656
 Stop Biryulyovo Passazhirskaya : 55.580999, 37.659164
+3
+Bus 256
+Bus 750
+Bus 751
 
 Bus 256: 6 stops on route, 5 unique stops, 4371.02 route length
 Bus 750 : 5 stops on route, 3 unique stops, 20939.5 route length

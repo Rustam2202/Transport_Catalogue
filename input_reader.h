@@ -31,7 +31,7 @@ Stop ReadInputStop(istream& query) {
 	return result;
 }
 
-Bus ReadInputBus(TransportCatalogue trans_cat, string_view str) {
+Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 	Bus result;
 	auto ch = str.begin();
 
@@ -47,18 +47,32 @@ Bus ReadInputBus(TransportCatalogue trans_cat, string_view str) {
 	ch++;
 
 	// найти остановку в stops_ и вставить указатель в result
-	_String_view_iterator ch_begin = ch;
-	_String_view_iterator ch_end = ch;
-	while (*ch != '\n') {
-		if (*ch == '>' || *ch == '-' || *ch == '\n') {
-			if (*ch == '-') {
-				result.IsRing = true;
-			}
-			ch_end = ch;
-			string_view stop(ch_begin, ch_end - 1);
+	auto ch_begin = ch;
+	auto ch_end = ch;
+
+	result.IsRing = any_of(ch_begin, str.end(), [](const char c) {return c == '>'; });
+
+	while (true) {
+		if (*ch == '>' || *ch == '-') {
+			ch_end = ch - 1;
+			string stop(ch_begin,ch_end);
+			
 			result.stops.insert(trans_cat.FindStop(stop));
-			ch_begin = ch;
+			ch_begin = ch+2;
 		}
+		else if (next(ch) == str.end())
+		{
+			ch_end = str.end();
+			string stop(ch_begin, ch_end);
+			result.stops.insert(trans_cat.FindStop(stop));
+			break;
+
+			/*ch_end = str.end();
+			string_view stop(ch_begin, ch_end);
+			result.stops.insert(trans_cat.FindStop(stop));
+			break;*/
+		}
+
 		ch++;
 	}
 
