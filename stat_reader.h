@@ -22,14 +22,14 @@ ostream& operator<<(ostream& os, const BusInfo& bus_info) {
 
 void OutputReader(TransportCatalogue& trans_cat) {
 	int query_count;
-	cout << "Enter count of count to show buses: " << endl;
+	//cout << "Enter count of count to show buses: " << endl;
 	cin >> query_count;
-	cout << "Entered " << query_count << endl;
+	//cout << "Entered " << query_count << endl;
 
 	string bus;
 	vector<int> bus_queries(query_count);
 	for (int i = 0; i < query_count; ++i) {
-		cout << "Enter bus number: " << endl;
+	//	cout << "Enter bus number: " << endl;
 		cin >> bus;
 		cin >> bus_queries[i];
 	}

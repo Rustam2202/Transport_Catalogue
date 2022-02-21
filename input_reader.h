@@ -21,7 +21,6 @@ Stop ReadInputStop(istream& query) {
 
 	getline(query, stop, ':');
 	stop.erase(stop.begin());
-	stop.erase(stop.end() - 1);
 	result.stop = stop;
 
 	cin >> result.coodinates.lat;
@@ -84,9 +83,9 @@ void InputReader(TransportCatalogue& trans_cat) {
 	//vector<string> stop_queries;
 	vector<string> bus_queries;
 
-	cout << "Enter count of queries to input data: "<<endl;
+	//cout << "Enter count of queries to input data: "<<endl;
 	cin >> query_count;
-	cout << "Entered " << query_count << endl;
+	//cout << "Entered " << query_count << endl;
 
 	int query_numb = 0;
 	while (query_numb < query_count) {
@@ -109,7 +108,7 @@ void InputReader(TransportCatalogue& trans_cat) {
 		}*/
 	}
 
-	cout << "Queries enterded" << endl;
+	//cout << "Queries enterded" << endl;
 
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));
@@ -130,4 +129,4 @@ Stop Universam: 55.587655, 37.645687
 Stop Biryulyovo Tovarnaya: 55.592028, 37.653656
 Stop Biryulyovo Passazhirskaya: 55.580999, 37.659164
 
-*/
+*/  
