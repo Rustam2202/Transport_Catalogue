@@ -24,39 +24,22 @@ void OutputReader(TransportCatalogue& trans_cat) {
 	int query_count;
 
 	cin >> query_count;
-	//cout << "Entered " << query_count << endl;
-	/*int query_numb = 0;
-	while (query_numb < query_count) {
-		string query_type;
-		cin >> query_type;
-		if (query_type == "Bus")
-		{
-			int number;
-			cin >> number;
-			cout << trans_cat.GetBusInfo(number) << endl;
-			query_numb++;
-		}
-	}*/
-
+	cin.get();
+	cout << "Query count Entered " << query_count << endl;
 	string bus;
 	vector<int> bus_queries(query_count);
 	for (int i = 0; i < query_count; ++i) {
-		int number;
-		string bus;
-		cin >> bus;
-		cin >> number;
-		bus_queries[i] = number;
-
-		/*string temp;
-		cin.get();
+		string temp;
 		getline(cin, temp);
-		bus_queries[i] = stoi(temp.substr(4, 6));*/
+		bus_queries[i] = stoi(temp.substr(4, 6));
 	}
+	cout << "Buses entered" << endl;
+	cout << flush;
 	for (int bus : bus_queries) {
 		cout << trans_cat.GetBusInfo(bus) << endl;
 	}
-
 }
+
 /*
 10
 Stop Tolstopaltsevo: 55.611087, 37.208290

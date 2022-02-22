@@ -85,7 +85,7 @@ void InputReader(TransportCatalogue& trans_cat) {
 
 	//cout << "Enter count of queries to input data: "<<endl;
 	cin >> query_count;
-	//cout << "Entered " << query_count << endl;
+//	cout << "Entered " << query_count << endl;
 
 	int query_numb = 0;
 	while (query_numb < query_count) {
@@ -103,16 +103,14 @@ void InputReader(TransportCatalogue& trans_cat) {
 			bus_queries.push_back(temp);
 			query_numb++;
 		}
-		/*else {
-			cout << "Incorrected query type (enter Stop or Bus):";
-		}*/
 	}
-
-	//cout << "Queries enterded" << endl;
+	cin.get();
+	cout << "Stops enterded" << endl;
 
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));
 	}
+	cout << "Buses enterded" << endl;
 
 }
 
