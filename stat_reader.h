@@ -25,7 +25,6 @@ void OutputReader(TransportCatalogue& trans_cat) {
 
 	cin >> query_count;
 	cin.get();
-	cout << "Query count Entered " << query_count << endl;
 	string bus;
 	vector<int> bus_queries(query_count);
 	for (int i = 0; i < query_count; ++i) {
@@ -33,8 +32,7 @@ void OutputReader(TransportCatalogue& trans_cat) {
 		getline(cin, temp);
 		bus_queries[i] = stoi(temp.substr(4, 6));
 	}
-	cout << "Buses entered" << endl;
-	cout << flush;
+	
 	for (int bus : bus_queries) {
 		cout << trans_cat.GetBusInfo(bus) << endl;
 	}

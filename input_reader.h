@@ -10,11 +10,6 @@
 
 using namespace std;
 
-void DeleteBourderSpaces(string_view str) {
-	str.remove_prefix(std::min(str.find_first_not_of(" "), str.size()));
-	str.remove_suffix(std::max(str.find_last_not_of(" "), str.size()));
-}
-
 Stop ReadInputStop(istream& query) {
 	Stop result;
 	std::string stop;
@@ -54,22 +49,21 @@ Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 	while (true) {
 		if (*ch == '>' || *ch == '-') {
 			ch_end = ch - 1;
-			string stop(ch_begin,ch_end);
-			
-			result.stops.insert(trans_cat.FindStop(stop));
-			ch_begin = ch+2;
+			string stop(ch_begin, ch_end);
+
+			// result.stops[trans_cat.FindStop(stop)]++; // unordered_map<Stop*, size_t> stops;
+			result.stops_unique.insert(trans_cat.FindStop(stop));
+			result.stops_vector.push_back(trans_cat.FindStop(stop));
+			ch_begin = ch + 2;
 		}
 		else if (next(ch) == str.end())
 		{
 			ch_end = str.end();
 			string stop(ch_begin, ch_end);
-			result.stops.insert(trans_cat.FindStop(stop));
+			//	result.stops[trans_cat.FindStop(stop)]++; // unordered_map<Stop*, size_t> stops;
+			result.stops_unique.insert(trans_cat.FindStop(stop));
+			result.stops_vector.push_back(trans_cat.FindStop(stop));
 			break;
-
-			/*ch_end = str.end();
-			string_view stop(ch_begin, ch_end);
-			result.stops.insert(trans_cat.FindStop(stop));
-			break;*/
 		}
 
 		ch++;
@@ -80,12 +74,9 @@ Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 
 void InputReader(TransportCatalogue& trans_cat) {
 	int query_count;
-	//vector<string> stop_queries;
 	vector<string> bus_queries;
 
-	//cout << "Enter count of queries to input data: "<<endl;
 	cin >> query_count;
-//	cout << "Entered " << query_count << endl;
 
 	int query_numb = 0;
 	while (query_numb < query_count) {
@@ -105,12 +96,10 @@ void InputReader(TransportCatalogue& trans_cat) {
 		}
 	}
 	cin.get();
-	cout << "Stops enterded" << endl;
 
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));
 	}
-	cout << "Buses enterded" << endl;
 
 }
 
@@ -127,4 +116,4 @@ Stop Universam: 55.587655, 37.645687
 Stop Biryulyovo Tovarnaya: 55.592028, 37.653656
 Stop Biryulyovo Passazhirskaya: 55.580999, 37.659164
 
-*/  
+*/

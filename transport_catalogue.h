@@ -4,9 +4,12 @@
 
 #include <algorithm>
 #include <deque>
+#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
+
+using namespace std;
 
 struct Stop
 {
@@ -17,10 +20,11 @@ struct Stop
 struct Bus
 {
 	int bus;
-	std::unordered_set<Stop*> stops;
-	//std::unordered_map<size_t, Stop*> stops;
+	std::unordered_set<Stop*> stops_unique;
+	//	std::unordered_map<Stop*, size_t> stops;
+
+	std::vector<Stop*> stops_vector;
 	bool IsRing = false;
-	//double distance = 0.0;
 };
 
 struct BusInfo {
@@ -72,30 +76,28 @@ public:
 	//	получение информации о маршруте
 	BusInfo GetBusInfo(int number) {
 		BusInfo result;
+		Bus* bus_finded = FindBus(number);
+
 		result.bus = number;
 
-		Bus* bus_p = FindBus(number);
-		if (bus_p == nullptr) {
+		if (bus_finded == nullptr) {
 			return result;
 		}
 
-		auto it = bus_p->stops.begin();
-		auto it_begin = bus_p->stops.begin();
-		it++;
-		while (it != bus_p->stops.end()) {
-			result.route_length += ComputeDistance((*std::prev(it))->coodinates, (*it)->coodinates);
-			it++;
+		result.unique_stops = bus_finded->stops_unique.size();
+
+		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
+			result.route_length += ComputeDistance(bus_finded->stops_vector[i-1]->coodinates, bus_finded->stops_vector[i]->coodinates);
 		}
 
-		if (bus_p->IsRing == true) {
-			result.route_length += ComputeDistance((*std::prev(it))->coodinates, (*it_begin)->coodinates);
-			result.stops_on_route = bus_p->stops.size() + 1;
+		if (bus_finded->IsRing == true) {
+			result.stops_on_route = bus_finded->stops_vector.size();
+
 		}
 		else {
+			result.stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
 			result.route_length *= 2;
-			result.stops_on_route = bus_p->stops.size() * 2 - 1;
 		}
-		result.unique_stops = bus_p->stops.size();
 
 		return result;
 	}
