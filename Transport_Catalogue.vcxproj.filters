@@ -27,6 +27,9 @@
     <ClInclude Include="transport_catalogue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="input_reader.cpp">

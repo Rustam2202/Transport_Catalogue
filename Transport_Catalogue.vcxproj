@@ -22,6 +22,7 @@
     <ClInclude Include="geo.h" />
     <ClInclude Include="input_reader.h" />
     <ClInclude Include="stat_reader.h" />
+    <ClInclude Include="tests.h" />
     <ClInclude Include="transport_catalogue.h" />
   </ItemGroup>
   <ItemGroup>

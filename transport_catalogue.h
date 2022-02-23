@@ -7,6 +7,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 #include <string>
 
 using namespace std;
@@ -34,6 +35,12 @@ struct BusInfo {
 	double route_length = 0.0;
 };
 
+struct StopInfo {
+	string stop_name;
+	set<string> stop_with_buses;
+	bool IsInStops = true;
+};
+
 class TransportCatalogue {
 
 public:
@@ -49,54 +56,33 @@ public:
 	}
 
 	//	поиск маршрута по имени
-	Bus* FindBus(string number) {
-		auto it = find_if(buses_.begin(), buses_.end(),
-			[number](const Bus& bus) {
-				return bus.bus == number;
-			}
-		);
-		if (it == buses_.end()) {
-			return nullptr;
-		}
-
-		return &buses_[it - buses_.begin()];
-	}
+	Bus* FindBus(string bus_number);
 
 	//	поиск остановки по имени
-	Stop* FindStop(std::string_view str) {
-		auto it = std::find_if(stops_.begin(), stops_.end(),
-			[str](const Stop& stop) {
-				return stop.stop == str;
-			}
-		);
-
-		return &stops_[it - stops_.begin()];
-	}
+	Stop* FindStop(std::string_view str);
 
 	//	получение информации о маршруте
-	BusInfo GetBusInfo(string number) {
-		BusInfo result;
-		Bus* bus_finded = FindBus(number);
+	BusInfo GetBusInfo(string bus_number);
 
-		result.bus = number;
+	// получение информации об остановке (пересекающие маршруты)
+	StopInfo GetStopInfo(string stop_name) {
+		StopInfo result;
+		result.stop_name = stop_name;
 
-		if (bus_finded == nullptr) {
+		auto stop_finded = FindStop(stop_name);
+
+		if (stop_finded == nullptr) {
+			result.IsInStops = false;
 			return result;
 		}
 
-		result.unique_stops = bus_finded->stops_unique.size();
-
-		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
-			result.route_length += ComputeDistance(bus_finded->stops_vector[i-1]->coodinates, bus_finded->stops_vector[i]->coodinates);
-		}
-
-		if (bus_finded->IsRing == true) {
-			result.stops_on_route = bus_finded->stops_vector.size();
-
-		}
-		else {
-			result.stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
-			result.route_length *= 2;
+		for (const Bus& bus : buses_) {
+			if (bus.stops_unique.count(stop_finded) > 0) {
+				result.stop_with_buses.insert(bus.bus);
+			}
+			else {
+				continue;
+			}
 		}
 
 		return result;
@@ -105,39 +91,5 @@ public:
 private:
 	std::deque<Bus> buses_;
 	std::deque<Stop> stops_;
+	//unordered_map<Stop*, set<string>> stop_with_buses;
 };
-
-/*
-
-6
-Stop Stop1: 55.611087, 37.208290
-Stop Stop2: 55.595884, 37.209755
-Bus 4: Stop1 - Stop2
-Bus 3 c: Stop1 > Stop2 > Stop2 > Stop2 > Stop1
-Bus 2a: Stop1 > Stop2
-Bus 1: Stop1 - Stop2 - Stop2 - Stop1
-
-5
-Bus 1
-Bus 2a
-Bus 3 c
-Bus 4
-Bus 5
-
-10
-Stop Tolstopaltsevo: 55.611087, 37.208290
-Stop Marushkino: 55.595884, 37.209755
-Bus 256: Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye
-Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
-Stop Rasskazovka: 55.632761, 37.333324
-Stop Biryulyovo Zapadnoye: 55.574371, 37.651700
-Stop Biryusinka: 55.581065, 37.648390
-Stop Universam: 55.587655, 37.645687
-Stop Biryulyovo Tovarnaya: 55.592028, 37.653656
-Stop Biryulyovo Passazhirskaya: 55.580999, 37.659164
-3
-Bus 256
-Bus 750
-Bus 751
-
-*/
