@@ -26,14 +26,15 @@ void OutputReader(TransportCatalogue& trans_cat) {
 	cin >> query_count;
 	cin.get();
 	string bus;
-	vector<int> bus_queries(query_count);
+	vector<string> bus_queries(query_count);
 	for (int i = 0; i < query_count; ++i) {
 		string temp;
 		getline(cin, temp);
-		bus_queries[i] = stoi(temp.substr(4, 6));
+		bus_queries[i] = temp.substr(4, temp.back());
+		//bus_queries[i] = stoi(temp.substr(4, 6));
 	}
 	
-	for (int bus : bus_queries) {
+	for (string bus : bus_queries) {
 		cout << trans_cat.GetBusInfo(bus) << endl;
 	}
 }

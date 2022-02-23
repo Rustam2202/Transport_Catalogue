@@ -30,13 +30,15 @@ Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 	auto ch = str.begin();
 
 	// найти номер
-	string num;
+	//string num;
 	while (*ch != ':')
 	{
-		num.push_back(*ch);
+		result.bus.push_back(*ch);
+		//num.push_back(*ch);
 		ch++;
 	}
-	result.bus = stoi(num);
+
+	//result.bus = stoi(num);
 	ch++;
 	ch++;
 

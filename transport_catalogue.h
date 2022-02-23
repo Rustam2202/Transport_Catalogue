@@ -19,7 +19,7 @@ struct Stop
 
 struct Bus
 {
-	int bus;
+	std::string bus;
 	std::unordered_set<Stop*> stops_unique;
 	//	std::unordered_map<Stop*, size_t> stops;
 
@@ -28,7 +28,7 @@ struct Bus
 };
 
 struct BusInfo {
-	int bus;
+	string bus;
 	size_t stops_on_route = 0;
 	size_t unique_stops = 0;
 	double route_length = 0.0;
@@ -49,7 +49,7 @@ public:
 	}
 
 	//	поиск маршрута по имени
-	Bus* FindBus(int number) {
+	Bus* FindBus(string number) {
 		auto it = find_if(buses_.begin(), buses_.end(),
 			[number](const Bus& bus) {
 				return bus.bus == number;
@@ -74,7 +74,7 @@ public:
 	}
 
 	//	получение информации о маршруте
-	BusInfo GetBusInfo(int number) {
+	BusInfo GetBusInfo(string number) {
 		BusInfo result;
 		Bus* bus_finded = FindBus(number);
 
