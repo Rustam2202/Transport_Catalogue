@@ -95,7 +95,7 @@ void InputReader(TransportCatalogue& trans_cat) {
 			query_numb++;
 		}
 	}
-	cin.get();
+	//cin.get();
 
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));
@@ -104,6 +104,23 @@ void InputReader(TransportCatalogue& trans_cat) {
 }
 
 /*
+
+4
+Stop Stop1: 55.611087, 37.208290
+Stop Stop2: 55.595884, 37.209755
+Bus 1: Stop1 - Stop2 - Stop1
+Bus 2: Stop1 > Stop2 > Stop1
+2
+Bus 1
+Bus 2
+
+3
+Bus 222 AAA: Stop1 - Stop2
+Stop Stop1: 55.574371, 37.651700
+Stop Stop2: 55.581065, 37.648390
+1
+Bus 222 AAA
+
 10
 Stop Tolstopaltsevo: 55.611087, 37.208290
 Stop Marushkino: 55.595884, 37.209755

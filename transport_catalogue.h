@@ -109,6 +109,21 @@ private:
 
 /*
 
+6
+Stop Stop1: 55.611087, 37.208290
+Stop Stop2: 55.595884, 37.209755
+Bus 4: Stop1 - Stop2
+Bus 3 c: Stop1 > Stop2 > Stop2 > Stop2 > Stop1
+Bus 2a: Stop1 > Stop2
+Bus 1: Stop1 - Stop2 - Stop2 - Stop1
+
+5
+Bus 1
+Bus 2a
+Bus 3 c
+Bus 4
+Bus 5
+
 10
 Stop Tolstopaltsevo: 55.611087, 37.208290
 Stop Marushkino: 55.595884, 37.209755
