@@ -16,66 +16,176 @@ Stop ReadInputStop(istream& query) {
 	return result;
 }
 
+struct NameLenghts
+{
+	string this_stop_name;
+	string lengths_data;
+};
+
+NameLenghts ReadSimpleStop(string_view str, TransportCatalogue& trans_cat) {
+	auto ch = str.begin();
+	string stop_name;
+
+	// имя остановки
+	while (*ch != ':')
+	{
+		stop_name.push_back(*ch);
+		ch++;
+	}
+	ch++;
+
+	// координаты
+	double lat;
+	double lng;
+	string temp;
+	while (*ch != ',') {
+		temp.push_back(*ch);
+		ch++;
+	}
+
+	lat = stod(temp);
+	temp.clear();
+	ch++;
+	while (true) {
+		if (*ch != ',') {
+			
+		}
+		else if (next(ch) != str.end()) {
+
+		}
+		ch++;
+	}
+	lng = stod(temp);
+	temp.clear();
+
+	Stop result;
+	result.stop = stop_name;
+	result.coodinates.lat = lat;
+	result.coodinates.lng = lng;
+	trans_cat.AddStop(result);
+
+	str.remove_prefix(ch - str.begin());
+	NameLenghts ret;
+	ret.this_stop_name = stop_name;
+	ret.lengths_data = str;
+	return ret;
+}
+
+void ReadStopLenghtsData(NameLenghts& lng_data, TransportCatalogue& trans_cat) {
+	auto ch = lng_data.lengths_data.begin() + 1;
+	auto ch_begin = ch;
+	auto ch_end = ch;
+
+	while (true) {
+		if (*ch == 'm') {
+
+			ch_end = ch;
+			string lenght_temp(ch_begin, ch_end);
+			uint64_t lenght = stoi(lenght_temp);
+			ch += 5;
+			ch_begin = ch;
+			while (true) {
+				if (*ch == ',') {
+					ch_end = ch;
+					string other_stop_name(ch_begin, ch_end);
+					trans_cat.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
+					ch++;
+					ch_begin = ch;
+					break;
+				}
+				else if (next(ch) == lng_data.lengths_data.end()) {
+					ch_end = ch + 1;
+					string other_stop_name(ch_begin, ch_end);
+					trans_cat.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
+					ch++;
+					break;
+				}
+				ch++;
+			}
+
+		}
+		if (ch == lng_data.lengths_data.end()) {
+			return;
+		}
+		ch++;
+	}
+}
+
 void ReadInputStop(TransportCatalogue& trans_cat, string_view str) {
 
 	auto ch = str.begin();
 	string stop_name;
 
 	// имя остановки
+
+	while (*ch != ':')
 	{
-		while (*ch != ':')
-		{
-			stop_name.push_back(*ch);
-			ch++;
-		}
+		stop_name.push_back(*ch);
+		ch++;
 	}
+	ch++;
 
 	// координаты
-	{
-		double lat;
-		double lng;
-		string temp;
-		while (*ch != ',') {
-			temp.push_back(*ch);
-			ch++;
-		}
-		lat = stoi(temp);
-		temp.clear();
-		while (*ch != ',') {
-			temp.push_back(*ch);
-			ch++;
-		}
-		lng = stoi(temp);
-		temp.clear();
 
-		Stop result;
-		result.stop = stop_name;
-		result.coodinates.lat = lat;
-		result.coodinates.lng = lng;
-		trans_cat.AddStop(result);
+	double lat;
+	double lng;
+	string temp;
+	while (*ch != ',') {
+		temp.push_back(*ch);
+		ch++;
 	}
+
+	lat = stod(temp);
+	temp.clear();
+	ch++;
+	while (*ch != ',') {
+		temp.push_back(*ch);
+		ch++;
+	}
+	lng = stod(temp);
+	temp.clear();
+
+	Stop result;
+	result.stop = stop_name;
+	result.coodinates.lat = lat;
+	result.coodinates.lng = lng;
+	trans_cat.AddStop(result);
+
 
 	if (ch == str.end()) {
 		return;
 	}
 
+	ch++;
 	auto ch_begin = ch;
 	auto ch_end = ch;
 
 	while (true) {
 		if (*ch == 'm') {
-			ch_end = ch - 1;
+			ch_end = ch;
 			string lenght_temp(ch_begin, ch_end);
 			uint64_t lenght = stoi(lenght_temp);
-			ch += 4;
+			ch += 5;
 			ch_begin = ch;
-			while (*ch != ',' || next(ch) == str.end()) {
+			while (true) {
+				if (*ch == ',') {
+					ch_end = ch;
+					string other_stop_name(ch_begin, ch_end);
+					trans_cat.SetDistanceBetweenStops(stop_name, other_stop_name, lenght);
+					ch++;
+					ch_begin = ch;
+					break;
+				}
+				else if (next(ch) == str.end()) {
+					ch_end = ch + 1;
+					string other_stop_name(ch_begin, ch_end);
+					trans_cat.SetDistanceBetweenStops(stop_name, other_stop_name, lenght);
+					ch++;
+					break;
+				}
 				ch++;
 			}
-			ch_end = ch;
 
-			string other_stop_name(ch_begin, ch_end);
-			trans_cat.SetDistanceBetweenStops(stop_name, other_stop_name, lenght);
 		}
 		if (ch == str.end()) {
 			return;
@@ -139,6 +249,7 @@ void InputReader(TransportCatalogue& trans_cat) {
 	int query_count;
 	vector<string> stop_queries;
 	vector<string> bus_queries;
+	vector<NameLenghts> lengths_queries;
 
 	cin >> query_count;
 
@@ -164,8 +275,14 @@ void InputReader(TransportCatalogue& trans_cat) {
 			query_numb++;
 		}
 	}
-	for (string query : bus_queries) {
-		ReadInputStop(trans_cat, query);
+	for (string query : stop_queries) {
+		auto query_lengths = ReadSimpleStop(query, trans_cat);
+		if (!query_lengths.lengths_data.empty()) {
+			lengths_queries.push_back(query_lengths);
+		}
+	}
+	for (auto lng_data : lengths_queries) {
+		ReadStopLenghtsData(lng_data, trans_cat);
 	}
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));

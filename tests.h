@@ -17,6 +17,12 @@ Bus 3 c
 Bus 4
 Bus 5
 
+ 
+ 1
+ Stop Prazhskaya: 55.611678, 37.603831
+
+ Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
+
 
 13
 Stop Tolstopaltsevo: 55.611087, 37.20829, 3900m to Marushkino
