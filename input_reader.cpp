@@ -16,35 +16,73 @@ Stop ReadInputStop(istream& query) {
 	return result;
 }
 
-void ReadInputStop(TransportCatalogue& trans_cat, istream& query) {
-	Stop result;
-	std::string stop;
+void ReadInputStop(TransportCatalogue& trans_cat, string_view str) {
 
-	getline(query, stop, ':');
-	stop.erase(stop.begin());
-	result.stop = stop;
+	auto ch = str.begin();
+	string stop_name;
 
-	cin >> result.coodinates.lat;
-	cin.get();
-	cin >> result.coodinates.lng;
+	// имя остановки
+	{
+		while (*ch != ':')
+		{
+			stop_name.push_back(*ch);
+			ch++;
+		}
+	}
 
-	string lengths_query;
-	getline(query, lengths_query);
-	if (!lengths_query.empty()) {
-		string_view str = lengths_query;
-		auto ch = str.begin() + 2;
-		auto ch_begin = ch;
-		auto ch_end = ch;
-		while (true) {
-			if (*ch == 'm') {
-				ch_end = ch - 1;
-				string lng(ch_begin, ch_end);
-				uint64_t lenght = stoi(lng);
+	// координаты
+	{
+		double lat;
+		double lng;
+		string temp;
+		while (*ch != ',') {
+			temp.push_back(*ch);
+			ch++;
+		}
+		lat = stoi(temp);
+		temp.clear();
+		while (*ch != ',') {
+			temp.push_back(*ch);
+			ch++;
+		}
+		lng = stoi(temp);
+		temp.clear();
 
+		Stop result;
+		result.stop = stop_name;
+		result.coodinates.lat = lat;
+		result.coodinates.lng = lng;
+		trans_cat.AddStop(result);
+	}
+
+	if (ch == str.end()) {
+		return;
+	}
+
+	auto ch_begin = ch;
+	auto ch_end = ch;
+
+	while (true) {
+		if (*ch == 'm') {
+			ch_end = ch - 1;
+			string lenght_temp(ch_begin, ch_end);
+			uint64_t lenght = stoi(lenght_temp);
+			ch += 4;
+			ch_begin = ch;
+			while (*ch != ',' || next(ch) == str.end()) {
+				ch++;
 			}
+			ch_end = ch;
+
+			string other_stop_name(ch_begin, ch_end);
+			trans_cat.SetDistanceBetweenStops(stop_name, other_stop_name, lenght);
+		}
+		if (ch == str.end()) {
+			return;
 		}
 		ch++;
 	}
+
 }
 
 // Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
@@ -110,13 +148,13 @@ void InputReader(TransportCatalogue& trans_cat) {
 		cin >> query_type;
 		if (query_type == "Stop")
 		{
-			/*string temp;
+			string temp;
 			cin.get();
 			getline(cin, temp);
 			stop_queries.push_back(temp);
-			query_numb++;*/
-			trans_cat.AddStop(ReadInputStop(cin));
 			query_numb++;
+			/*trans_cat.AddStop(ReadInputStop(cin));
+			query_numb++;*/
 		}
 		else if (query_type == "Bus") {
 			string temp;
@@ -126,9 +164,9 @@ void InputReader(TransportCatalogue& trans_cat) {
 			query_numb++;
 		}
 	}
-	/*for (string query : bus_queries) {
-		trans_cat.AddStop(ReadInputStop(trans_cat, query));
-	}*/
+	for (string query : bus_queries) {
+		ReadInputStop(trans_cat, query);
+	}
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));
 	}

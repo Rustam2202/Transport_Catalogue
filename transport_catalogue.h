@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <deque>
 #include <iostream>
+#include <map> //
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
@@ -68,8 +69,13 @@ public:
 	StopInfo GetStopInfo(string stop_name);
 
 	// задание дистанции между остановками
-	void SetDistanceBetweenStops(Stop* this_stop, Stop* other_stop){
-
+	void SetDistanceBetweenStops(string_view this_stop, string_view other_stop, uint64_t length) {
+		//auto p = make_pair(this_stop, other_stop);
+		auto finded_this = FindStop(this_stop);
+		auto finded_other = FindStop(other_stop);
+		if (finded_this != nullptr && finded_other != nullptr) {
+			route_lengths_[{finded_this, finded_other}] = length;
+		}
 	}
 	// Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
 
@@ -84,5 +90,5 @@ private:
 	std::deque<Stop> stops_;
 
 	//unordered_map<Stop*, set<string>> stop_with_buses;
-	std::unordered_map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
+	std::map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
 };
