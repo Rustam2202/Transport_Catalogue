@@ -52,16 +52,20 @@ void OutputReader(TransportCatalogue& trans_cat) {
 		string temp;
 		getline(cin, temp);
 		if (query_type == "Stop") {
-			stop_queries.push_back(temp);
+			//stop_queries.push_back(temp);
+			cout << trans_cat.GetStopInfo(temp) << endl;
+
 		}
 		else if (query_type == "Bus") {
-			bus_queries.push_back(temp);
+			//bus_queries.push_back(temp);
+			cout << trans_cat.GetBusInfo(temp) << endl;
+
 		}
 	}
-	for (string& bus : bus_queries) {
+	/*for (string& bus : bus_queries) {
 		cout << trans_cat.GetBusInfo(bus) << endl;
 	}
 	for (string& stop : stop_queries) {
 		cout << trans_cat.GetStopInfo(stop) << endl;
-	}
+	}*/
 }

@@ -33,9 +33,9 @@ Stop Rossoshanskaya ulitsa: 55.595579, 37.605757
 Stop Prazhskaya: 55.611678, 37.603831
 6
 Bus 256
+Stop Biryulyovo Zapadnoye
 Bus 750
 Bus 751
-Stop Biryulyovo Zapadnoye
 Stop Samara
 Stop Prazhskaya
 
