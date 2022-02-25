@@ -54,3 +54,26 @@ BusInfo TransportCatalogue::GetBusInfo(string bus_number) {
 
 	return result;
 }
+
+StopInfo TransportCatalogue::GetStopInfo(string stop_name) {
+	StopInfo result;
+	result.stop_name = stop_name;
+
+	auto stop_finded = FindStop(stop_name);
+
+	if (stop_finded == nullptr) {
+		result.IsInStops = false;
+		return result;
+	}
+
+	for (const Bus& bus : buses_) {
+		if (bus.stops_unique.count(stop_finded) > 0) {
+			result.stop_with_buses.insert(bus.bus);
+		}
+		else {
+			continue;
+		}
+	}
+
+	return result;
+}

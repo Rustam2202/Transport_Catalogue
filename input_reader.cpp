@@ -16,6 +16,41 @@ Stop ReadInputStop(istream& query) {
 	return result;
 }
 
+void ReadInputStop(TransportCatalogue& trans_cat, istream& query) {
+	Stop result;
+	std::string stop;
+
+	getline(query, stop, ':');
+	stop.erase(stop.begin());
+	result.stop = stop;
+
+	cin >> result.coodinates.lat;
+	cin.get();
+	cin >> result.coodinates.lng;
+
+	string lengths_query;
+	getline(query, lengths_query);
+	if (!lengths_query.empty()) {
+		string_view str = lengths_query;
+		auto ch = str.begin() + 2;
+		auto ch_begin = ch;
+		auto ch_end = ch;
+		while (true) {
+			if (*ch == 'm') {
+				ch_end = ch - 1;
+				string lng(ch_begin, ch_end);
+				uint64_t lenght = stoi(lng);
+
+			}
+		}
+		ch++;
+	}
+}
+
+// Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
+// Stop Prazhskaya: 55.611678, 37.603831
+
+
 Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 	Bus result;
 	auto ch = str.begin();
@@ -64,6 +99,7 @@ Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 
 void InputReader(TransportCatalogue& trans_cat) {
 	int query_count;
+	vector<string> stop_queries;
 	vector<string> bus_queries;
 
 	cin >> query_count;
@@ -74,6 +110,11 @@ void InputReader(TransportCatalogue& trans_cat) {
 		cin >> query_type;
 		if (query_type == "Stop")
 		{
+			/*string temp;
+			cin.get();
+			getline(cin, temp);
+			stop_queries.push_back(temp);
+			query_numb++;*/
 			trans_cat.AddStop(ReadInputStop(cin));
 			query_numb++;
 		}
@@ -85,7 +126,9 @@ void InputReader(TransportCatalogue& trans_cat) {
 			query_numb++;
 		}
 	}
-
+	/*for (string query : bus_queries) {
+		trans_cat.AddStop(ReadInputStop(trans_cat, query));
+	}*/
 	for (string query : bus_queries) {
 		trans_cat.AddBus(ReadInputBus(trans_cat, query));
 	}

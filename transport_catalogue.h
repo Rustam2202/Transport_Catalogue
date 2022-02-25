@@ -65,31 +65,24 @@ public:
 	BusInfo GetBusInfo(string bus_number);
 
 	// получение информации об остановке (пересекающие маршруты)
-	StopInfo GetStopInfo(string stop_name) {
-		StopInfo result;
-		result.stop_name = stop_name;
+	StopInfo GetStopInfo(string stop_name);
 
-		auto stop_finded = FindStop(stop_name);
+	// задание дистанции между остановками
+	void SetDistanceBetweenStops(Stop* this_stop, Stop* other_stop){
 
-		if (stop_finded == nullptr) {
-			result.IsInStops = false;
-			return result;
-		}
+	}
+	// Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
 
-		for (const Bus& bus : buses_) {
-			if (bus.stops_unique.count(stop_finded) > 0) {
-				result.stop_with_buses.insert(bus.bus);
-			}
-			else {
-				continue;
-			}
-		}
 
-		return result;
+	//получение дистанции между остановками
+	void GetDistanceBetweenStops() {
+
 	}
 
 private:
 	std::deque<Bus> buses_;
 	std::deque<Stop> stops_;
+
 	//unordered_map<Stop*, set<string>> stop_with_buses;
+	std::unordered_map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
 };
