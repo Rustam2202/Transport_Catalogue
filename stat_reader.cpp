@@ -11,7 +11,8 @@ ostream& operator<<(ostream& os, const BusInfo& bus_info) {
 		os << "Bus " << bus_info.bus << ": ";
 		os << bus_info.stops_on_route << " stops on route, ";
 		os << bus_info.unique_stops << " unique stops, ";
-		os << bus_info.route_length << " route length";
+		os << bus_info.route_length_on_road << " route length, ";
+		os << bus_info.curvature << " curvature";
 	}
 	return os;
 }
@@ -58,8 +59,8 @@ void OutputReader(TransportCatalogue& trans_cat) {
 		}
 		else if (query_type == "Bus") {
 			//bus_queries.push_back(temp);
-			cout << trans_cat.GetBusInfo(temp) << endl;
-
+			//cout << trans_cat.GetBusInfo(temp) << endl;
+			cout << trans_cat.GetBusInfoWithLengths(temp) << endl;
 		}
 	}
 	/*for (string& bus : bus_queries) {

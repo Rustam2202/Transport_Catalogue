@@ -1,20 +1,20 @@
 
 #include "input_reader.h"
 
-Stop ReadInputStop(istream& query) {
-	Stop result;
-	std::string stop;
-
-	getline(query, stop, ':');
-	stop.erase(stop.begin());
-	result.stop = stop;
-
-	cin >> result.coodinates.lat;
-	cin.get();
-	cin >> result.coodinates.lng;
-
-	return result;
-}
+//Stop ReadInputStop(istream& query) {
+//	Stop result;
+//	std::string stop;
+//
+//	getline(query, stop, ':');
+//	stop.erase(stop.begin());
+//	result.stop = stop;
+//
+//	cin >> result.coodinates.lat;
+//	cin.get();
+//	cin >> result.coodinates.lng;
+//
+//	return result;
+//}
 
 struct NameLenghts
 {
@@ -206,7 +206,6 @@ void ReadInputStop(TransportCatalogue& trans_cat, string_view str) {
 
 // Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
 // Stop Prazhskaya: 55.611678, 37.603831
-
 
 Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
 	Bus result;
