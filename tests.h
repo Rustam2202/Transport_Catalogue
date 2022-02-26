@@ -20,7 +20,7 @@ Bus 5
  
  1
  Stop Prazhskaya: 55.611678, 37.603831
-
+ 1
  Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
 
 

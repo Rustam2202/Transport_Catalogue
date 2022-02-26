@@ -47,16 +47,20 @@ NameLenghts ReadSimpleStop(string_view str, TransportCatalogue& trans_cat) {
 	temp.clear();
 	ch++;
 	while (true) {
-		if (*ch != ',') {
-			
+		if (*ch == ',') {
+			lng = stod(temp);
+			break;
 		}
-		else if (next(ch) != str.end()) {
-
+		else if (next(ch) == str.end()) {
+			//ch++;
+			temp.push_back(*ch);
+			lng = stod(temp);
+			ch++;
+			break;
 		}
+		temp.push_back(*ch);
 		ch++;
 	}
-	lng = stod(temp);
-	temp.clear();
 
 	Stop result;
 	result.stop = stop_name;
@@ -64,8 +68,13 @@ NameLenghts ReadSimpleStop(string_view str, TransportCatalogue& trans_cat) {
 	result.coodinates.lng = lng;
 	trans_cat.AddStop(result);
 
-	str.remove_prefix(ch - str.begin());
 	NameLenghts ret;
+	if (ch == str.end()) {
+		return ret;
+	}
+
+	ch++;
+	str.remove_prefix(ch - str.begin());
 	ret.this_stop_name = stop_name;
 	ret.lengths_data = str;
 	return ret;
