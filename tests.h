@@ -1,5 +1,5 @@
 
-{
+
 // 1.12 1/3
 /*
 6
@@ -17,7 +17,7 @@ Bus 3 c
 Bus 4
 Bus 5
 
- 
+
  1
  Stop Prazhskaya: 55.611678, 37.603831
  1
@@ -47,4 +47,3 @@ Stop Prazhskaya
 Stop Biryulyovo Zapadnoye
 
 */
-}

@@ -5,139 +5,78 @@
 #include <algorithm>
 #include <deque>
 #include <iostream>
-#include <map> //
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
 #include <string>
 
-using namespace std;
+namespace TransportCatalogueNamespace {
+	struct Stop
+	{
+		std::string stop;
+		Coordinates coodinates;
+	};
 
-struct Stop
-{
-	std::string stop;
-	Coordinates coodinates;
-};
+	struct Bus
+	{
+		std::string bus;
+		std::unordered_set<Stop*> stops_unique;
+		std::vector<Stop*> stops_vector;
+		bool IsRing = false;
+	};
 
-struct Bus
-{
-	std::string bus;
-	std::unordered_set<Stop*> stops_unique;
-	std::vector<Stop*> stops_vector;
-	bool IsRing = false;
-};
+	struct BusInfo {
+		std::string bus;
+		size_t stops_on_route = 0;
+		size_t unique_stops = 0;
+		double route_length = 0.0;
+		uint64_t route_length_on_road = 0;
+		double curvature = 1.0;
+	};
 
-struct BusInfo {
-	string bus;
-	size_t stops_on_route = 0;
-	size_t unique_stops = 0;
-	double route_length = 0.0;
-	uint64_t route_length_on_road = 0;
-	double curvature = 1.0;
-};
+	struct StopInfo {
+		std::string stop_name;
+		std::set<std::string> stop_with_buses;
+		bool IsInStops = true;
+	};
 
-struct StopInfo {
-	string stop_name;
-	set<string> stop_with_buses;
-	bool IsInStops = true;
-};
+	class TransportCatalogue {
 
-class TransportCatalogue {
-
-public:
-
-	//	добавление маршрута в базу
-	void AddBus(Bus bus) {
-		buses_.push_back(bus);
-	}
-
-	//	добавление остановки в базу
-	void AddStop(Stop stop) {
-		stops_.push_back(stop);
-	}
-
-	//	поиск маршрута по имени
-	Bus* FindBus(string bus_number);
-
-	//	поиск остановки по имени
-	Stop* FindStop(std::string_view str);
-
-	//	получение информации о маршруте
-	BusInfo GetBusInfo(string bus_number);
-
-	BusInfo	GetBusInfoWithLengths(string bus_number) {
-		BusInfo result;
-		Bus* bus_finded = FindBus(bus_number);
-
-		result.bus = bus_number;
-
-		if (bus_finded == nullptr) {
-			return result;
+	public:
+		//	добавление маршрута в базу
+		void AddBus(Bus bus) {
+			buses_.push_back(bus);
 		}
 
-		result.unique_stops = bus_finded->stops_unique.size();
-
-		uint64_t full_lng = 0;
-		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
-			result.route_length += ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
-			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
-		}
-		if (bus_finded->IsRing == false) {
-			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
-				result.route_length += ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
-				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop, bus_finded->stops_vector[i - 1]->stop);
-			}
+		//	добавление остановки в базу
+		void AddStop(Stop stop) {
+			stops_.push_back(stop);
 		}
 
-		result.route_length_on_road = full_lng;
-		result.curvature = full_lng / result.route_length;
+		//	поиск маршрута по имени
+		Bus* FindBus(std::string bus_number);
 
-		if (bus_finded->IsRing == true) {
-			result.stops_on_route = bus_finded->stops_vector.size();
+		//	поиск остановки по имени
+		Stop* FindStop(std::string_view str);
 
-		}
-		else {
-			result.stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
-			result.route_length *= 2;
-		}
+		//	получение информации о маршруте
+		BusInfo GetBusInfo(std::string bus_number);
 
-		return result;
-	}
+		BusInfo	GetBusInfoWithLengths(std::string bus_number);
 
-	// получение информации об остановке (пересекающие маршруты)
-	StopInfo GetStopInfo(string stop_name);
+		// получение информации об остановке (пересекающие маршруты)
+		StopInfo GetStopInfo(std::string stop_name);
 
-	// задание дистанции между остановками
-	void SetDistanceBetweenStops(string_view this_stop, string_view other_stop, uint64_t length) {
-		//auto p = make_pair(this_stop, other_stop);
-		auto finded_this = FindStop(this_stop);
-		auto finded_other = FindStop(other_stop);
-		if (finded_this != nullptr && finded_other != nullptr) {
-			route_lengths_[{finded_this, finded_other}] = length;
-		}
-	}
-	// Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka, 100m to Marushkino
+		// задание дистанции между остановками
+		void SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length);
 
+		//получение дистанции между остановками
+		uint64_t GetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop);
 
-	//получение дистанции между остановками
-	uint64_t GetDistanceBetweenStops(string_view this_stop, string_view other_stop) {
-		auto finded_this = FindStop(this_stop);
-		auto finded_other = FindStop(other_stop);
-		if (finded_this != nullptr && finded_other != nullptr) {
-			auto finded_lng_it = route_lengths_.find({ finded_this, finded_other });
-			if (finded_lng_it == route_lengths_.end()) {
-				return route_lengths_.at({ finded_other,finded_this });
-			}
-
-			return route_lengths_.at({ finded_this, finded_other });
-		}
-		return 0;
-	}
-
-private:
-	std::deque<Bus> buses_;
-	std::deque<Stop> stops_;
-
-	//unordered_map<Stop*, set<string>> stop_with_buses;
-	std::map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_; // unord_map!!
-};
+	private:
+		std::deque<Bus> buses_;
+		std::deque<Stop> stops_;
+		std::map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
+	};
+}

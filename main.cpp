@@ -3,6 +3,7 @@
 #include "transport_catalogue.h"
 
 int main() {
+	using namespace TransportCatalogueNamespace;
 	TransportCatalogue transport_catalogue;
 	InputReader(transport_catalogue);
 	OutputReader(transport_catalogue);

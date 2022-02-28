@@ -4,4 +4,6 @@
 
 #include "transport_catalogue.h"
 
-void OutputReader(TransportCatalogue& trans_cat);
+namespace TransportCatalogueNamespace {
+	void OutputReader(TransportCatalogue& trans_cat);
+}
