@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace TransportCatalogueNamespace {
+namespace transport_catalogue {
 	namespace detail {
 		using namespace std;
 		ostream& operator<<(ostream& os, const BusInfo& bus_info) {
@@ -21,7 +21,7 @@ namespace TransportCatalogueNamespace {
 		ostream& operator<<(ostream& os, const StopInfo& stop_info) {
 			using namespace std;
 
-			if (stop_info.IsInStops == false) {
+			if (stop_info.is_in_stop == false) {
 				os << "Stop " << stop_info.stop_name << ": not found";
 			}
 			else if (stop_info.stop_with_buses.size() == 0) {
@@ -39,9 +39,9 @@ namespace TransportCatalogueNamespace {
 		}
 	}
 
-	void OutputReader(TransportCatalogue& trans_cat) {
+	void OutputReader(TransportCatalogue& catalogue) {
 		using namespace std;
-		using namespace TransportCatalogueNamespace::detail;
+		using namespace transport_catalogue::detail;
 
 		vector<string> bus_queries;
 		vector<string> stop_queries;
@@ -56,11 +56,11 @@ namespace TransportCatalogueNamespace {
 			string temp;
 			getline(cin, temp);
 			if (query_type == "Stop") {
-				cout << trans_cat.GetStopInfo(temp) << endl;
+				cout << catalogue.GetStopInfo(temp) << endl;
 
 			}
 			else if (query_type == "Bus") {
-				cout << trans_cat.GetBusInfoWithLengths(temp) << endl;
+				cout << catalogue.GetBusInfoWithLengths(temp) << endl;
 			}
 		}
 	}

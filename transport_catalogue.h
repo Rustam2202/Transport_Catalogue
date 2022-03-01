@@ -11,7 +11,8 @@
 #include <set>
 #include <string>
 
-namespace TransportCatalogueNamespace {
+namespace transport_catalogue {
+
 	struct Stop
 	{
 		std::string stop;
@@ -23,7 +24,7 @@ namespace TransportCatalogueNamespace {
 		std::string bus;
 		std::unordered_set<Stop*> stops_unique;
 		std::vector<Stop*> stops_vector;
-		bool IsRing = false;
+		bool is_ring = false;
 	};
 
 	struct BusInfo {
@@ -38,7 +39,7 @@ namespace TransportCatalogueNamespace {
 	struct StopInfo {
 		std::string stop_name;
 		std::set<std::string> stop_with_buses;
-		bool IsInStops = true;
+		bool is_in_stop = true;
 	};
 
 	class TransportCatalogue {

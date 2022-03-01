@@ -6,6 +6,6 @@
 
 #include <string_view>
 
-namespace TransportCatalogueNamespace {
-	void InputReader(TransportCatalogue& trans_cat);
+namespace transport_catalogue {
+	void InputReader(TransportCatalogue& catalogue);
 }

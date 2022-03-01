@@ -1,6 +1,6 @@
 #include "transport_catalogue.h"
 
-namespace TransportCatalogueNamespace {
+namespace transport_catalogue {
 	Bus* TransportCatalogue::FindBus(std::string bus_number) {
 		auto it = find_if(buses_.begin(), buses_.end(),
 			[bus_number](const Bus& bus) {
@@ -43,7 +43,7 @@ namespace TransportCatalogueNamespace {
 			result.route_length += ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
 		}
 
-		if (bus_finded->IsRing == true) {
+		if (bus_finded->is_ring == true) {
 			result.stops_on_route = bus_finded->stops_vector.size();
 
 		}
@@ -62,7 +62,7 @@ namespace TransportCatalogueNamespace {
 		auto stop_finded = FindStop(stop_name);
 
 		if (stop_finded == nullptr) {
-			result.IsInStops = false;
+			result.is_in_stop = false;
 			return result;
 		}
 
@@ -95,7 +95,7 @@ namespace TransportCatalogueNamespace {
 			result.route_length += ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
 			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
 		}
-		if (bus_finded->IsRing == false) {
+		if (bus_finded->is_ring == false) {
 			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
 				result.route_length += ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
 				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop, bus_finded->stops_vector[i - 1]->stop);
@@ -105,7 +105,7 @@ namespace TransportCatalogueNamespace {
 		result.route_length_on_road = full_lng;
 		result.curvature = full_lng / result.route_length;
 
-		if (bus_finded->IsRing == true) {
+		if (bus_finded->is_ring == true) {
 			result.stops_on_route = bus_finded->stops_vector.size();
 
 		}

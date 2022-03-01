@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-namespace TransportCatalogueNamespace {
+namespace transport_catalogue {
 	using namespace std;
 
 	namespace detail {
@@ -13,7 +13,7 @@ namespace TransportCatalogueNamespace {
 			string lengths_data;
 		};
 
-		NameLenghts ReadSimpleStop(string_view str, TransportCatalogue& trans_cat) {
+		NameLenghts ParsingStop(string_view str, TransportCatalogue& catalogue) {
 			auto ch = str.begin();
 			string stop_name;
 
@@ -55,7 +55,7 @@ namespace TransportCatalogueNamespace {
 			result.stop = stop_name;
 			result.coodinates.lat = lat;
 			result.coodinates.lng = lng;
-			trans_cat.AddStop(result);
+			catalogue.AddStop(result);
 			// запись имя+координаты
 
 			// проверка: есть ди длины после координат
@@ -72,7 +72,7 @@ namespace TransportCatalogueNamespace {
 			return ret;
 		}
 
-		void ReadStopLenghtsData(NameLenghts& lng_data, TransportCatalogue& trans_cat) {
+		void ParsingStopsLength(NameLenghts& lng_data, TransportCatalogue& catalogue) {
 			auto ch = lng_data.lengths_data.begin() + 1;
 			auto ch_begin = ch;
 			auto ch_end = ch;
@@ -88,7 +88,7 @@ namespace TransportCatalogueNamespace {
 						if (*ch == ',') {
 							ch_end = ch;
 							string other_stop_name(ch_begin, ch_end);
-							trans_cat.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
+							catalogue.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
 							ch++;
 							ch_begin = ch;
 							break;
@@ -96,7 +96,7 @@ namespace TransportCatalogueNamespace {
 						else if (next(ch) == lng_data.lengths_data.end()) {
 							ch_end = ch + 1;
 							string other_stop_name(ch_begin, ch_end);
-							trans_cat.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
+							catalogue.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
 							ch++;
 							break;
 						}
@@ -112,7 +112,7 @@ namespace TransportCatalogueNamespace {
 		}
 	}
 
-	Bus ReadInputBus(TransportCatalogue& trans_cat, string_view str) {
+	Bus ParsingBus(TransportCatalogue& catalogue, string_view str) {
 		Bus result;
 		auto ch = str.begin();
 
@@ -129,22 +129,22 @@ namespace TransportCatalogueNamespace {
 		auto ch_begin = ch;
 		auto ch_end = ch;
 
-		result.IsRing = any_of(ch_begin, str.end(), [](const char c) {return c == '>'; });
+		result.is_ring = any_of(ch_begin, str.end(), [](const char c) {return c == '>'; });
 
 		while (true) {
 			if (*ch == '>' || *ch == '-') {
 				ch_end = ch - 1;
 				string stop(ch_begin, ch_end);
-				result.stops_unique.insert(trans_cat.FindStop(stop));
-				result.stops_vector.push_back(trans_cat.FindStop(stop));
+				result.stops_unique.insert(catalogue.FindStop(stop));
+				result.stops_vector.push_back(catalogue.FindStop(stop));
 				ch_begin = ch + 2;
 			}
 			else if (next(ch) == str.end())
 			{
 				ch_end = str.end();
 				string stop(ch_begin, ch_end);
-				result.stops_unique.insert(trans_cat.FindStop(stop));
-				result.stops_vector.push_back(trans_cat.FindStop(stop));
+				result.stops_unique.insert(catalogue.FindStop(stop));
+				result.stops_vector.push_back(catalogue.FindStop(stop));
 				break;
 			}
 			ch++;
@@ -152,8 +152,8 @@ namespace TransportCatalogueNamespace {
 		return result;
 	}
 
-	void InputReader(TransportCatalogue& trans_cat) {
-		using namespace TransportCatalogueNamespace::detail;
+	void InputReader(TransportCatalogue& catalogue) {
+		using namespace transport_catalogue::detail;
 		int query_count;
 		vector<string> stop_queries;
 		vector<string> bus_queries;
@@ -182,16 +182,16 @@ namespace TransportCatalogueNamespace {
 			}
 		}
 		for (string query : stop_queries) {
-			auto query_lengths = ReadSimpleStop(query, trans_cat);
+			auto query_lengths = ParsingStop(query, catalogue);
 			if (!query_lengths.lengths_data.empty()) {
 				lengths_queries.push_back(query_lengths);
 			}
 		}
 		for (auto lng_data : lengths_queries) {
-			ReadStopLenghtsData(lng_data, trans_cat);
+			ParsingStopsLength(lng_data, catalogue);
 		}
 		for (string query : bus_queries) {
-			trans_cat.AddBus(ReadInputBus(trans_cat, query));
+			catalogue.AddBus(ParsingBus(catalogue, query));
 		}
 	}
 }
