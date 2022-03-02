@@ -1,5 +1,7 @@
 #include "transport_catalogue.h"
 
+#include <algorithm>
+
 namespace transport_catalogue {
 	Bus* TransportCatalogue::FindBus(std::string bus_number) {
 		auto it = find_if(buses_.begin(), buses_.end(),
@@ -36,6 +38,7 @@ namespace transport_catalogue {
 		if (bus_finded == nullptr) {
 			return result;
 		}
+
 
 		result.unique_stops = bus_finded->stops_unique.size();
 
@@ -78,6 +81,25 @@ namespace transport_catalogue {
 		return result;
 	}
 
+	void TransportCatalogue::GetStopInfo2(std::string stop_name) {
+
+		Stop* stop_finded = FindStop(stop_name);
+
+		if (stop_finded == nullptr) {
+			stop_info_[{stop_name, nullptr}].insert("not found");
+			return;
+		}
+
+		for (const Bus& bus : buses_) {
+			if (bus.stops_unique.count(stop_finded) > 0) {
+				stop_info_[{stop_name, stop_finded}].insert(bus.bus);
+			}
+			else {
+				stop_info_[{stop_name, stop_finded}].insert("no buses");
+			}
+		}
+	}
+
 	BusInfo	TransportCatalogue::GetBusInfoWithLengths(std::string bus_number) {
 		BusInfo result;
 		Bus* bus_finded = FindBus(bus_number);
@@ -87,6 +109,11 @@ namespace transport_catalogue {
 		if (bus_finded == nullptr) {
 			return result;
 		}
+
+		/*std::vector<Stop*> temp_unique;
+		temp_unique.reserve(10);
+		std::unique_copy(bus_finded->stops_vector.begin(), bus_finded->stops_vector.end(), temp_unique.begin());
+		result.unique_stops = temp_unique.size();*/
 
 		result.unique_stops = bus_finded->stops_unique.size();
 

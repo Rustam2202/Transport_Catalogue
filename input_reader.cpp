@@ -7,73 +7,45 @@ namespace transport_catalogue {
 	using namespace std;
 
 	namespace detail {
-		struct NameLenghts
+		struct RouteLenghts
 		{
 			string this_stop_name;
 			string lengths_data;
 		};
 
-		NameLenghts ParsingStop(string_view str, TransportCatalogue& catalogue) {
-			auto ch = str.begin();
-			string stop_name;
+		RouteLenghts ParsingStop(istream& input_data, TransportCatalogue& catalogue) {
+			Stop result;
 
 			// имя остановки
-			while (*ch != ':')
-			{
-				stop_name.push_back(*ch);
-				ch++;
-			}
-			ch++;
+			getline(input_data, result.stop, ':');
+			cin.get();
 
 			// координаты
-			double lat;
-			double lng;
-			string temp;
-			while (*ch != ',') {
-				temp.push_back(*ch);
-				ch++;
-			}
-			lat = stod(temp);
-			temp.clear();
-			ch++;
-			while (true) {
-				if (*ch == ',') {
-					lng = stod(temp);
-					break;
-				}
-				else if (next(ch) == str.end()) {
-					temp.push_back(*ch);
-					lng = stod(temp);
-					ch++;
-					break;
-				}
-				temp.push_back(*ch);
-				ch++;
-			}
+			cin >> result.coodinates.lat;
+			cin.get();
+			cin >> result.coodinates.lng;
 
-			Stop result;
-			result.stop = stop_name;
-			result.coodinates.lat = lat;
-			result.coodinates.lng = lng;
 			catalogue.AddStop(result);
 			// запись имя+координаты
 
-			// проверка: есть ди длины после координат
-			NameLenghts ret;
-			if (ch == str.end()) {
-				return ret;
-			}
-			ch++;
-
-			// длины маршрутов
-			str.remove_prefix(ch - str.begin());
-			ret.this_stop_name = stop_name;
-			ret.lengths_data = str;
-			return ret;
+			// оставшиеся длины или пустая строка
+			RouteLenghts lengths;
+			lengths.this_stop_name = result.stop;
+			getline(input_data, lengths.lengths_data);
+			return lengths;
 		}
 
-		void ParsingStopsLength(NameLenghts& lng_data, TransportCatalogue& catalogue) {
-			auto ch = lng_data.lengths_data.begin() + 1;
+		//string_view SplitWord(string& str, char ch) {
+		//	auto begin = str.find_first_not_of(' ');
+		//	auto end = str.find_last_not_of('ch');
+		//	//string_view result(&str[begin], end);
+		//	return { &str[begin], end - begin };
+		//}
+
+		void ParsingStopsLength(RouteLenghts& stop_and_length, TransportCatalogue& catalogue) {
+			//	SplitWord(stop_and_length.lengths_data, 'm');
+
+			auto ch = stop_and_length.lengths_data.begin() + 1;
 			auto ch_begin = ch;
 			auto ch_end = ch;
 
@@ -88,23 +60,22 @@ namespace transport_catalogue {
 						if (*ch == ',') {
 							ch_end = ch;
 							string other_stop_name(ch_begin, ch_end);
-							catalogue.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
+							catalogue.SetDistanceBetweenStops(stop_and_length.this_stop_name, other_stop_name, lenght);
 							ch++;
 							ch_begin = ch;
 							break;
 						}
-						else if (next(ch) == lng_data.lengths_data.end()) {
+						else if (next(ch) == stop_and_length.lengths_data.end()) {
 							ch_end = ch + 1;
 							string other_stop_name(ch_begin, ch_end);
-							catalogue.SetDistanceBetweenStops(lng_data.this_stop_name, other_stop_name, lenght);
+							catalogue.SetDistanceBetweenStops(stop_and_length.this_stop_name, other_stop_name, lenght);
 							ch++;
 							break;
 						}
 						ch++;
 					}
-
 				}
-				if (ch == lng_data.lengths_data.end()) {
+				if (ch == stop_and_length.lengths_data.end()) {
 					return;
 				}
 				ch++;
@@ -117,13 +88,17 @@ namespace transport_catalogue {
 		auto ch = str.begin();
 
 		// найти номер
-		while (*ch != ':')
+		auto end = str.find(':');
+		result.bus = { &str[0], end };
+		ch += end + 2;
+
+		/*while (*ch != ':')
 		{
 			result.bus.push_back(*ch);
 			ch++;
 		}
 		ch++;
-		ch++;
+		ch++;*/
 
 		// найти остановку в stops_ и вставить указатель в result
 		auto ch_begin = ch;
@@ -152,12 +127,12 @@ namespace transport_catalogue {
 		return result;
 	}
 
-	void InputReader(TransportCatalogue& catalogue) {
+	void InputReader(TransportCatalogue& catalogue/*, istream& input*/) {
 		using namespace transport_catalogue::detail;
 		int query_count;
 		vector<string> stop_queries;
 		vector<string> bus_queries;
-		vector<NameLenghts> lengths_queries;
+		vector<RouteLenghts> lengths_queries;
 
 		cin >> query_count;
 
@@ -169,8 +144,7 @@ namespace transport_catalogue {
 			{
 				string temp;
 				cin.get();
-				getline(cin, temp);
-				stop_queries.push_back(temp);
+				lengths_queries.push_back(ParsingStop(cin, catalogue));
 				query_numb++;
 			}
 			else if (query_type == "Bus") {
@@ -181,14 +155,11 @@ namespace transport_catalogue {
 				query_numb++;
 			}
 		}
-		for (string query : stop_queries) {
-			auto query_lengths = ParsingStop(query, catalogue);
-			if (!query_lengths.lengths_data.empty()) {
-				lengths_queries.push_back(query_lengths);
+
+		for (RouteLenghts stop_and_length : lengths_queries) {
+			if (!stop_and_length.lengths_data.empty()) {
+				ParsingStopsLength(stop_and_length, catalogue);
 			}
-		}
-		for (auto lng_data : lengths_queries) {
-			ParsingStopsLength(lng_data, catalogue);
 		}
 		for (string query : bus_queries) {
 			catalogue.AddBus(ParsingBus(catalogue, query));

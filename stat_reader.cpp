@@ -57,7 +57,7 @@ namespace transport_catalogue {
 			getline(cin, temp);
 			if (query_type == "Stop") {
 				cout << catalogue.GetStopInfo(temp) << endl;
-
+				catalogue.GetStopInfo2(temp);
 			}
 			else if (query_type == "Bus") {
 				cout << catalogue.GetBusInfoWithLengths(temp) << endl;
