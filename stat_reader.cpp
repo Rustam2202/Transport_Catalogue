@@ -39,6 +39,12 @@ namespace transport_catalogue {
 		}
 	}
 
+	void PrintStop(const std::string& stop_name, const TransportCatalogue& catalogue) {
+		for (std::string stop: catalogue.GetStopInfo2(stop_name)) {
+			std::cout << stop << " ";
+		}
+	}
+
 	void OutputReader(TransportCatalogue& catalogue) {
 		using namespace std;
 		using namespace transport_catalogue::detail;
@@ -57,7 +63,7 @@ namespace transport_catalogue {
 			getline(cin, temp);
 			if (query_type == "Stop") {
 				cout << catalogue.GetStopInfo(temp) << endl;
-				catalogue.GetStopInfo2(temp);
+				catalogue.AddStopInfo(temp);
 			}
 			else if (query_type == "Bus") {
 				cout << catalogue.GetBusInfoWithLengths(temp) << endl;
