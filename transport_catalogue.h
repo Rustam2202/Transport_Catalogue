@@ -61,7 +61,7 @@ namespace transport_catalogue {
 		Bus* FindBus(std::string bus_number);
 
 		//	поиск остановки по имени
-		Stop* FindStop(std::string str);
+		Stop* FindStop(std::string_view str);
 
 		//	получение информации о маршруте
 		BusInfo GetBusInfo(std::string bus_number);
@@ -71,7 +71,9 @@ namespace transport_catalogue {
 		// получение информации об остановке (пересекающие маршруты)
 		StopInfo GetStopInfo(std::string stop_name);
 		void AddStopInfo(std::string stop_name);
-		std::set<std::string> GetStopInfo2(const std::string& stop_name) const;
+
+
+		std::set<std::string> GetStopInfo2(std::string stop_name);
 
 		// задание дистанции между остановками
 		void SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length);
@@ -100,7 +102,11 @@ namespace transport_catalogue {
 		std::deque<Stop> stops_;
 		//std::map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
 
-		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;
-		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> stop_info_;
+		std::unordered_map<std::pair<Stop*, Stop*>,
+			uint64_t,
+			Hasher> route_lengths_;
+		std::unordered_map<std::pair<std::string, Stop*>,
+			std::set<std::string>,
+			Hasher> stop_info_;
 	};
 }

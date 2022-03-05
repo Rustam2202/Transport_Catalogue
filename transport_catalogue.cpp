@@ -15,7 +15,7 @@ namespace transport_catalogue {
 		return &buses_[it - buses_.begin()];
 	}
 
-	Stop* TransportCatalogue::FindStop(std::string str) {
+	Stop* TransportCatalogue::FindStop(std::string_view str) {
 		auto it = std::find_if(stops_.begin(), stops_.end(),
 			[str](const Stop& stop) {
 				return stop.stop == str;
@@ -86,7 +86,7 @@ namespace transport_catalogue {
 		Stop* stop_finded = FindStop(stop_name);
 
 		if (stop_finded == nullptr) {
-			stop_info_[{stop_name, nullptr}].insert("not found");
+			stop_info_[{stop_name, nullptr}];
 			return;
 		}
 
@@ -95,12 +95,12 @@ namespace transport_catalogue {
 				stop_info_[{stop_name, stop_finded}].insert(bus.bus);
 			}
 			else {
-				stop_info_[{stop_name, stop_finded}].insert("no buses");
+				stop_info_[{stop_name, stop_finded}];
 			}
 		}
 	}
 
-	std::set<std::string>& TransportCatalogue::GetStopInfo2(const std::string& stop_name)const {
+	std::set<std::string> TransportCatalogue::GetStopInfo2(std::string stop_name)  {
 		Stop* stop_finded = FindStop(stop_name);
 		return stop_info_[{ stop_name, stop_finded }];
 	}
