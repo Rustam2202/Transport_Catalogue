@@ -100,10 +100,16 @@ namespace transport_catalogue {
 		}
 	}
 
-	std::set<std::string> TransportCatalogue::GetStopInfo2(std::string stop_name)  {
+	std::unordered_map<std::pair<std::string, Stop*>,
+		std::set<std::string>,
+		TransportCatalogue::Hasher> TransportCatalogue::GetStopInfo2() {
+		return stop_info_;
+	}
+
+	/*std::map<std::string, std::set<std::string>> TransportCatalogue::GetStopInfo2(std::string stop_name)  {
 		Stop* stop_finded = FindStop(stop_name);
 		return stop_info_[{ stop_name, stop_finded }];
-	}
+	}*/
 
 	BusInfo	TransportCatalogue::GetBusInfoWithLengths(std::string bus_number) {
 		BusInfo result;

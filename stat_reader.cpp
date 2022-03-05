@@ -38,10 +38,24 @@ namespace transport_catalogue {
 			return os;
 		}
 	}
-
 	void PrintStop(const std::string stop_name, TransportCatalogue& catalogue) {
-		for (std::string stop : catalogue.GetStopInfo2(stop_name)) {
-			std::cout << stop << " ";
+		auto stop_info = catalogue.GetStopInfo2();
+		auto stop_finded = catalogue.FindStop(stop_name);
+		if (stop_finded == nullptr) {
+			std::cout << "Stop " << stop_name << ": not found\n";
+		}
+		else  {
+			auto buses = stop_info[{stop_name, stop_finded}];
+			if (buses.empty()) {
+				std::cout << "Stop " << stop_name << ": no buses\n";
+			}
+			else{
+				std::cout << "Stop " << stop_name << ": buses ";
+				for (auto bus : buses) {
+					std::cout << bus << " ";
+				}
+				std::cout << std::endl;
+			}
 		}
 	}
 
@@ -62,7 +76,7 @@ namespace transport_catalogue {
 			string temp;
 			getline(cin, temp);
 			if (query_type == "Stop") {
-				cout << catalogue.GetStopInfo(temp) << endl;
+				//cout << catalogue.GetStopInfo(temp) << endl;
 				catalogue.AddStopInfo(temp);
 				PrintStop(temp, catalogue);
 			}

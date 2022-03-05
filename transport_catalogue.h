@@ -45,6 +45,21 @@ namespace transport_catalogue {
 	};
 
 	class TransportCatalogue {
+	private:
+		class Hasher {
+		public:
+			size_t operator()(std::pair<Stop*, Stop*> stops) const {
+				return string_hasher_(stops.first->stop + stops.second->stop);
+			}
+			size_t operator()(std::pair<std::string, Stop*> stops) const {
+				if (stops.second == nullptr) {
+					return string_hasher_(stops.first);
+				}
+				return string_hasher_(stops.first + stops.second->stop);
+			}
+		private:
+			std::hash<std::string> string_hasher_;
+		};
 
 	public:
 		//	добавление маршрута в базу
@@ -72,8 +87,9 @@ namespace transport_catalogue {
 		StopInfo GetStopInfo(std::string stop_name);
 		void AddStopInfo(std::string stop_name);
 
-
-		std::set<std::string> GetStopInfo2(std::string stop_name);
+		std::unordered_map<std::pair<std::string, Stop*>,
+			std::set<std::string>,
+			Hasher> GetStopInfo2();
 
 		// задание дистанции между остановками
 		void SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length);
@@ -82,22 +98,6 @@ namespace transport_catalogue {
 		uint64_t GetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop);
 
 	private:
-
-		class Hasher {
-		public:
-			size_t operator()(std::pair<Stop*, Stop*> stops) const {
-				return string_hasher_(stops.first->stop + stops.second->stop);
-			}
-			size_t operator()(std::pair<std::string, Stop*> stops) const {
-				if (stops.second == nullptr) {
-					return string_hasher_(stops.first);
-				}
-				return string_hasher_(stops.first + stops.second->stop);
-			}
-		private:
-			std::hash<std::string> string_hasher_;
-		};
-
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
 		//std::map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
