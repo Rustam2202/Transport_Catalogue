@@ -7,6 +7,7 @@ namespace transport_catalogue {
 	using namespace std;
 
 	namespace detail {
+
 		struct RouteLenghts
 		{
 			string this_stop_name;
@@ -35,15 +36,7 @@ namespace transport_catalogue {
 			return lengths;
 		}
 
-		//string_view SplitWord(string& str, char ch) {
-		//	auto begin = str.find_first_not_of(' ');
-		//	auto end = str.find_last_not_of('ch');
-		//	//string_view result(&str[begin], end);
-		//	return { &str[begin], end - begin };
-		//}
-
 		void ParsingStopsLength(RouteLenghts& stop_and_length, TransportCatalogue& catalogue) {
-			//	SplitWord(stop_and_length.lengths_data, 'm');
 
 			auto ch = stop_and_length.lengths_data.begin() + 1;
 			auto ch_begin = ch;
@@ -127,30 +120,29 @@ namespace transport_catalogue {
 		return result;
 	}
 
-	void InputReader(TransportCatalogue& catalogue/*, istream& input*/) {
-		using namespace transport_catalogue::detail;
+	void InputReader(TransportCatalogue& catalogue, istream& input) {
+		using namespace transport_catalogue::detail; // InputReader вне пространства имен detail
 		int query_count;
 		vector<string> stop_queries;
 		vector<string> bus_queries;
 		vector<RouteLenghts> lengths_queries;
 
-		cin >> query_count;
-
+		input >> query_count;
 		int query_numb = 0;
 		while (query_numb < query_count) {
 			string query_type;
-			cin >> query_type;
+			input >> query_type;
 			if (query_type == "Stop")
 			{
 				string temp;
-				cin.get();
-				lengths_queries.push_back(ParsingStop(cin, catalogue));
+				input.get();
+				lengths_queries.push_back(ParsingStop(input, catalogue));
 				query_numb++;
 			}
 			else if (query_type == "Bus") {
 				string temp;
-				cin.get();
-				getline(cin, temp);
+				input.get();
+				getline(input, temp);
 				bus_queries.push_back(temp);
 				query_numb++;
 			}

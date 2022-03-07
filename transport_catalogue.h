@@ -79,17 +79,12 @@ namespace transport_catalogue {
 		Stop* FindStop(std::string_view str);
 
 		//	получение информации о маршруте
-		BusInfo GetBusInfo(std::string bus_number);
+		BusInfo	GetBusInfo(std::string bus_number);
 
-		BusInfo	GetBusInfoWithLengths(std::string bus_number);
-
-		// получение информации об остановке (пересекающие маршруты)
-		StopInfo GetStopInfo(std::string stop_name);
 		void AddStopInfo(std::string stop_name);
 
-		std::unordered_map<std::pair<std::string, Stop*>,
-			std::set<std::string>,
-			Hasher> GetStopInfo2();
+		// получение информации об остановке (пересекающие маршруты)
+		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> GetStopInfo();
 
 		// задание дистанции между остановками
 		void SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length);
@@ -100,13 +95,7 @@ namespace transport_catalogue {
 	private:
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
-		//std::map<std::pair<Stop*, Stop*>, uint64_t> route_lengths_;
-
-		std::unordered_map<std::pair<Stop*, Stop*>,
-			uint64_t,
-			Hasher> route_lengths_;
-		std::unordered_map<std::pair<std::string, Stop*>,
-			std::set<std::string>,
-			Hasher> stop_info_;
+		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;
+		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> stop_info_;
 	};
 }

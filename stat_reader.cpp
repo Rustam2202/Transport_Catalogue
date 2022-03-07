@@ -39,17 +39,17 @@ namespace transport_catalogue {
 		}
 	}
 	void PrintStop(const std::string stop_name, TransportCatalogue& catalogue) {
-		auto stop_info = catalogue.GetStopInfo2();
+		auto stop_info = catalogue.GetStopInfo();
 		auto stop_finded = catalogue.FindStop(stop_name);
 		if (stop_finded == nullptr) {
 			std::cout << "Stop " << stop_name << ": not found\n";
 		}
-		else  {
+		else {
 			auto buses = stop_info[{stop_name, stop_finded}];
 			if (buses.empty()) {
 				std::cout << "Stop " << stop_name << ": no buses\n";
 			}
-			else{
+			else {
 				std::cout << "Stop " << stop_name << ": buses ";
 				for (auto bus : buses) {
 					std::cout << bus << " ";
@@ -59,29 +59,30 @@ namespace transport_catalogue {
 		}
 	}
 
-	void OutputReader(TransportCatalogue& catalogue) {
+	//void OutputReader(TransportCatalogue& catalogue) 
+	void OutputReader(TransportCatalogue& catalogue, std::istream& input, std::ostream& output) {
 		using namespace std;
 		using namespace transport_catalogue::detail;
 
 		vector<string> bus_queries;
 		vector<string> stop_queries;
 		int query_count;
-		cin >> query_count;
-		cin.get();
+		input >> query_count;
+		input.get();
 
 		for (int i = 0; i < query_count; ++i) {
 			string query_type;
-			cin >> query_type;
-			cin.get();
+			input >> query_type;
+			input.get();
 			string temp;
-			getline(cin, temp);
+			getline(input, temp);
 			if (query_type == "Stop") {
 				//cout << catalogue.GetStopInfo(temp) << endl;
 				catalogue.AddStopInfo(temp);
 				PrintStop(temp, catalogue);
 			}
 			else if (query_type == "Bus") {
-				cout << catalogue.GetBusInfoWithLengths(temp) << endl;
+				output << catalogue.GetBusInfo(temp) << endl;
 			}
 		}
 	}

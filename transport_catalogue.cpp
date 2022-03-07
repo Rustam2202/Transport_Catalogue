@@ -29,58 +29,6 @@ namespace transport_catalogue {
 		return &stops_[it - stops_.begin()];
 	}
 
-	BusInfo TransportCatalogue::GetBusInfo(std::string bus_number) {
-		BusInfo result;
-		Bus* bus_finded = FindBus(bus_number);
-
-		result.bus = bus_number;
-
-		if (bus_finded == nullptr) {
-			return result;
-		}
-
-
-		result.unique_stops = bus_finded->stops_unique.size();
-
-		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
-			result.route_length += ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
-		}
-
-		if (bus_finded->is_ring == true) {
-			result.stops_on_route = bus_finded->stops_vector.size();
-
-		}
-		else {
-			result.stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
-			result.route_length *= 2;
-		}
-
-		return result;
-	}
-
-	StopInfo TransportCatalogue::GetStopInfo(std::string stop_name) {
-		StopInfo result;
-		result.stop_name = stop_name;
-
-		auto stop_finded = FindStop(stop_name);
-
-		if (stop_finded == nullptr) {
-			result.is_in_stop = false;
-			return result;
-		}
-
-		for (const Bus& bus : buses_) {
-			if (bus.stops_unique.count(stop_finded) > 0) {
-				result.stop_with_buses.insert(bus.bus);
-			}
-			else {
-				continue;
-			}
-		}
-
-		return result;
-	}
-
 	void TransportCatalogue::AddStopInfo(std::string stop_name) {
 
 		Stop* stop_finded = FindStop(stop_name);
@@ -102,16 +50,11 @@ namespace transport_catalogue {
 
 	std::unordered_map<std::pair<std::string, Stop*>,
 		std::set<std::string>,
-		TransportCatalogue::Hasher> TransportCatalogue::GetStopInfo2() {
+		TransportCatalogue::Hasher> TransportCatalogue::GetStopInfo() {
 		return stop_info_;
 	}
 
-	/*std::map<std::string, std::set<std::string>> TransportCatalogue::GetStopInfo2(std::string stop_name)  {
-		Stop* stop_finded = FindStop(stop_name);
-		return stop_info_[{ stop_name, stop_finded }];
-	}*/
-
-	BusInfo	TransportCatalogue::GetBusInfoWithLengths(std::string bus_number) {
+	BusInfo	TransportCatalogue::GetBusInfo(std::string bus_number) {
 		BusInfo result;
 		Bus* bus_finded = FindBus(bus_number);
 
