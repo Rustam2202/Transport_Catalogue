@@ -45,18 +45,26 @@ namespace transport_catalogue {
 	};
 
 	class TransportCatalogue {
-	private:
+	public:
+
 		class Hasher {
 		public:
+
+			size_t operator()(std::string name)const {
+				return string_hasher_(name);
+			}
+
 			size_t operator()(std::pair<Stop*, Stop*> stops) const {
 				return string_hasher_(stops.first->stop + stops.second->stop);
 			}
+
 			size_t operator()(std::pair<std::string, Stop*> stops) const {
 				if (stops.second == nullptr) {
 					return string_hasher_(stops.first);
 				}
 				return string_hasher_(stops.first + stops.second->stop);
 			}
+
 		private:
 			std::hash<std::string> string_hasher_;
 		};
@@ -74,6 +82,7 @@ namespace transport_catalogue {
 
 		//	поиск маршрута по имени
 		Bus* FindBus(std::string bus_number);
+		void FindBus2(std::string bus_number);
 
 		//	поиск остановки по имени
 		Stop* FindStop(std::string_view str);
@@ -95,6 +104,8 @@ namespace transport_catalogue {
 	private:
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
+		std::unordered_map<std::string, Coordinates, Hasher> stops_to_find_;
+		std::unordered_map<std::string, std::pair<std::vector<Stop*>, bool>, Hasher> buses_to_find_;
 		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;
 		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> stop_info_;
 	};

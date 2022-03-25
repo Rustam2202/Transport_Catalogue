@@ -3,6 +3,7 @@
 #include <algorithm>
 
 namespace transport_catalogue {
+
 	Bus* TransportCatalogue::FindBus(std::string bus_number) {
 		auto it = find_if(buses_.begin(), buses_.end(),
 			[bus_number](const Bus& bus) {
@@ -13,6 +14,10 @@ namespace transport_catalogue {
 			return nullptr;
 		}
 		return &buses_[it - buses_.begin()];
+	}
+
+	void TransportCatalogue::FindBus2(std::string bus_number) {
+
 	}
 
 	Stop* TransportCatalogue::FindStop(std::string_view str) {

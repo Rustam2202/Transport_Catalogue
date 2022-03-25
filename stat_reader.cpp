@@ -37,7 +37,13 @@ namespace transport_catalogue {
 
 			return os;
 		}
+
+		/*ostream& operator<<(ostream& os, const std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, TransportCatalogue::Hasher> stop_info) {
+			using namespace std;
+			os << stop_info;
+		}*/
 	}
+
 	void PrintStop(const std::string stop_name, TransportCatalogue& catalogue) {
 		auto stop_info = catalogue.GetStopInfo();
 		auto stop_finded = catalogue.FindStop(stop_name);
@@ -80,6 +86,7 @@ namespace transport_catalogue {
 				//cout << catalogue.GetStopInfo(temp) << endl;
 				catalogue.AddStopInfo(temp);
 				PrintStop(temp, catalogue);
+				//output << catalogue.GetStopInfo();
 			}
 			else if (query_type == "Bus") {
 				output << catalogue.GetBusInfo(temp) << endl;
