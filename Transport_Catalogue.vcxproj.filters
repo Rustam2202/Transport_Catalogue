@@ -87,4 +87,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="input.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="output.json">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

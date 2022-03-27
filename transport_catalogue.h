@@ -1,74 +1,19 @@
 #pragma once
 
+#include "domain.h"
 #include "geo.h"
 
-#include <algorithm>
 #include <deque>
 #include <iostream>
-#include <map>
 #include <unordered_map>
-#include <unordered_set>
 #include <set>
 #include <string>
 #include <functional>
 #include <string>
 
 namespace transport_catalogue {
-
-	struct Stop
-	{
-		std::string stop;
-		Coordinates coodinates;
-	};
-
-	struct Bus
-	{
-		std::string bus;
-		std::unordered_set<Stop*> stops_unique;
-		std::vector<Stop*> stops_vector;
-		bool is_ring = false;
-	};
-
-	struct BusInfo {
-		std::string bus;
-		size_t stops_on_route = 0;
-		size_t unique_stops = 0;
-		double route_length = 0.0;
-		uint64_t route_length_on_road = 0;
-		double curvature = 1.0;
-	};
-
-	struct StopInfo {
-		std::string stop_name;
-		std::set<std::string> stop_with_buses;
-		bool is_in_stop = true;
-	};
-
+	
 	class TransportCatalogue {
-	public:
-
-		class Hasher {
-		public:
-
-			size_t operator()(std::string name)const {
-				return string_hasher_(name);
-			}
-
-			size_t operator()(std::pair<Stop*, Stop*> stops) const {
-				return string_hasher_(stops.first->stop + stops.second->stop);
-			}
-
-			size_t operator()(std::pair<std::string, Stop*> stops) const {
-				if (stops.second == nullptr) {
-					return string_hasher_(stops.first);
-				}
-				return string_hasher_(stops.first + stops.second->stop);
-			}
-
-		private:
-			std::hash<std::string> string_hasher_;
-		};
-
 	public:
 		//	добавление маршрута в базу
 		void AddBus(Bus bus) {

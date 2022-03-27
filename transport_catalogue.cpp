@@ -55,7 +55,7 @@ namespace transport_catalogue {
 
 	std::unordered_map<std::pair<std::string, Stop*>,
 		std::set<std::string>,
-		TransportCatalogue::Hasher> TransportCatalogue::GetStopInfo() {
+		Hasher> TransportCatalogue::GetStopInfo() {
 		return stop_info_;
 	}
 
@@ -78,12 +78,12 @@ namespace transport_catalogue {
 
 		uint64_t full_lng = 0;
 		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
-			result.route_length += ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
+			result.route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
 			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
 		}
 		if (bus_finded->is_ring == false) {
 			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
-				result.route_length += ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
+				result.route_length += geo::ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
 				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop, bus_finded->stops_vector[i - 1]->stop);
 			}
 		}
