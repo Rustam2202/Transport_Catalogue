@@ -6,7 +6,7 @@
 #include "stat_reader.h"
 #include "transport_catalogue.h"
 
-//#include <iostream>
+//include <iostream>
 #include <string>
 
 int main() {
@@ -19,11 +19,14 @@ int main() {
 	* Выполнить запросы к справочнику, находящиеся в массиве "stat_requests", построив JSON-массив
 	* с ответами Вывести в stdout ответы в виде JSON
 	*/
-	using namespace std::literals;
+	using namespace std;
 
 	TransportCatalogue catalogue;
-	std::fstream file("input.json"s);
-	catalogue = ReadJSON(file);
+
+	
+	fstream file("input.json"s);
+	istream& istrm(file);
+	ReadJSON(istrm, catalogue);
 
 	PrintJSON(catalogue);
 }

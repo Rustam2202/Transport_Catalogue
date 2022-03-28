@@ -1,9 +1,12 @@
 #pragma once
 
 #include "transport_catalogue.h"
+
+#include <iostream>
 #include <optional>
 #include <unordered_set>
 
+using namespace std;
 using namespace transport_catalogue;
 
 /*
@@ -41,6 +44,6 @@ using namespace transport_catalogue;
 //   // const renderer::MapRenderer& renderer_;
 //};
 
-void PrintJSON(TransportCatalogue& catalogue) {
-
+inline void PrintJSON(TransportCatalogue& catalogue) {
+	
 }

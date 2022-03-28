@@ -15,9 +15,9 @@
 using namespace transport_catalogue;
 using namespace json;
 
-inline TransportCatalogue ReadJSON(std::fstream& input) {
+inline void ReadJSON(std::istream& input, TransportCatalogue& catalogue) {
 	
-	transport_catalogue::TransportCatalogue catalogue;
+	//transport_catalogue::TransportCatalogue catalogue;
 	std::vector<std::pair<std::string, Dict>> road_distances;
 
 	char c;
@@ -27,12 +27,13 @@ inline TransportCatalogue ReadJSON(std::fstream& input) {
 	}
 	Document request_type = Load(input); // "base_requests":
 	input.get(); // ':'
-	Document base_request_data = Load(input); // 
+	Document base_request_data = Load(input); 
 	input.get(); // ','
 	request_type = json::Load(input); // "stat_requests":
 	input.get(); // ':'
 	Document state_request_data = Load(input);
 
+	// stops insert
 	for (auto base_data : base_request_data.GetRoot().AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Stop") {
 			Stop stop;
@@ -44,12 +45,14 @@ inline TransportCatalogue ReadJSON(std::fstream& input) {
 		}
 	}
 
+	// distances insert
 	for (auto stop : road_distances) {
 		for (auto dist : stop.second) {
 			catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
 		}
 	}
 
+	// buses insert
 	for (auto base_data : base_request_data.GetRoot().AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Bus") {
 			Bus bus;
@@ -62,6 +65,7 @@ inline TransportCatalogue ReadJSON(std::fstream& input) {
 		}
 	}
 
-	return catalogue;
+
+
 }
 
