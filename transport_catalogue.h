@@ -12,7 +12,7 @@
 #include <string>
 
 namespace transport_catalogue {
-	
+
 	class TransportCatalogue {
 	public:
 		//	добавление маршрута в базу
@@ -27,15 +27,17 @@ namespace transport_catalogue {
 
 		//	поиск маршрута по имени
 		Bus* FindBus(std::string bus_number);
-		void FindBus2(std::string bus_number);
 
 		//	поиск остановки по имени
 		Stop* FindStop(std::string_view str);
 
 		//	получение информации о маршруте
+		std::unordered_map<std::string, BusInfo, Hasher> GetBusInfo2();
 		BusInfo	GetBusInfo(std::string bus_number);
 
 		void AddStopInfo(std::string stop_name);
+
+		void AddBusInfo(std::string bus_name);
 
 		// получение информации об остановке (пересекающие маршруты)
 		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> GetStopInfo();
@@ -49,7 +51,8 @@ namespace transport_catalogue {
 	private:
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
-		
+
+		std::unordered_map<std::string, BusInfo, Hasher> bus_info_;
 		std::unordered_map<std::string, Coordinates, Hasher> stops_to_find_;
 		std::unordered_map<std::string, std::pair<std::vector<Stop*>, bool>, Hasher> buses_to_find_;
 		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;

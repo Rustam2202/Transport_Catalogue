@@ -21,9 +21,7 @@ inline Dict MakeDictStop(int request_id, const std::string stop_name, TransportC
 	auto stop_finded = catalogue.FindStop(stop_name);
 
 	if (stop_finded == nullptr) {
-		return {
-			{"request_id", request_id},
-			{"error_message", "not found"} };
+		return { {"request_id", request_id},{"error_message", "not found"} };
 	}
 	else {
 		auto buses_finded = stop_info[{stop_name, stop_finded}];
@@ -34,6 +32,25 @@ inline Dict MakeDictStop(int request_id, const std::string stop_name, TransportC
 		return {
 			{"buses", buses},
 			{"request_id", request_id}
+		};
+	}
+}
+
+inline Dict MakeDictBus(int request_id, const std::string bus_name, TransportCatalogue& catalogue) {
+	auto bus_info = catalogue.GetBusInfo2();
+	auto bus_finded = catalogue.FindBus(bus_name);
+
+	if (bus_finded == nullptr) {
+		return { {"request_id", request_id}, {"error_message", "not found"} };
+	}
+	else {
+		auto bus_finded = bus_info[bus_name];
+		return{
+			{"curvature", bus_finded.curvature},
+			{"request_id", request_id},
+			{ "route_length", bus_finded.route_length},
+			{"stop_count", (int)bus_finded.stops_on_route},
+			{"unique_stop_count", (int)bus_finded.unique_stops}
 		};
 	}
 }
@@ -98,6 +115,7 @@ inline void ReadJSON(std::istream& input, TransportCatalogue& catalogue) {
 		}
 		else if (stat_data.AsMap().at("type").AsString() == "Bus") {
 			catalogue.GetBusInfo(stat_data.AsMap().at("name").AsString());
+			result.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 	}
 }

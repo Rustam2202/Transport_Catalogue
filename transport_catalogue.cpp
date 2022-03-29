@@ -16,10 +16,6 @@ namespace transport_catalogue {
 		return &buses_[it - buses_.begin()];
 	}
 
-	void TransportCatalogue::FindBus2(std::string bus_number) {
-
-	}
-
 	Stop* TransportCatalogue::FindStop(std::string_view str) {
 		auto it = std::find_if(stops_.begin(), stops_.end(),
 			[str](const Stop& stop) {
@@ -59,6 +55,46 @@ namespace transport_catalogue {
 		return stop_info_;
 	}
 
+	void TransportCatalogue::AddBusInfo(std::string bus_name) {
+		Bus* bus_finded = FindBus(bus_name);
+
+		if (bus_finded == nullptr) {
+			return;
+		}
+
+		bus_info_[bus_name].bus = bus_name;
+
+		bus_info_[bus_name].unique_stops = bus_finded->stops_unique.size();
+
+		uint64_t full_lng = 0;
+		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
+			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
+			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
+		}
+		if (bus_finded->is_ring == false) {
+			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
+				bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
+				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop, bus_finded->stops_vector[i - 1]->stop);
+			}
+		}
+
+		bus_info_[bus_name].route_length_on_road = full_lng;
+		bus_info_[bus_name].curvature = full_lng / bus_info_[bus_name].route_length;
+
+		if (bus_finded->is_ring == true) {
+			bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size();
+
+		}
+		else {
+			bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
+			bus_info_[bus_name].route_length *= 2;
+		}
+	}
+
+	std::unordered_map<std::string, BusInfo, Hasher> TransportCatalogue::GetBusInfo2() {
+		return bus_info_;
+	}
+
 	BusInfo	TransportCatalogue::GetBusInfo(std::string bus_number) {
 		BusInfo result;
 		Bus* bus_finded = FindBus(bus_number);
@@ -68,11 +104,6 @@ namespace transport_catalogue {
 		if (bus_finded == nullptr) {
 			return result;
 		}
-
-		/*std::vector<Stop*> temp_unique;
-		temp_unique.reserve(10);
-		std::unique_copy(bus_finded->stops_vector.begin(), bus_finded->stops_vector.end(), temp_unique.begin());
-		result.unique_stops = temp_unique.size();*/
 
 		result.unique_stops = bus_finded->stops_unique.size();
 
