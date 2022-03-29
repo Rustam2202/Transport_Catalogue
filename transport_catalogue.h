@@ -49,6 +49,7 @@ namespace transport_catalogue {
 	private:
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
+		
 		std::unordered_map<std::string, Coordinates, Hasher> stops_to_find_;
 		std::unordered_map<std::string, std::pair<std::vector<Stop*>, bool>, Hasher> buses_to_find_;
 		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;
