@@ -2,23 +2,50 @@
   "base_requests": [
     {
       "type": "Bus",
-      "name": "114",
-      "stops": [ "Морской вокзал", "Ривьерский мост" ],
+      "name": "221b",
+      "stops": [ "stop 1", "stop 2", "stop 3", "stop 4" ],
+      "is_roundtrip": true
+    },
+    {
+      "type": "Bus",
+      "name": "221c",
+      "stops": [ "stop 1", "stop 2", "stop 3", "stop 4", "stop 1" ],
       "is_roundtrip": false
     },
     {
       "type": "Stop",
-      "name": "Ривьерский мост",
-      "latitude": 43.587795,
-      "longitude": 39.716901,
-      "road_distances": { "Морской вокзал": 850 }
+      "name": "stop 1",
+      "latitude": 43.56886,
+      "longitude": 39.989079,
+      "road_distances": { "stop 2": 850 }
     },
     {
       "type": "Stop",
-      "name": "Морской вокзал",
-      "latitude": 43.581969,
-      "longitude": 39.719848,
-      "road_distances": { "Ривьерский мост": 850 }
+      "name": "stop 2",
+      "latitude": 43.751717,
+      "longitude": 39.890172,
+      "road_distances": { "stop 3": 1200 }
+    },
+    {
+      "type": "Stop",
+      "name": "stop 3",
+      "latitude": 43.159626,
+      "longitude": 39.06826,
+      "road_distances": { "stop 4": 560 }
+    },
+    {
+      "type": "Stop",
+      "name": "stop 4",
+      "latitude": 43.18901,
+      "longitude": 39.960190,
+      "road_distances": { "stop 5": 450 }
+    },
+    {
+      "type": "Stop",
+      "name": "stop 5",
+      "latitude": 43.56462,
+      "longitude": 39.626467,
+      "road_distances": { "stop 1": 700 }
     }
   ],
   "stat_requests": [
@@ -31,6 +58,42 @@
       "id": 2,
       "type": "Bus",
       "name": "114"
+    },
+    {
+      "id": 11,
+      "type": "Stop",
+      "name": "stop 1"
+    },
+    {
+      "id": 112,
+      "type": "Stop",
+      "name": "stop 2"
+    },
+    {
+      "id": 1233,
+      "type": "Bus",
+      "name": "221b"
+    },
+    {
+      "id": 44,
+      "type": "Bus",
+      "name": "221 c"
+    },
+    {
+      "id": 56,
+      "type": "Stop",
+      "name": "stop 3"
+    },
+    {
+      "id": 10,
+      "type": "Stop",
+      "name": "stop 4"
+    },
+    {
+      "id": 1111,
+      "type": "Stop",
+      "name": "stop 5"
     }
   ]
 }
+

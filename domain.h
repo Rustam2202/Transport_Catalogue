@@ -4,9 +4,9 @@
 
 #include <set>
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <unordered_set>
-
 
 /*
  * В этом файле вы можете разместить классы/структуры, которые являются частью предметной области (domain)

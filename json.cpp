@@ -349,12 +349,12 @@ namespace json {
 
 		void operator()(Dict value) const {
 
-			out << "{";
+			out << "\n  {\n";
 			size_t size = 0;
 
 			for (auto doc : value) {
 				std::ostringstream strm;
-				out << "\"" << doc.first << "\": ";
+				out << "    \"" << doc.first << "\": ";
 				if (doc.second.IsString()) {
 					PrintStrng(out, doc.second.AsString());
 				}
@@ -365,10 +365,10 @@ namespace json {
 				}
 				size++;
 				if (size < value.size()) {
-					out << ",";
+					out << ",\n";
 				}
 			}
-			out << "}";
+			out << "  }";
 		}
 
 		void operator()(Array arr) const {
@@ -388,8 +388,7 @@ namespace json {
 					out << ",";
 				}
 			}
-			out << "]";
-
+			out << "\n]";
 		}
 
 		void operator()(std::string str) const {

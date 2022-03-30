@@ -7,6 +7,7 @@
 #include "transport_catalogue.h"
 
 //include <iostream>
+#include <fstream>
 #include <string>
 
 int main() {
@@ -22,11 +23,9 @@ int main() {
 	using namespace std;
 
 	TransportCatalogue catalogue;
-
 	
 	fstream file("input.json"s);
 	istream& istrm(file);
-	ReadJSON(istrm, catalogue);
+	ReadJSON(catalogue, istrm, std::cout);
 
-	PrintJSON(catalogue);
 }

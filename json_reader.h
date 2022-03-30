@@ -9,19 +9,20 @@
  */
 
 #include <algorithm>
-#include <fstream>
-#include <map>;
+#include <iostream>
+#include <map>
 #include <string>
 
 using namespace transport_catalogue;
 using namespace json;
+using namespace std::literals;
 
 inline Dict MakeDictStop(int request_id, const std::string stop_name, TransportCatalogue& catalogue) {
 	auto stop_info = catalogue.GetStopInfo();
 	auto stop_finded = catalogue.FindStop(stop_name);
 
 	if (stop_finded == nullptr) {
-		return { {"request_id", request_id},{"error_message", "not found"} };
+		return { {"request_id"s, request_id}, {"error_message"s, "not found"s} };
 	}
 	else {
 		auto buses_finded = stop_info[{stop_name, stop_finded}];
@@ -30,8 +31,8 @@ inline Dict MakeDictStop(int request_id, const std::string stop_name, TransportC
 			buses.push_back(bus);
 		}
 		return {
-			{"buses", buses},
-			{"request_id", request_id}
+			{"buses"s, buses},
+			{"request_id"s, request_id}
 		};
 	}
 }
@@ -41,21 +42,21 @@ inline Dict MakeDictBus(int request_id, const std::string bus_name, TransportCat
 	auto bus_finded = catalogue.FindBus(bus_name);
 
 	if (bus_finded == nullptr) {
-		return { {"request_id", request_id}, {"error_message", "not found"} };
+		return { {"request_id"s, request_id}, {"error_message"s, "not found"s} };
 	}
 	else {
 		auto bus_finded = bus_info[bus_name];
 		return{
-			{"curvature", bus_finded.curvature},
-			{"request_id", request_id},
-			{ "route_length", bus_finded.route_length},
-			{"stop_count", (int)bus_finded.stops_on_route},
-			{"unique_stop_count", (int)bus_finded.unique_stops}
+			{"curvature"s, bus_finded.curvature},
+			{"request_id"s, request_id},
+			{ "route_length"s, (int)bus_finded.route_length_on_road},
+			{"stop_count"s, (int)bus_finded.stops_on_route},
+			{"unique_stop_count"s, (int)bus_finded.unique_stops}
 		};
 	}
 }
 
-inline void ReadJSON(std::istream& input, TransportCatalogue& catalogue) {
+inline void ReadJSON( TransportCatalogue& catalogue, std::istream& input = std::cin, std::ostream& output=std::cout) {
 
 	//transport_catalogue::TransportCatalogue catalogue;
 	std::vector<std::pair<std::string, Dict>> road_distances;
@@ -66,7 +67,7 @@ inline void ReadJSON(std::istream& input, TransportCatalogue& catalogue) {
 		throw;
 	}
 	Document request_type = Load(input); // "base_requests":
-	input.get(); // ':'
+	input.get(c); // ':'
 	Document base_request_data = Load(input);
 	input.get(); // ','
 	request_type = json::Load(input); // "stat_requests":
@@ -114,9 +115,12 @@ inline void ReadJSON(std::istream& input, TransportCatalogue& catalogue) {
 			result.push_back(MakeDictStop(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 		else if (stat_data.AsMap().at("type").AsString() == "Bus") {
-			catalogue.GetBusInfo(stat_data.AsMap().at("name").AsString());
+			catalogue.AddBusInfo(stat_data.AsMap().at("name").AsString());
 			result.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 	}
+
+	Document doc(result);
+	Print(doc, output);
 }
 
