@@ -24,8 +24,8 @@ int main() {
 
 	TransportCatalogue catalogue;
 	
-	fstream file("input.json"s);
-	istream& istrm(file);
-	ReadJSON(catalogue, istrm, std::cout);
-
+	fstream file("input2.json"s);
+	istream& strm(file);
+	
+	ReadJSON(catalogue,strm, std::cout);
 }

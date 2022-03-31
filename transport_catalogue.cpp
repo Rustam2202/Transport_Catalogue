@@ -70,6 +70,8 @@ namespace transport_catalogue {
 		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
 			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
 			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
+			std::cout << bus_info_[bus_name].route_length << std::endl;
+			std::cout << full_lng<<std::endl;
 		}
 		if (bus_finded->is_ring == false) {
 			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
@@ -134,16 +136,16 @@ namespace transport_catalogue {
 	}
 
 	void TransportCatalogue::SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length) {
-		auto finded_this = FindStop(this_stop);
-		auto finded_other = FindStop(other_stop);
+		Stop* finded_this = FindStop(this_stop);
+		Stop* finded_other = FindStop(other_stop);
 		if (finded_this != nullptr && finded_other != nullptr) {
 			route_lengths_[{finded_this, finded_other}] = length;
 		}
 	}
 
 	uint64_t TransportCatalogue::GetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop) {
-		auto finded_this = FindStop(this_stop);
-		auto finded_other = FindStop(other_stop);
+		Stop* finded_this = FindStop(this_stop);
+		Stop* finded_other = FindStop(other_stop);
 		if (finded_this != nullptr && finded_other != nullptr) {
 			auto finded_lng_it = route_lengths_.find({ finded_this, finded_other });
 			if (finded_lng_it == route_lengths_.end()) {

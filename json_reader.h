@@ -1,12 +1,12 @@
 #pragma once
 
-#include "json.h"
-#include "transport_catalogue.h"
-
 /*
  * Здесь можно разместить код наполнения транспортного справочника данными из JSON,
  * а также код обработки запросов к базе и формирование массива ответов в формате JSON
  */
+
+#include "json.h"
+#include "transport_catalogue.h"
 
 #include <algorithm>
 #include <iostream>
@@ -87,7 +87,7 @@ inline void ReadJSON( TransportCatalogue& catalogue, std::istream& input = std::
 	}
 
 	// distances insert
-	for (auto stop : road_distances) {
+	for (std::pair<std::string, json::Dict> stop : road_distances) {
 		for (auto dist : stop.second) {
 			catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
 		}
@@ -103,7 +103,6 @@ inline void ReadJSON( TransportCatalogue& catalogue, std::istream& input = std::
 				bus.stops_unique.insert(catalogue.FindStop(stop.AsString()));
 				bus.stops_vector.push_back(catalogue.FindStop(stop.AsString()));
 			}
-
 			catalogue.AddBus(std::move(bus));
 		}
 	}

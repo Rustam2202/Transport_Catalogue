@@ -359,7 +359,6 @@ namespace json {
 					PrintStrng(out, doc.second.AsString());
 				}
 				else {
-					//strm.clear();
 					std::visit(VisitTypeDocument{ strm }, doc.second.GetJsonDocument());
 					out << strm.str();
 				}
@@ -368,7 +367,7 @@ namespace json {
 					out << ",\n";
 				}
 			}
-			out << "  }";
+			out << "\n  }";
 		}
 
 		void operator()(Array arr) const {
@@ -388,7 +387,7 @@ namespace json {
 					out << ",";
 				}
 			}
-			out << "\n]";
+			out << "]";
 		}
 
 		void operator()(std::string str) const {
