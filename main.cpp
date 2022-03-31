@@ -28,4 +28,5 @@ int main() {
 	istream& strm(file);
 	
 	ReadJSON(catalogue,strm, std::cout);
+	//ReadJSON(strm,std::cout);
 }

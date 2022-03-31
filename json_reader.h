@@ -17,6 +17,8 @@ using namespace transport_catalogue;
 using namespace json;
 using namespace std::literals;
 
+//std::ostream& ReadJSON(std::istream&, std::ostream&);
+
 inline Dict MakeDictStop(int request_id, const std::string stop_name, TransportCatalogue& catalogue) {
 	auto stop_info = catalogue.GetStopInfo();
 	auto stop_finded = catalogue.FindStop(stop_name);
@@ -87,8 +89,8 @@ inline void ReadJSON( TransportCatalogue& catalogue, std::istream& input = std::
 	}
 
 	// distances insert
-	for (std::pair<std::string, json::Dict> stop : road_distances) {
-		for (auto dist : stop.second) {
+	for (std::pair<std::string, Dict> stop : road_distances) {
+		for (std::pair<std::string, Node> dist : stop.second) {
 			catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
 		}
 	}
@@ -107,6 +109,7 @@ inline void ReadJSON( TransportCatalogue& catalogue, std::istream& input = std::
 		}
 	}
 
+	// stat requests 
 	Array result;
 	for (auto stat_data : state_request_data.GetRoot().AsArray()) {
 		if (stat_data.AsMap().at("type").AsString() == "Stop") {
