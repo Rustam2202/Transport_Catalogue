@@ -4,30 +4,61 @@
 
 namespace transport_catalogue {
 
-	Bus* TransportCatalogue::FindBus(std::string bus_number) {
-		auto it = find_if(buses_.begin(), buses_.end(),
-			[bus_number](const Bus& bus) {
-				return bus.bus == bus_number;
+	//Bus* TransportCatalogue::FindBus(std::string bus_number) {
+	//	auto it = find_if(buses_.begin(), buses_.end(),
+	//		[bus_number](const Bus& bus) {
+	//			return bus.bus == bus_number;
+	//		}
+	//	);
+	//	if (it == buses_.end()) {
+	//		return nullptr;
+	//	}
+	//	return &buses_[it - buses_.begin()];
+	//}
+
+	Bus* TransportCatalogue::FindBus(const std::string& bus_number) {
+		if (buses_to_find_.count(bus_number) == 0) {
+			auto it = find_if(buses_.begin(), buses_.end(),
+				[bus_number](const Bus& bus) {
+					return bus.bus == bus_number;
+				}
+			);
+			if (it == buses_.end()) {
+				buses_to_find_[bus_number] = nullptr;
 			}
-		);
-		if (it == buses_.end()) {
-			return nullptr;
+			else {
+				buses_to_find_[bus_number] = &(*it);
+			}
 		}
-		return &buses_[it - buses_.begin()];
+		return buses_to_find_.at(bus_number);
 	}
 
-	Stop* TransportCatalogue::FindStop(std::string_view str) {
-		auto it = std::find_if(stops_.begin(), stops_.end(),
+
+	Stop* TransportCatalogue::FindStop(const std::string& stop_name) {
+		if (buses_to_find_.count(stop_name) == 0) {
+			auto it = find_if(stops_.begin(), stops_.end(),
+				[stop_name](const Stop& stop) {
+					return stop.stop == stop_name;
+				}
+			);
+			if (it == stops_.end()) {
+				stops_to_find_[stop_name] = nullptr;
+			}
+			else {
+				stops_to_find_[stop_name] = &(*it);
+			}
+		}
+		return stops_to_find_.at(stop_name);
+
+		/*auto it = std::find_if(stops_.begin(), stops_.end(),
 			[str](const Stop& stop) {
 				return stop.stop == str;
 			}
 		);
-
 		if (it == stops_.end()) {
 			return nullptr;
 		}
-
-		return &stops_[it - stops_.begin()];
+		return &stops_[it - stops_.begin()];*/
 	}
 
 	void TransportCatalogue::AddStopInfo(std::string stop_name) {
@@ -62,16 +93,17 @@ namespace transport_catalogue {
 			return;
 		}
 
-		bus_info_[bus_name].bus = bus_name;
+		if (bus_info_.count(bus_name) > 0) {
+			return;
+		}
 
+		bus_info_[bus_name].bus = bus_name;
 		bus_info_[bus_name].unique_stops = bus_finded->stops_unique.size();
 
 		uint64_t full_lng = 0;
 		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
 			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
 			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
-			std::cout << bus_info_[bus_name].route_length << std::endl;
-			std::cout << full_lng<<std::endl;
 		}
 		if (bus_finded->is_ring == false) {
 			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
@@ -80,6 +112,7 @@ namespace transport_catalogue {
 			}
 		}
 
+		//auto a = bus_info_[bus_name].route_length;
 		bus_info_[bus_name].route_length_on_road = full_lng;
 		bus_info_[bus_name].curvature = full_lng / bus_info_[bus_name].route_length;
 
@@ -135,7 +168,7 @@ namespace transport_catalogue {
 		return result;
 	}
 
-	void TransportCatalogue::SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length) {
+	void TransportCatalogue::SetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop, uint64_t length) {
 		Stop* finded_this = FindStop(this_stop);
 		Stop* finded_other = FindStop(other_stop);
 		if (finded_this != nullptr && finded_other != nullptr) {
@@ -143,7 +176,7 @@ namespace transport_catalogue {
 		}
 	}
 
-	uint64_t TransportCatalogue::GetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop) {
+	uint64_t TransportCatalogue::GetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop) {
 		Stop* finded_this = FindStop(this_stop);
 		Stop* finded_other = FindStop(other_stop);
 		if (finded_this != nullptr && finded_other != nullptr) {

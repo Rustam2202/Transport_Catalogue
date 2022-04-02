@@ -54,15 +54,23 @@ namespace transport_catalogue {
 	class Hasher {
 	public:
 
-		size_t operator()(std::string name)const {
+		/*size_t operator()(std::string name)const {
+			return string_hasher_(name);
+		}*/
+
+		size_t operator()(const std::string& name)const {
 			return string_hasher_(name);
 		}
+
+		/*size_t operator()(std::pair<const std::string&, Bus*> bus)const {
+			return string_hasher_(bus.first+bus.second->bus);
+		}*/
 
 		size_t operator()(std::pair<Stop*, Stop*> stops) const {
 			return string_hasher_(stops.first->stop + stops.second->stop);
 		}
 
-		size_t operator()(std::pair<std::string, Stop*> stops) const {
+		size_t operator()(std::pair<const std::string&, Stop*> stops) const {
 			if (stops.second == nullptr) {
 				return string_hasher_(stops.first);
 			}
