@@ -1,12 +1,7 @@
-#pragma once
-
-#include "input_reader.h"
 #include "json_reader.h"
 #include "request_handler.h"
-#include "stat_reader.h"
 #include "transport_catalogue.h"
 
-//include <iostream>
 #include <fstream>
 #include <string>
 

@@ -80,7 +80,7 @@
     },
     {
       "type": "Bus",
-      "name": "10",
+      "name": "751",
       "stops": [ "Biryulyovo Zapadnoye", "Universam", "Rossoshanskaya ulitsa", "Biryulyovo Zapadnoye" ],
       "is_roundtrip": true
     },

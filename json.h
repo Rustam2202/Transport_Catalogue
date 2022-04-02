@@ -31,14 +31,12 @@ namespace json {
 		Node(int value) :document_(value) {}
 		Node(double value) :document_(value) {}
 		Node(std::string str) :document_(str) {}
-		//Node(std::string_view str_v) :document_(str_v) {}
 
 		bool IsNull() const;
 		bool IsInt() const;
 		bool IsDouble() const;
 		bool IsPureDouble() const;
 		bool IsString() const;
-		//bool IsStringView();
 		bool IsBool() const;
 		bool IsArray() const;
 		bool IsMap() const;

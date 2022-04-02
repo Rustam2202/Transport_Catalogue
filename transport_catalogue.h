@@ -12,52 +12,51 @@
 #include <string>
 
 namespace transport_catalogue {
+	using BusToFindType = std::unordered_map<std::string_view, Bus*, Hasher>;
+	using StopToFindType = std::unordered_map<std::string_view, Stop*, Hasher>;
+	using BusInfoType = std::unordered_map<std::string_view, BusInfo, Hasher>;
+	using RouteLengthsType = std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher>;
+	//using StopInfoType = std::unordered_map<std::pair<std::string_view, Stop*>, std::set<Bus*>, Hasher>;
+	using StopInfoType = std::unordered_map<std::pair<std::string_view, Stop*>, std::set<std::string>, Hasher>;
 
 	class TransportCatalogue {
 	public:
-		//	добавление маршрута в базу
 		void AddBus(Bus bus) {
 			buses_.push_back(bus);
 		}
 
-		//	добавление остановки в базу
 		void AddStop(Stop stop) {
 			stops_.push_back(stop);
 		}
 
-		//	поиск маршрута по имени
-	//	Bus* FindBus(std::string bus_number);
 		Bus* FindBus(std::string_view bus_number);
 
-		//	поиск остановки по имени
-		//Stop* FindStop(std::string_view str);
 		Stop* FindStop(std::string_view stop_name);
 
-		//	получение информации о маршруте
-		std::unordered_map<std::string_view, BusInfo, Hasher> GetBusInfo2();
-		BusInfo	GetBusInfo(std::string bus_number);
-
-		void AddStopInfo(std::string stop_name);
+		void AddStopInfo(std::string_view stop_name);
 
 		void AddBusInfo(std::string_view bus_name);
 
-		// получение информации об остановке (пересекающие маршруты)
-		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> GetStopInfo();
+		BusInfoType GetBusInfo() {
+			return bus_info_;
+		}
 
-		// задание дистанции между остановками
+		StopInfoType GetStopInfo() {
+			return stop_info_;
+		}
+
 		void SetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop, uint64_t length);
 
-		//получение дистанции между остановками
 		uint64_t GetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop);
 
 	private:
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
 
-		std::unordered_map<std::string_view, Bus*, Hasher> buses_to_find_;
-		std::unordered_map<std::string_view, Stop*, Hasher> stops_to_find_;
-		std::unordered_map<std::string_view, BusInfo, Hasher> bus_info_;
-		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;
-		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> stop_info_;
+		BusToFindType buses_to_find_;
+		StopToFindType stops_to_find_;
+		BusInfoType bus_info_;
+		RouteLengthsType route_lengths_;
+		StopInfoType stop_info_;
 	};
 }

@@ -65,11 +65,6 @@
       "name": "stop 1"
     },
     {
-      "id": 112,
-      "type": "Stop",
-      "name": "stop 2"
-    },
-    {
       "id": 1233,
       "type": "Bus",
       "name": "221c"
@@ -80,19 +75,9 @@
       "name": "221b"
     },
     {
-      "id": 56,
-      "type": "Stop",
-      "name": "stop 3"
-    },
-    {
-      "id": 10,
+      "id": 1234567890,
       "type": "Stop",
       "name": "stop 4"
-    },
-    {
-      "id": 1111,
-      "type": "Stop",
-      "name": "stop 5"
     }
   ]
 }

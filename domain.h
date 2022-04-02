@@ -22,10 +22,11 @@
 
 namespace transport_catalogue {
 
+
 	struct Stop
 	{
 		std::string stop;
-		Coordinates coodinates;
+		geo::Coordinates coodinates;
 	};
 
 	struct Bus
@@ -58,23 +59,15 @@ namespace transport_catalogue {
 			return string_hasher_(name);
 		}
 
-		/*size_t operator()(const std::string& name)const {
-			return string_hasher_(name);
-		}*/
-
-		/*size_t operator()(std::pair<const std::string&, Bus*> bus)const {
-			return string_hasher_(bus.first+bus.second->bus);
-		}*/
-
 		size_t operator()(std::pair<Stop*, Stop*> stops) const {
 			return string_hasher_(stops.first->stop + stops.second->stop);
 		}
 
-		size_t operator()(std::pair<std::string, Stop*> stops) const {
+		size_t operator()(std::pair<std::string_view, Stop*> stops) const {
 			if (stops.second == nullptr) {
 				return string_hasher_(stops.first);
 			}
-			return string_hasher_(stops.first+stops.second->stop);
+			return string_hasher_(stops.first) + string_hasher_(stops.second->stop);
 		}
 
 	private:
