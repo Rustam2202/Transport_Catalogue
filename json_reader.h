@@ -17,7 +17,7 @@ using namespace transport_catalogue;
 using namespace json;
 using namespace std::literals;
 
-inline Dict MakeDictStop(int request_id, const std::string stop_name, TransportCatalogue& catalogue) {
+inline Dict MakeDictStop(int request_id, const std::string_view stop_name, TransportCatalogue& catalogue) {
 	auto stop_info = catalogue.GetStopInfo();
 	auto stop_finded = catalogue.FindStop(stop_name);
 

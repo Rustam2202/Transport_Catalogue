@@ -4,19 +4,7 @@
 
 namespace transport_catalogue {
 
-	//Bus* TransportCatalogue::FindBus(std::string bus_number) {
-	//	auto it = find_if(buses_.begin(), buses_.end(),
-	//		[bus_number](const Bus& bus) {
-	//			return bus.bus == bus_number;
-	//		}
-	//	);
-	//	if (it == buses_.end()) {
-	//		return nullptr;
-	//	}
-	//	return &buses_[it - buses_.begin()];
-	//}
-
-	Bus* TransportCatalogue::FindBus(const std::string& bus_number) {
+	Bus* TransportCatalogue::FindBus(std::string_view bus_number) {
 		if (buses_to_find_.count(bus_number) == 0) {
 			auto it = find_if(buses_.begin(), buses_.end(),
 				[bus_number](const Bus& bus) {
@@ -33,8 +21,7 @@ namespace transport_catalogue {
 		return buses_to_find_.at(bus_number);
 	}
 
-
-	Stop* TransportCatalogue::FindStop(const std::string& stop_name) {
+	Stop* TransportCatalogue::FindStop(std::string_view stop_name) {
 		if (buses_to_find_.count(stop_name) == 0) {
 			auto it = find_if(stops_.begin(), stops_.end(),
 				[stop_name](const Stop& stop) {
@@ -49,16 +36,6 @@ namespace transport_catalogue {
 			}
 		}
 		return stops_to_find_.at(stop_name);
-
-		/*auto it = std::find_if(stops_.begin(), stops_.end(),
-			[str](const Stop& stop) {
-				return stop.stop == str;
-			}
-		);
-		if (it == stops_.end()) {
-			return nullptr;
-		}
-		return &stops_[it - stops_.begin()];*/
 	}
 
 	void TransportCatalogue::AddStopInfo(std::string stop_name) {
@@ -86,7 +63,7 @@ namespace transport_catalogue {
 		return stop_info_;
 	}
 
-	void TransportCatalogue::AddBusInfo(std::string bus_name) {
+	void TransportCatalogue::AddBusInfo(std::string_view bus_name) {
 		Bus* bus_finded = FindBus(bus_name);
 
 		if (bus_finded == nullptr) {
@@ -112,7 +89,6 @@ namespace transport_catalogue {
 			}
 		}
 
-		//auto a = bus_info_[bus_name].route_length;
 		bus_info_[bus_name].route_length_on_road = full_lng;
 		bus_info_[bus_name].curvature = full_lng / bus_info_[bus_name].route_length;
 
@@ -126,7 +102,7 @@ namespace transport_catalogue {
 		}
 	}
 
-	std::unordered_map<std::string, BusInfo, Hasher> TransportCatalogue::GetBusInfo2() {
+	std::unordered_map<std::string_view, BusInfo, Hasher> TransportCatalogue::GetBusInfo2() {
 		return bus_info_;
 	}
 

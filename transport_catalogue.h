@@ -27,19 +27,19 @@ namespace transport_catalogue {
 
 		//	поиск маршрута по имени
 	//	Bus* FindBus(std::string bus_number);
-		Bus* FindBus(const std::string& bus_number);
+		Bus* FindBus(std::string_view bus_number);
 
 		//	поиск остановки по имени
 		//Stop* FindStop(std::string_view str);
-		Stop* FindStop(const std::string& stop_name);
+		Stop* FindStop(std::string_view stop_name);
 
 		//	получение информации о маршруте
-		std::unordered_map<std::string, BusInfo, Hasher> GetBusInfo2();
+		std::unordered_map<std::string_view, BusInfo, Hasher> GetBusInfo2();
 		BusInfo	GetBusInfo(std::string bus_number);
 
 		void AddStopInfo(std::string stop_name);
 
-		void AddBusInfo(std::string bus_name);
+		void AddBusInfo(std::string_view bus_name);
 
 		// получение информации об остановке (пересекающие маршруты)
 		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> GetStopInfo();
@@ -54,12 +54,9 @@ namespace transport_catalogue {
 		std::deque<Bus> buses_;
 		std::deque<Stop> stops_;
 
-		std::unordered_map<std::string, Bus*, Hasher> buses_to_find_;
-		std::unordered_map<std::string, Stop*, Hasher> stops_to_find_;
-		std::unordered_map<std::string, BusInfo, Hasher> bus_info_;
-		//std::unordered_map<std::string, std::set<Stop*>, Hasher> stop_info_;
-		//std::unordered_map<std::string, Coordinates, Hasher> stops_to_find_;
-	//	std::unordered_map<std::string, std::pair<std::vector<Stop*>, bool>, Hasher> buses_to_find_;
+		std::unordered_map<std::string_view, Bus*, Hasher> buses_to_find_;
+		std::unordered_map<std::string_view, Stop*, Hasher> stops_to_find_;
+		std::unordered_map<std::string_view, BusInfo, Hasher> bus_info_;
 		std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher> route_lengths_;
 		std::unordered_map<std::pair<std::string, Stop*>, std::set<std::string>, Hasher> stop_info_;
 	};
