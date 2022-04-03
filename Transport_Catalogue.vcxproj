@@ -75,6 +75,7 @@
     <None Include="input2.json" />
     <None Include="input3.json" />
     <None Include="input4.json" />
+    <None Include="input5.json" />
     <None Include="output.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

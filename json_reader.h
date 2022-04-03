@@ -9,6 +9,7 @@
 #include "transport_catalogue.h"
 
 #include <algorithm>
+#include <execution>
 #include <iostream>
 #include <iomanip>
 #include <map>
@@ -35,9 +36,9 @@ inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCa
 			}
 		}*/
 
-		for (auto bus : stop_info[{stop_name, stop_finded}]) {
+		for (std::string bus : stop_info[{stop_name, stop_finded}]) {
 			if (bus != nullptr) {
-				buses.push_back((std::string)bus);
+				buses.push_back(bus);
 			}
 		}
 
@@ -45,7 +46,6 @@ inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCa
 			{"buses"s, buses},
 			{"request_id"s, request_id}
 		};
-
 	}
 }
 
@@ -70,7 +70,8 @@ inline Dict MakeDictBus(int request_id, std::string_view bus_name, TransportCata
 
 inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::cin, std::ostream& output = std::cout) {
 
-	std::vector<std::pair<std::string, Dict>> road_distances;
+	//std::vector<std::pair<std::string, Dict>> road_distances;
+	std::unordered_map<std::pair<std::string,std::string>,int> road_distances_2;
 
 	char c;
 	input >> c;
@@ -86,31 +87,50 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 	Document state_request_data = Load(input);
 
 	// stops insert
-	for (auto base_data : base_request_data.GetRoot().AsArray()) {
+	for (Node base_data : base_request_data.GetRoot().AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Stop") {
 			Stop stop;
 			stop.stop = base_data.AsMap().at("name").AsString();
 			stop.coodinates.lat = base_data.AsMap().at("latitude").AsDouble();
 			stop.coodinates.lng = base_data.AsMap().at("longitude").AsDouble();
-			road_distances.push_back({ stop.stop, base_data.AsMap().at("road_distances").AsMap() });
+			//road_distances.push_back({ stop.stop, base_data.AsMap().at("road_distances").AsMap() });
 			catalogue.AddStop(std::move(stop));
+			road_distances_2[{base_data.AsMap().at("name").AsString(),
+				base_data.AsMap().at("road_distances").
+			}]
 		}
 	}
 
 	// distances insert
-	for (std::pair<std::string, json::Dict> stop : road_distances) {
-		for (auto dist : stop.second) {
-			catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
+
+	for (auto stop : road_distances_2) {
+		for (auto other_stop : stop.second) {
+			catalogue.SetDistanceBetweenStops(stop.first->stop, other_stop.first, other_stop.second.AsInt());
 		}
 	}
 
+	/*std::for_each(std::execution::par, road_distances.begin(), road_distances.end(),
+		[&](std::pair<std::string, json::Dict> stop)
+		{
+
+			for (auto dist : stop.second) {
+				catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
+			}
+		});*/
+
+	/*for (std::pair<std::string, json::Dict> stop : road_distances) {
+		for (auto dist : stop.second) {
+			catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
+		}
+	}*/
+
 	// buses insert
-	for (auto base_data : base_request_data.GetRoot().AsArray()) {
+	for (Node base_data : base_request_data.GetRoot().AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Bus") {
 			Bus bus;
 			bus.bus = base_data.AsMap().at("name").AsString();
 			bus.is_ring = base_data.AsMap().at("is_roundtrip").AsBool();
-			for (auto stop : base_data.AsMap().at("stops").AsArray()) {
+			for (Node stop : base_data.AsMap().at("stops").AsArray()) {
 				bus.stops_unique.insert(catalogue.FindStop(stop.AsString()));
 				bus.stops_vector.push_back(catalogue.FindStop(stop.AsString()));
 			}
@@ -129,7 +149,6 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 			result.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 	}
-	//output << std::setprecision(6);
 	Document doc(result);
 	Print(doc, output);
 }

@@ -103,5 +103,8 @@
     <None Include="input4.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="input5.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

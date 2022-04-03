@@ -45,9 +45,9 @@ namespace transport_catalogue {
 			return stop_info_;
 		}
 
-		void SetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop, uint64_t length);
+		void SetDistanceBetweenStops( std::string_view this_stop,  std::string_view other_stop, uint64_t length);
 
-		uint64_t GetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop);
+		uint64_t GetDistanceBetweenStops( std::string_view this_stop,  std::string_view other_stop);
 
 	private:
 		std::deque<Bus> buses_;

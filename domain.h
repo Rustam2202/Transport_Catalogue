@@ -69,6 +69,9 @@ namespace transport_catalogue {
 			}
 			return string_hasher_(stops.first) + string_hasher_(stops.second->stop);
 		}
+		size_t operator()(std::pair<Stop *, json::Dict > a)const {
+			return string_hasher_(a.first->stop);
+		}
 
 	private:
 		std::hash<std::string_view> string_hasher_;

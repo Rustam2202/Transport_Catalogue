@@ -103,7 +103,7 @@ namespace transport_catalogue {
 		}*/
 	}
 
-	void TransportCatalogue::SetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop, uint64_t length) {
+	void TransportCatalogue::SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length) {
 		Stop* finded_this = FindStop(this_stop);
 		Stop* finded_other = FindStop(other_stop);
 		if (finded_this != nullptr && finded_other != nullptr) {
@@ -111,7 +111,7 @@ namespace transport_catalogue {
 		}
 	}
 
-	uint64_t TransportCatalogue::GetDistanceBetweenStops(const std::string& this_stop, const std::string& other_stop) {
+	uint64_t TransportCatalogue::GetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop) {
 		Stop* finded_this = FindStop(this_stop);
 		Stop* finded_other = FindStop(other_stop);
 		if (finded_this != nullptr && finded_other != nullptr) {
