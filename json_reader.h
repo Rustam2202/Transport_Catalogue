@@ -36,12 +36,11 @@ inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCa
 			}
 		}*/
 
-		for (std::string bus : stop_info[{stop_name, stop_finded}]) {
+		for (const std::string& bus : stop_info[{stop_name, stop_finded}]) {
 			if (bus != nullptr) {
 				buses.push_back(bus);
 			}
 		}
-
 		return {
 			{"buses"s, buses},
 			{"request_id"s, request_id}
@@ -57,7 +56,7 @@ inline Dict MakeDictBus(int request_id, std::string_view bus_name, TransportCata
 		return { {"request_id"s, request_id}, {"error_message"s, "not found"s} };
 	}
 	else {
-		auto bus_finded = bus_info[bus_name];
+		BusInfo bus_finded = bus_info[bus_name];
 		return{
 			{"curvature"s, bus_finded.curvature},
 			{"request_id"s, request_id},
@@ -70,8 +69,13 @@ inline Dict MakeDictBus(int request_id, std::string_view bus_name, TransportCata
 
 inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::cin, std::ostream& output = std::cout) {
 
+	//Dict root = Load(input).GetRoot().AsMap();
+
+
+
 	//std::vector<std::pair<std::string, Dict>> road_distances;
-	std::unordered_map<std::pair<std::string,std::string>,int> road_distances_2;
+	std::unordered_map<std::pair<std::string, std::string>, int, Hasher> road_distances_2;
+	//	std::unordered_map<std::pair<std::string_view, std::string_view>, int, Hasher> road_distances_2;
 
 	char c;
 	input >> c;
@@ -94,19 +98,17 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 			stop.coodinates.lat = base_data.AsMap().at("latitude").AsDouble();
 			stop.coodinates.lng = base_data.AsMap().at("longitude").AsDouble();
 			//road_distances.push_back({ stop.stop, base_data.AsMap().at("road_distances").AsMap() });
+			for (auto dict : base_data.AsMap().at("road_distances").AsMap()) {
+				road_distances_2[{stop.stop, dict.first}] = dict.second.AsInt();
+			}
 			catalogue.AddStop(std::move(stop));
-			road_distances_2[{base_data.AsMap().at("name").AsString(),
-				base_data.AsMap().at("road_distances").
-			}]
 		}
 	}
 
 	// distances insert
 
 	for (auto stop : road_distances_2) {
-		for (auto other_stop : stop.second) {
-			catalogue.SetDistanceBetweenStops(stop.first->stop, other_stop.first, other_stop.second.AsInt());
-		}
+		catalogue.SetDistanceBetweenStops(stop.first.first, stop.first.second, stop.second);
 	}
 
 	/*std::for_each(std::execution::par, road_distances.begin(), road_distances.end(),
@@ -118,13 +120,13 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 			}
 		});*/
 
-	/*for (std::pair<std::string, json::Dict> stop : road_distances) {
-		for (auto dist : stop.second) {
-			catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
-		}
-	}*/
+		/*for (std::pair<std::string, json::Dict> stop : road_distances) {
+			for (auto dist : stop.second) {
+				catalogue.SetDistanceBetweenStops(stop.first, dist.first, dist.second.AsInt());
+			}
+		}*/
 
-	// buses insert
+		// buses insert
 	for (Node base_data : base_request_data.GetRoot().AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Bus") {
 			Bus bus;
@@ -139,17 +141,22 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 	}
 
 	Array result;
+	//	output << '[';
 	for (auto stat_data : state_request_data.GetRoot().AsArray()) {
 		if (stat_data.AsMap().at("type").AsString() == "Stop") {
 			catalogue.AddStopInfo(stat_data.AsMap().at("name").AsString());
+			//	Print(Document(MakeDictStop(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue)), output);
 			result.push_back(MakeDictStop(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 		else if (stat_data.AsMap().at("type").AsString() == "Bus") {
 			catalogue.AddBusInfo(stat_data.AsMap().at("name").AsString());
+			//	Print(Document(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue)), output);
 			result.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
+		//output << ",";
 	}
-	Document doc(result);
+	//	output << ']';
+	Document doc(std::move(result));
 	Print(doc, output);
 }
 
