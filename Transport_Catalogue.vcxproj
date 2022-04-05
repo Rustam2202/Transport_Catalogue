@@ -29,6 +29,7 @@
     </ClInclude>
     <ClInclude Include="json.h" />
     <ClInclude Include="json_reader.h" />
+    <ClInclude Include="log_duration.h" />
     <ClInclude Include="map_renderer.h" />
     <ClInclude Include="request_handler.h" />
     <ClInclude Include="stat_reader.h">
@@ -77,6 +78,7 @@
     <None Include="input4.json" />
     <None Include="input5.json" />
     <None Include="output.json" />
+    <None Include="speed_input.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

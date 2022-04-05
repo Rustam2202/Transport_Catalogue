@@ -22,7 +22,7 @@ namespace transport_catalogue {
 	}
 
 	Stop* TransportCatalogue::FindStop(std::string_view stop_name) {
-		if (buses_to_find_.count(stop_name) == 0) {
+		if (stops_to_find_.count(stop_name) == 0) {
 			auto it = find_if(stops_.begin(), stops_.end(),
 				[stop_name](const Stop& stop) {
 					return stop.stop == stop_name;
@@ -90,6 +90,7 @@ namespace transport_catalogue {
 			else {
 				stop_info_[{stop_name, stop_finded}];
 			}
+			
 		}
 
 		/*for (auto it = buses_.begin(); it != buses_.end(); it++) {

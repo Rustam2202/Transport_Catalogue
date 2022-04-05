@@ -48,6 +48,9 @@
     <ClInclude Include="svg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="log_duration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="input_reader.cpp">
@@ -104,6 +107,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="input5.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="speed_input.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
