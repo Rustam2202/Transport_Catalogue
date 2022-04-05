@@ -22,7 +22,6 @@
 
 namespace transport_catalogue {
 
-
 	struct Stop
 	{
 		std::string stop;

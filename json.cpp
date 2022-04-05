@@ -381,7 +381,6 @@ namespace json {
 				else {
 					std::visit(VisitTypeDocument{ strm }, arr[i].GetJsonDocument());
 					out << strm.str();
-					//strm.clear();
 				}
 				if (i != arr.size() - 1) {
 					out << ",";
