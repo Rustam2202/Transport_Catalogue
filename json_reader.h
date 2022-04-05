@@ -104,7 +104,7 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 			catalogue.AddStop(std::move(stop));
 		}
 		else if (base_data.AsMap().at("type").AsString() == "Bus") {
-			buses_dicts.push_back(std::move(base_data.AsMap()));
+			buses_dicts.push_back(base_data.AsMap());
 		}
 	}
 
