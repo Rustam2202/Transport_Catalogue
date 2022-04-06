@@ -19,7 +19,7 @@ int main() {
 
 	TransportCatalogue catalogue;
 	
-	fstream file("speed_input.json"s);
+	fstream file("input3.json"s);
 	istream& strm(file);
 	
 	ReadJSON(catalogue,strm, std::cout);

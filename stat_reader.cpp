@@ -7,9 +7,9 @@ namespace transport_catalogue {
 		using namespace std;
 		ostream& operator<<(ostream& os, const BusInfo& bus_info) {
 			if (bus_info.stops_on_route == 0)
-				os << "Bus " << bus_info.bus << ": not found";
+				os << "Bus " << bus_info.bus_name << ": not found";
 			else {
-				os << "Bus " << bus_info.bus << ": ";
+				os << "Bus " << bus_info.bus_name << ": ";
 				os << bus_info.stops_on_route << " stops on route, ";
 				os << bus_info.unique_stops << " unique stops, ";
 				os << bus_info.route_length_on_road << " route length, ";

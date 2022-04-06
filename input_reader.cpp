@@ -18,7 +18,7 @@ namespace transport_catalogue {
 			Stop result;
 
 			// имя остановки
-			getline(input_data, result.stop, ':');
+			getline(input_data, result.stop_name, ':');
 			cin.get();
 
 			// координаты
@@ -31,7 +31,7 @@ namespace transport_catalogue {
 
 			// оставшиеся длины или пустая строка
 			RouteLenghts lengths;
-			lengths.this_stop_name = result.stop;
+			lengths.this_stop_name = result.stop_name;
 			getline(input_data, lengths.lengths_data);
 			return lengths;
 		}
@@ -82,7 +82,7 @@ namespace transport_catalogue {
 
 		// найти номер
 		auto end = str.find(':');
-		result.bus = { &str[0], end };
+		result.bus_name = { &str[0], end };
 		ch += end + 2;
 
 		/*while (*ch != ':')

@@ -106,10 +106,10 @@
     <None Include="input4.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="input5.json">
+    <None Include="speed.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="speed_input.json">
+    <None Include="input5.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

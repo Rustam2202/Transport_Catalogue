@@ -34,18 +34,18 @@ namespace transport_catalogue {
 			return;
 		}
 
-		bus_info_[bus_name].bus = bus_name;
+		bus_info_[bus_name].bus_name = bus_name;
 		bus_info_[bus_name].unique_stops = bus_finded->stops_unique.size();
 
 		uint64_t full_lng = 0;
 		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
 			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
-			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop, bus_finded->stops_vector[i]->stop);
+			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop_name, bus_finded->stops_vector[i]->stop_name);
 		}
 		if (bus_finded->is_ring == false) {
 			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
 				bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
-				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop, bus_finded->stops_vector[i - 1]->stop);
+				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop_name, bus_finded->stops_vector[i - 1]->stop_name);
 			}
 		}
 
@@ -62,32 +62,30 @@ namespace transport_catalogue {
 		}
 	}
 
-	void TransportCatalogue::AddStopInfo(std::string_view stop_name) {
-		Stop* stop_finded = FindStop(stop_name);
-		if (stop_finded == nullptr) {
-			return;
-		}
-
-		for (Bus bus : buses_) {
-			if (bus.stops_unique.count(stop_finded) > 0) {
-				stop_info_[{stop_name, stop_finded}].insert(bus.bus);
-				//stop_info_[{stop_name, stop_finded}].insert(&bus);
-			}
-			else {
-				stop_info_[{stop_name, stop_finded}];
-			}
-		}
-
-		/*for (auto it = buses_.begin(); it != buses_.end(); it++) {
-			if ((*it).stops_unique.count(stop_finded) > 0) {
-				stop_info_[{stop_name, stop_finded}].insert(&(*it));
-
-			}
-			else {
-				stop_info_[{stop_name, stop_finded}].insert(nullptr);
-			}
-		}*/
-	}
+	//void TransportCatalogue::AddStopInfo(std::string_view stop_name) {
+	//	Stop* stop_finded = FindStop(stop_name);
+	//	if (stop_finded == nullptr) {
+	//		return;
+	//	}
+	//	for (Bus bus : buses_) {
+	//		if (bus.stops_unique.count(stop_finded) > 0) {
+	//			//stop_info_[{stop_name, stop_finded}].insert(bus.bus);
+	//			// 
+	//			//stop_info_[{stop_name, stop_finded}].insert(&bus);
+	//		}
+	//		else {
+	//			//stop_info_[{stop_name, stop_finded}];
+	//		}
+	//	}
+	//	/*for (auto it = buses_.begin(); it != buses_.end(); it++) {
+	//		if ((*it).stops_unique.count(stop_finded) > 0) {
+	//			stop_info_[{stop_name, stop_finded}].insert(&(*it));
+	//		}
+	//		else {
+	//			stop_info_[{stop_name, stop_finded}].insert(nullptr);
+	//		}
+	//	}*/
+	//}
 
 	void TransportCatalogue::SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length) {
 		Stop* finded_this = FindStop(this_stop);

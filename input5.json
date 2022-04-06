@@ -1,138 +1,57 @@
 {
   "base_requests": [
     {
+      "type": "Stop",
+      "name": "Электросети",
+      "latitude": 43.598701,
+      "longitude": 39.730623,
+      "road_distances": {
+        "Улица Докучаева": 3000,
+        "Улица Лизы Чайкиной": 4300
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Улица Докучаева",
+      "latitude": 43.618701,
+      "longitude": 39.720623,
+      "road_distances": {
+        "Электросети": 3200,
+        "Улица Лизы Чайкиной": 4100
+      }
+    },
+    {
       "type": "Bus",
-      "name": "Bus1",
+      "name": "14",
       "stops": [
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2",
-        "Stop1",
-        "Stop2"
-
+        "Улица Лизы Чайкиной",
+        "Электросети",
+        "Улица Докучаева",
+        "Улица Лизы Чайкиной"
       ],
       "is_roundtrip": true
     },
     {
       "type": "Stop",
-      "name": "Stop1",
-      "latitude": 38.413522679752795,
-      "longitude": 34.77839058726191,
-      "road_distances": { "Stop2": 674452 }
-    },
-    {
-      "type": "Stop",
-      "name": "Stop2",
-      "latitude": 38.42309720084585,
-      "longitude": 34.73119278667983,
-      "road_distances": { "Stop1": 914534 }
-    }
+      "name": "Улица Лизы Чайкиной",
+      "latitude": 43.578701,
+      "longitude": 39.710623,
+      "road_distances": {
+        "Улица Докучаева": 3400,
+        "Электросети": 4500
+      }
+    }    
   ],
   "stat_requests": [
     {
-      "id": 328294215,
+      "id": 12345678,
       "type": "Bus",
-      "name": "Bus1"
+      "name": "14"
     },
     {
-      "id": 328294215,
-      "type": "Bus",
-      "name": "Bus1"
+      "id": 12345,
+      "type": "Stop",
+      "name": "Улица Докучаева"
     }
   ]
 }
