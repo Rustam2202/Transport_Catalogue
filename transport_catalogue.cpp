@@ -24,68 +24,66 @@ namespace transport_catalogue {
 		}
 	}
 
-	void TransportCatalogue::AddBusInfo(std::string_view bus_name) {
-		Bus* bus_finded = FindBus(bus_name);
+	//void TransportCatalogue::AddBusInfo(std::string_view bus_name) {
+	//	Bus* bus_finded = FindBus(bus_name);
+	//	if (bus_finded == nullptr) {
+	//		return;
+	//	}
+	//	if (bus_info_.count(bus_name) > 0) {
+	//		return;
+	//	}
+	//	bus_info_[bus_name].bus_name = bus_name;
+	//	bus_info_[bus_name].unique_stops = bus_finded->stops_unique.size();
+	//	uint64_t full_lng = 0;
+	//	for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
+	//		bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
+	//		full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop_name, bus_finded->stops_vector[i]->stop_name);
+	//	}
+	//	if (bus_finded->is_ring == false) {
+	//		for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
+	//			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
+	//			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop_name, bus_finded->stops_vector[i - 1]->stop_name);
+	//		}
+	//	}
+	//	bus_info_[bus_name].route_length_on_road = full_lng;
+	//	bus_info_[bus_name].curvature = full_lng / bus_info_[bus_name].route_length;
+	//	if (bus_finded->is_ring == true) {
+	//		bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size();
+	//	}
+	//	else {
+	//		bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
+	//		bus_info_[bus_name].route_length *= 2;
+	//	}
+	//}
 
-		if (bus_finded == nullptr) {
-			return;
-		}
-		if (bus_info_.count(bus_name) > 0) {
-			return;
-		}
-
-		bus_info_[bus_name].bus_name = bus_name;
-		bus_info_[bus_name].unique_stops = bus_finded->stops_unique.size();
+	void TransportCatalogue::AddBusInfo() {
+		bus_info_[buses_.back().bus_name].bus_name = buses_.back().bus_name;
+		bus_info_[buses_.back().bus_name].unique_stops = buses_.back().stops_unique.size();
 
 		uint64_t full_lng = 0;
-		for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
-			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
-			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop_name, bus_finded->stops_vector[i]->stop_name);
+		for (int i = 1; i < buses_.back().stops_vector.size(); ++i) {
+			bus_info_[buses_.back().bus_name].route_length += geo::ComputeDistance(buses_.back().stops_vector[i - 1]->coodinates, buses_.back().stops_vector[i]->coodinates);
+			full_lng += GetDistanceBetweenStops(buses_.back().stops_vector[i - 1]->stop_name, buses_.back().stops_vector[i]->stop_name);
 		}
-		if (bus_finded->is_ring == false) {
-			for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
-				bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
-				full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop_name, bus_finded->stops_vector[i - 1]->stop_name);
+		if (buses_.back().is_ring == false) {
+			for (int i = buses_.back().stops_vector.size() - 1; i > 0; --i) {
+				bus_info_[buses_.back().bus_name].route_length += geo::ComputeDistance(buses_.back().stops_vector[i]->coodinates, buses_.back().stops_vector[i - 1]->coodinates);
+				full_lng += GetDistanceBetweenStops(buses_.back().stops_vector[i]->stop_name, buses_.back().stops_vector[i - 1]->stop_name);
 			}
 		}
 
-		bus_info_[bus_name].route_length_on_road = full_lng;
-		bus_info_[bus_name].curvature = full_lng / bus_info_[bus_name].route_length;
+		bus_info_[buses_.back().bus_name].route_length_on_road = full_lng;
+		bus_info_[buses_.back().bus_name].curvature = full_lng / bus_info_[buses_.back().bus_name].route_length;
 
-		if (bus_finded->is_ring == true) {
-			bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size();
+		if (buses_.back().is_ring == true) {
+			bus_info_[buses_.back().bus_name].stops_on_route = buses_.back().stops_vector.size();
 
 		}
 		else {
-			bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
-			bus_info_[bus_name].route_length *= 2;
+			bus_info_[buses_.back().bus_name].stops_on_route = buses_.back().stops_vector.size() * 2 - 1;
+			bus_info_[buses_.back().bus_name].route_length *= 2;
 		}
 	}
-
-	//void TransportCatalogue::AddStopInfo(std::string_view stop_name) {
-	//	Stop* stop_finded = FindStop(stop_name);
-	//	if (stop_finded == nullptr) {
-	//		return;
-	//	}
-	//	for (Bus bus : buses_) {
-	//		if (bus.stops_unique.count(stop_finded) > 0) {
-	//			//stop_info_[{stop_name, stop_finded}].insert(bus.bus);
-	//			// 
-	//			//stop_info_[{stop_name, stop_finded}].insert(&bus);
-	//		}
-	//		else {
-	//			//stop_info_[{stop_name, stop_finded}];
-	//		}
-	//	}
-	//	/*for (auto it = buses_.begin(); it != buses_.end(); it++) {
-	//		if ((*it).stops_unique.count(stop_finded) > 0) {
-	//			stop_info_[{stop_name, stop_finded}].insert(&(*it));
-	//		}
-	//		else {
-	//			stop_info_[{stop_name, stop_finded}].insert(nullptr);
-	//		}
-	//	}*/
-	//}
 
 	void TransportCatalogue::SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length) {
 		Stop* finded_this = FindStop(this_stop);

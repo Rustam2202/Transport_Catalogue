@@ -34,7 +34,7 @@ inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCa
 			for (Bus* bus : buses) {
 				buses_arr.push_back(bus->bus_name);
 			}
-			std::sort(buses_arr.begin(), buses_arr.end(),[](const Node lhs, const Node rhs) {return lhs.AsString() < rhs.AsString(); });
+			std::sort(std::execution::par, buses_arr.begin(), buses_arr.end(), [](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
 		}
 		return {
 			{"buses"s, buses_arr},
@@ -72,11 +72,11 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 			stop.stop_name = base_data.AsMap().at("name").AsString();
 			stop.coodinates.lat = base_data.AsMap().at("latitude").AsDouble();
 			stop.coodinates.lng = base_data.AsMap().at("longitude").AsDouble();
-			catalogue.AddStop(stop);
+			catalogue.AddStop(std::move(stop));
 		}
 	}
 
-	// stop-distances and buses insert
+	// stop-distances insert
 	for (Node base_data : base.AsMap().at("base_requests").AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Stop") {
 			Dict stops = base_data.AsMap().at("road_distances").AsMap();
@@ -84,7 +84,11 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 				catalogue.SetDistanceBetweenStops(base_data.AsMap().at("name").AsString(), other_stop.first, other_stop.second.AsInt());
 			}
 		}
-		else if (base_data.AsMap().at("type").AsString() == "Bus") {
+	}
+
+	// buses insert
+	for (Node base_data : base.AsMap().at("base_requests").AsArray()) {
+		if (base_data.AsMap().at("type").AsString() == "Bus") {
 			Bus bus;
 			bus.bus_name = base_data.AsMap().at("name").AsString();
 			bus.is_ring = base_data.AsMap().at("is_roundtrip").AsBool();
@@ -92,7 +96,7 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 				bus.stops_unique.insert(catalogue.FindStop(stop.AsString()));
 				bus.stops_vector.push_back(catalogue.FindStop(stop.AsString()));
 			}
-			catalogue.AddBus(bus);
+			catalogue.AddBus(std::move(bus));
 		}
 	}
 
@@ -104,7 +108,7 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 			result.push_back(MakeDictStop(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 		else if (stat_data.AsMap().at("type").AsString() == "Bus") {
-			catalogue.AddBusInfo(stat_data.AsMap().at("name").AsString());
+			//catalogue.AddBusInfo(stat_data.AsMap().at("name").AsString());
 			result.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 	}

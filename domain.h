@@ -37,7 +37,7 @@ namespace transport_catalogue {
 	};
 
 	struct BusInfo {
-		std::string bus_name;
+		std::string_view bus_name;
 		size_t stops_on_route = 0;
 		size_t unique_stops = 0;
 		double route_length = 0.0;
