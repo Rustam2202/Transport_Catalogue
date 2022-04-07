@@ -61,7 +61,7 @@ namespace transport_catalogue {
 		BusToFindType buses_to_find_;
 		StopToFindType stops_to_find_;
 		BusInfoType bus_info_;
-		RouteLengthsType route_lengths_;
 		StopInfoType stop_info_;
+		RouteLengthsType route_lengths_;
 	};
 }

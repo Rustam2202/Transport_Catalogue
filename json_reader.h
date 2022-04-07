@@ -7,6 +7,7 @@
 
 #include "json.h"
 #include "log_duration.h"
+#include "request_handler.h"
 #include "transport_catalogue.h"
 
 #include <algorithm>
@@ -66,6 +67,7 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 	Node base = Load(input).GetRoot();
 
 	// stops insert
+	RequestHandler::InsertStops(base);
 	for (Node base_data : base.AsMap().at("base_requests").AsArray()) {
 		if (base_data.AsMap().at("type").AsString() == "Stop") {
 			Stop stop;

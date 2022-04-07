@@ -24,13 +24,13 @@ namespace transport_catalogue {
 		}
 	}
 
-	size_t CalculateUniqueStops(std::vector<Stop*>& stops) {
+	/*size_t CalculateUniqueStops(std::vector<Stop*>& stops) {
 		std::vector<Stop*> unique_stops_temp(stops);
 		std::sort(unique_stops_temp.begin(), unique_stops_temp.end());
 		auto last = std::unique(unique_stops_temp.begin(), unique_stops_temp.end());
 		unique_stops_temp.erase(last, unique_stops_temp.end());
 		return unique_stops_temp.size();
-	}
+	}*/
 
 	void TransportCatalogue::AddBusInfo() {
 		bus_info_[buses_.back().bus_name].bus_name = buses_.back().bus_name;

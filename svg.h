@@ -12,14 +12,6 @@
 
 namespace svg {
 
-	//svg::Color color1;								 // none
-	//svg::Color color2 = svg::Rgb{ 215, 30, 25 };       // rgb(215,30,25)
-	//svg::Color color3 = svg::NoneColor;                // none
-	//svg::Color color4 = svg::Rgba{ 15, 15, 25, 0.7 };  // rgba(15,15,25,0.7)
-	//svg::Color color5 = "red"s;                        // red
-	//svg::Color color6 = svg::Rgb{};                    // rgb(0,0,0)
-	//svg::Color color7 = svg::Rgba{};                   // rgba(0,0,0,1.0);
-
 	class Rgb {
 	public:
 		Rgb() {};
@@ -52,30 +44,6 @@ namespace svg {
 
 	using Color = std::variant<std::monostate, std::string, svg::Rgb, svg::Rgba>;
 	inline const Color NoneColor = {};
-	//using Color = std::string;
-	// inline const Color NoneColor{ "none" };
-
-	//class Color {
-	//public:
-	//	std::ostream& out;
-	//	Color(): color_(std::monostate) {
-	//	//	color_ = std::monostate;
-	//	}
-	//	void operator()(std::monostate) const {
-	//		out << "none";
-	//	}
-	//	void operator()(std::string color_) const {
-	//		out << color_;
-	//	}
-	//	void operator()(svg::Rgb color_) const {
-	//		out << "rgb(" << color_.red << "," << color_.green << "," << color_.blue << ")";
-	//	}
-	//	void operator()(svg::Rgba color_) const {
-	//		out << "rgba(" << color_.red << "," << color_.green << "," << color_.blue << "," << color_.opacity << ")";
-	//	}
-	//private:
-	//	std::variant<std::monostate, std::string, svg::Rgb, svg::Rgba> color_;
-	//};
 
 	struct Point {
 		Point() = default;
@@ -171,13 +139,11 @@ namespace svg {
 				std::ostringstream strm;
 				std::visit(OstreamColorPrint{ strm }, *fill_color_);
 				out << " fill=\""sv << strm.str() << "\""sv;
-				//out << " fill=\""sv << *fill_color_ << "\""sv;
 			}
 			if (stroke_color_) {
 				std::ostringstream strm;
 				std::visit(OstreamColorPrint{ strm }, *stroke_color_);
 				out << " stroke=\""sv << strm.str() << "\""sv;
-				//out << " stroke=\""sv << *stroke_color_ << "\""sv;
 			}
 			if (stroke_width_) {
 				out << " stroke-width=\""sv << *stroke_width_ << "\""sv;
@@ -307,7 +273,5 @@ namespace svg {
 	private:
 		std::vector<std::unique_ptr<Object>> objects_;
 	};
-
-
 }  // namespace svg
 
