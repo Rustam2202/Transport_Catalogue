@@ -22,7 +22,7 @@ int main() {
 	fstream file("input6.json"s);
 	istream& strm(file);
 	
-	ReadJSON(catalogue,strm, std::cout);
+	ReadJSON(strm, std::cout);
 
 	//ReadJSON(catalogue, std::cin, std::cout);
 }

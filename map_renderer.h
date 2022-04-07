@@ -11,22 +11,11 @@
 
 namespace renderer {
 
-	class MapRenderer
-	{
-	public:
-		MapRenderer();
-		~MapRenderer();
+	class MapRenderer{
+	public:	
 
 	private:
 
 	};
-
-	MapRenderer::MapRenderer()
-	{
-	}
-
-	MapRenderer::~MapRenderer()
-	{
-	}
 
 } // namespace renderer
