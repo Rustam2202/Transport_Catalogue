@@ -30,10 +30,11 @@ inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCa
 	else {
 		Array buses_arr;
 		if (stop_info.count(stop_finded)) {
-			std::set<Bus*> buses = stop_info.at(stop_finded);
+			std::unordered_set<Bus*> buses = stop_info.at(stop_finded);
 			for (Bus* bus : buses) {
 				buses_arr.push_back(bus->bus_name);
 			}
+			std::sort(buses_arr.begin(), buses_arr.end(),[](const Node lhs, const Node rhs) {return lhs.AsString() < rhs.AsString(); });
 		}
 		return {
 			{"buses"s, buses_arr},

@@ -19,15 +19,15 @@ namespace transport_catalogue {
 	using RouteLengthsType = std::unordered_map<std::pair<Stop*, Stop*>, uint64_t, Hasher>;
 	//using StopInfoType = std::unordered_map<std::pair<std::string_view, Stop*>, std::set<Bus*>, Hasher>;
 	//using StopInfoType = std::unordered_map<std::pair<std::string_view, Stop*>, std::set<std::string>, Hasher>;
-	using StopInfoType = std::unordered_map<Stop*, std::set<Bus*>, Hasher>;
+	using StopInfoType = std::unordered_map<Stop*, std::unordered_set<Bus*>, Hasher>;
 
 	class TransportCatalogue {
 	public:
 		void AddBus(Bus bus) {
-			buses_.push_back(bus);
+			buses_.push_back(std::move(bus));
 			buses_to_find_[buses_.back().bus_name] = &buses_.back();
-			for (Stop* stop : bus.stops_vector) {
-				stop_info_[stop].insert(FindBus(bus.bus_name));
+			for (Stop* stop : buses_.back().stops_vector) {
+				stop_info_[stop].insert(FindBus(buses_.back().bus_name));
 			}
 		}
 

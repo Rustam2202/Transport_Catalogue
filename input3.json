@@ -19,8 +19,8 @@
     },
     {
       "type": "Bus",
-      "name": "256",
-      "stops": [ "Biryulyovo Zapadnoye", "Biryusinka", "Universam", "Biryulyovo Tovarnaya", "Biryulyovo Passazhirskaya", "Biryulyovo Zapadnoye" ],
+      "name": "751",
+      "stops": [ "Biryulyovo Zapadnoye", "Universam", "Rossoshanskaya ulitsa", "Biryulyovo Zapadnoye" ],
       "is_roundtrip": true
     },
     {
@@ -35,6 +35,12 @@
       "latitude": 55.632761,
       "longitude": 37.333324,
       "road_distances": { "Marushkino": 9500 }
+    },
+    {
+      "type": "Bus",
+      "name": "256",
+      "stops": [ "Biryulyovo Zapadnoye", "Biryusinka", "Universam", "Biryulyovo Tovarnaya", "Biryulyovo Passazhirskaya", "Biryulyovo Zapadnoye" ],
+      "is_roundtrip": true
     },
     {
       "type": "Stop",
@@ -78,12 +84,7 @@
       "longitude": 37.659164,
       "road_distances": { "Biryulyovo Zapadnoye": 1200 }
     },
-    {
-      "type": "Bus",
-      "name": "751",
-      "stops": [ "Biryulyovo Zapadnoye", "Universam", "Rossoshanskaya ulitsa", "Biryulyovo Zapadnoye" ],
-      "is_roundtrip": true
-    },
+
     {
       "type": "Stop",
       "name": "Rossoshanskaya ulitsa",
@@ -101,6 +102,11 @@
   ],
   "stat_requests": [
     {
+      "id": 55,
+      "type": "Bus",
+      "name": "751"
+    },
+    {
       "id": 22,
       "type": "Stop",
       "name": "Samara"
@@ -114,11 +120,6 @@
       "id": 44,
       "type": "Bus",
       "name": "750"
-    },
-    {
-      "id": 55,
-      "type": "Bus",
-      "name": "751"
     },
     {
       "id": 66,
