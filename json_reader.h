@@ -21,7 +21,7 @@ using namespace json;
 using namespace std::literals;
 
 inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCatalogue& catalogue) {
-	StopInfoType stop_info = catalogue.GetStopInfo();
+	const StopInfoType& stop_info = catalogue.GetStopInfo();
 	Stop* stop_finded = catalogue.FindStop(stop_name);
 
 	if (stop_finded == nullptr) {
@@ -44,14 +44,14 @@ inline Dict MakeDictStop(int request_id, std::string_view stop_name, TransportCa
 }
 
 inline Dict MakeDictBus(int request_id, std::string_view bus_name, TransportCatalogue& catalogue) {
-	BusInfoType bus_info = catalogue.GetBusInfo();
+	const BusInfoType& bus_info = catalogue.GetBusInfo();
 	Bus* bus_finded = catalogue.FindBus(bus_name);
 
 	if (bus_finded == nullptr) {
 		return { {"request_id"s, request_id}, {"error_message"s, "not found"s} };
 	}
 	else {
-		BusInfo bus_info_finded = bus_info[bus_name];
+		const BusInfo& bus_info_finded = bus_info.at(bus_name);
 		return{
 			{"curvature"s, bus_info_finded.curvature},
 			{"request_id"s, request_id},
@@ -104,15 +104,14 @@ inline void ReadJSON(TransportCatalogue& catalogue, std::istream& input = std::c
 	Array result;
 	for (Node stat_data : base.AsMap().at("stat_requests").AsArray()) {
 		if (stat_data.AsMap().at("type").AsString() == "Stop") {
-			//catalogue.AddStopInfo(stat_data.AsMap().at("name").AsString());
 			result.push_back(MakeDictStop(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 		else if (stat_data.AsMap().at("type").AsString() == "Bus") {
-			//catalogue.AddBusInfo(stat_data.AsMap().at("name").AsString());
 			result.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString(), catalogue));
 		}
 	}
 	Document doc(std::move(result));
 	Print(doc, output);
 }
+
 

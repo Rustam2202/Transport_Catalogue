@@ -76,6 +76,7 @@
     <None Include="input2.json" />
     <None Include="input3.json" />
     <None Include="input4.json" />
+    <None Include="input6.json" />
     <None Include="speed.json" />
     <None Include="output.json" />
     <None Include="input5.json" />

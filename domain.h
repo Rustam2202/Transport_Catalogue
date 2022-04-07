@@ -45,11 +45,11 @@ namespace transport_catalogue {
 		double curvature = 1.0;
 	};
 
-	struct StopInfo {
+	/*struct StopInfo {
 		std::string stop_name;
 		std::set<std::string> stop_with_buses;
 		bool is_in_stop = true;
-	};
+	};*/
 
 	class Hasher {
 	public:

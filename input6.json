@@ -1,0 +1,43 @@
+{
+  "base_requests": [
+    {
+      "type": "Stop",
+      "name": "A",
+      "latitude": 1,
+      "longitude": -1,
+      "road_distances": { "B": 100 }
+    },
+    {
+      "type": "Stop",
+      "name": "B",
+      "latitude": 0,
+      "longitude": -1,
+      "road_distances": {}
+    },
+    {
+      "type": "Bus",
+      "name": "1",
+      "stops": [ "A", "B" ],
+      "is_roundtrip": false
+    },
+    {
+      "type": "Stop",
+      "name": "A",
+      "latitude": 0,
+      "longitude": -1,
+      "road_distances": {}
+    }
+  ],
+  "stat_requests": [
+    {
+      "id": 1,
+      "type": "Bus",
+      "name": "1"
+    },
+    {
+      "id": 4,
+      "type": "Stop",
+      "name": "C"
+    }
+  ]
+}

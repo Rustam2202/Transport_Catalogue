@@ -24,40 +24,18 @@ namespace transport_catalogue {
 		}
 	}
 
-	//void TransportCatalogue::AddBusInfo(std::string_view bus_name) {
-	//	Bus* bus_finded = FindBus(bus_name);
-	//	if (bus_finded == nullptr) {
-	//		return;
-	//	}
-	//	if (bus_info_.count(bus_name) > 0) {
-	//		return;
-	//	}
-	//	bus_info_[bus_name].bus_name = bus_name;
-	//	bus_info_[bus_name].unique_stops = bus_finded->stops_unique.size();
-	//	uint64_t full_lng = 0;
-	//	for (int i = 1; i < bus_finded->stops_vector.size(); ++i) {
-	//		bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i - 1]->coodinates, bus_finded->stops_vector[i]->coodinates);
-	//		full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i - 1]->stop_name, bus_finded->stops_vector[i]->stop_name);
-	//	}
-	//	if (bus_finded->is_ring == false) {
-	//		for (int i = bus_finded->stops_vector.size() - 1; i > 0; --i) {
-	//			bus_info_[bus_name].route_length += geo::ComputeDistance(bus_finded->stops_vector[i]->coodinates, bus_finded->stops_vector[i - 1]->coodinates);
-	//			full_lng += GetDistanceBetweenStops(bus_finded->stops_vector[i]->stop_name, bus_finded->stops_vector[i - 1]->stop_name);
-	//		}
-	//	}
-	//	bus_info_[bus_name].route_length_on_road = full_lng;
-	//	bus_info_[bus_name].curvature = full_lng / bus_info_[bus_name].route_length;
-	//	if (bus_finded->is_ring == true) {
-	//		bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size();
-	//	}
-	//	else {
-	//		bus_info_[bus_name].stops_on_route = bus_finded->stops_vector.size() * 2 - 1;
-	//		bus_info_[bus_name].route_length *= 2;
-	//	}
-	//}
+	size_t CalculateUniqueStops(std::vector<Stop*>& stops) {
+		std::vector<Stop*> unique_stops_temp(stops);
+		std::sort(unique_stops_temp.begin(), unique_stops_temp.end());
+		auto last = std::unique(unique_stops_temp.begin(), unique_stops_temp.end());
+		unique_stops_temp.erase(last, unique_stops_temp.end());
+		return unique_stops_temp.size();
+	}
 
 	void TransportCatalogue::AddBusInfo() {
 		bus_info_[buses_.back().bus_name].bus_name = buses_.back().bus_name;
+		//bus_info_[buses_.back().bus_name].unique_stops = CalculateUniqueStops(buses_.back().stops_vector);
+				
 		bus_info_[buses_.back().bus_name].unique_stops = buses_.back().stops_unique.size();
 
 		uint64_t full_lng = 0;
