@@ -1,6 +1,7 @@
 #include "json_reader.h"
+#include "map_renderer.h"
 #include "request_handler.h"
-#include "transport_catalogue.h"
+//#include "transport_catalogue.h"
 
 #include <fstream>
 #include <string>
@@ -17,12 +18,18 @@ int main() {
 	*/
 	using namespace std;
 
-	TransportCatalogue catalogue;
-	
-	fstream file("input6.json"s);
+	fstream file("s10_final_opentest_1.json"s); // s10_final_opentest_1
 	istream& strm(file);
-	
 	ReadJSON(strm, std::cout);
+
+
+	//TransportCatalogue catalogue;
+
+	
+	//fstream file("s10_final_opentest_1.json"s); // s10_final_opentest_1
+	//istream& strm(file);
+	//
+	//ReadJSON(strm, std::cout);
 
 	//ReadJSON(catalogue, std::cin, std::cout);
 }

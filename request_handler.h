@@ -33,6 +33,7 @@ public:
 	void InsertStops(Array base);
 	void InsertStopsDistances(Array base);
 	void InsertBuses(Array base);
+	void InsertRenderStatus(const Node& base);
 	void CompileStats(Array base, Array& stats);
 
 	// Этот метод будет нужен в следующей части итогового проекта

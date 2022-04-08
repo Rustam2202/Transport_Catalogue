@@ -46,6 +46,9 @@ void RequestHandler::InsertBuses(json::Array base) {
 	}
 }
 
+
+
+
 void RequestHandler::CompileStats(json::Array base, json::Array& stats) {
 	for (Node stat_data : base) {
 		if (stat_data.AsMap().at("type").AsString() == "Stop") {

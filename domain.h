@@ -20,6 +20,10 @@
  *
  */
 
+namespace renderer {
+    
+}
+
 namespace transport_catalogue {
 
 	struct Stop
