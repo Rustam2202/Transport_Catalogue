@@ -21,33 +21,17 @@ namespace transport_catalogue {
 
 	class TransportCatalogue {
 	public:
-		void AddBus(Bus bus) {
-			buses_.push_back(std::move(bus));
-			buses_to_find_[buses_.back().bus_name] = &buses_.back();
-			// add stop_info_
-			for (Stop* stop : buses_.back().stops_vector) {
-				stop_info_[stop].insert(FindBus(buses_.back().bus_name));
-			}
-			// add bus_info_
-			AddBusInfo();
-		}
+		void AddBus(Bus bus);
 
-		void AddStop(Stop stop) {
-			stops_.push_back(std::move(stop));
-			stops_to_find_[stops_.back().stop_name] = &stops_.back();
-		}
+		void AddStop(Stop stop);
 
 		Bus* FindBus(std::string_view bus_number);
 
 		Stop* FindStop(std::string_view stop_name);
 
-		 BusInfoType& GetBusInfo() {
-			return bus_info_;
-		}
+		BusInfoType& GetBusInfo() { return bus_info_; }
 
-		 StopInfoType& GetStopInfo() {
-			return stop_info_;
-		}
+		StopInfoType& GetStopInfo() { return stop_info_; }
 
 		void SetDistanceBetweenStops(std::string_view this_stop, std::string_view other_stop, uint64_t length);
 

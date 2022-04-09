@@ -19,16 +19,14 @@ using namespace std::literals;
 namespace renderer {
 
 	inline const double EPSILON = 1e-6;
-	bool IsZero(double value) {
+	inline bool IsZero(double value) {
 		return std::abs(value) < EPSILON;
 	}
 
 	class SphereProjector {
 	public:
 		template <typename PointInputIt>
-		SphereProjector(PointInputIt points_begin, PointInputIt points_end, double max_width,
-			double max_height, double padding)
-			: padding_(padding) {
+		SphereProjector(PointInputIt points_begin, PointInputIt points_end, double max_width, double max_height, double padding) : padding_(padding) {
 			if (points_begin == points_end) {
 				return;
 			}
@@ -80,7 +78,7 @@ namespace renderer {
 		double zoom_coeff_ = 0;
 	};
 
-	using LabelOffset= std::array<double, 2>;
+	using LabelOffset = std::array<double, 2>;
 
 	struct RenderSettings
 	{
@@ -98,64 +96,27 @@ namespace renderer {
 		std::vector<svg::Color> color_palette;
 	};
 
-	class MapRenderer{
+	class MapRenderer {
 	public:
 
-		void SetWidth(double width) {
-			settings_.width = width;
-		}
-
-		void SetHeight(double height) {
-			settings_.height = height;
-		}
-
-		void SetPadding(double padding) {
-			settings_.padding = padding;
-		}
-
-		void SetStopRadius(double radius) {
-			settings_.stop_radius = radius;
-		}
-
-		void SetLineWidth(double width) {
-			settings_.line_width = width;
-		}
-
-		void SetUnderlayerWidth(double width) {
-			settings_.underlayer_width = width;
-		}
-
-		void SetBusLabelFontSize(int size) {
-			settings_.bus_label_font_size = size;
-		}
-
-		void SetStopLabelFontSize(int size) {
-			settings_.stop_label_font_size = size;
-		}
-
-		void SetStopLabelOffset(LabelOffset arr) {
-			settings_.stop_label_offset = arr;
-		}
-
-		void SetBusLabelOffset(LabelOffset arr) {
-			settings_.bus_label_offset = arr;
-		}
-
-		void SetUnderlayerColor(std::string color) {
-			settings_.underlayer_color = color;
-		}
-
-		void SetColorPalette(std::string color) {
-			settings_.color_palette.push_back(color);
-		}
-
+		void SetWidth(double width) { settings_.width = width; }
+		void SetHeight(double height) { settings_.height = height; }
+		void SetPadding(double padding) { settings_.padding = padding; }
+		void SetStopRadius(double radius) { settings_.stop_radius = radius; }
+		void SetLineWidth(double width) { settings_.line_width = width; }
+		void SetUnderlayerWidth(double width) { settings_.underlayer_width = width; }
+		void SetBusLabelFontSize(int size) { settings_.bus_label_font_size = size; }
+		void SetStopLabelFontSize(int size) { settings_.stop_label_font_size = size; }
+		void SetStopLabelOffset(LabelOffset arr) { settings_.stop_label_offset = arr; }
+		void SetBusLabelOffset(LabelOffset arr) { settings_.bus_label_offset = arr; }
+		void SetUnderlayerColor(std::string color) { settings_.underlayer_color = color; }
+		void SetColorPalette(std::string color) { settings_.color_palette.push_back(color); }
 		void SetColorPalette(int r, int g, int b) {
 			svg::Rgb rgb(r, g, b);
 			svg::Color color(rgb);
 			settings_.color_palette.push_back(std::move(color));
-		//	settings_.color_palette.push_back({ r,g,b });
+			//	settings_.color_palette.push_back({ r,g,b });
 		}
-
 		void SetColorPalette(int r, int g, int b, double o) {
 			svg::Rgba rgba(r, g, b, o);
 			svg::Color color(rgba);
@@ -163,6 +124,7 @@ namespace renderer {
 		}
 
 	private:
+		svg::Document map_;
 		RenderSettings settings_;
 	};
 

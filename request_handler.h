@@ -28,21 +28,20 @@ using namespace std::literals;
 class RequestHandler {
 public:
 
-	RequestHandler(TransportCatalogue& db, const renderer::MapRenderer& renderer) :db_(db), renderer_(renderer) {	}
+	RequestHandler(TransportCatalogue& db, const renderer::MapRenderer& renderer) :catalogue_(db), renderer_(renderer) {}
 
 	void InsertStops(Array base);
 	void InsertStopsDistances(Array base);
 	void InsertBuses(Array base);
-	void InsertRenderStatus(const Node& base);
 	void CompileStats(Array base, Array& stats);
 
 	// Этот метод будет нужен в следующей части итогового проекта
-	//svg::Document RenderMap() const;
+	svg::Document RenderMap() const;
 
 private:
 	Dict MakeDictStop(int request_id, std::string_view stop_name);
 	Dict MakeDictBus(int request_id, std::string_view bus_name);
 
-	transport_catalogue::TransportCatalogue& db_;
+	transport_catalogue::TransportCatalogue& catalogue_;
 	const renderer::MapRenderer& renderer_;
 };

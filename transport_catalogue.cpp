@@ -4,6 +4,20 @@
 
 namespace transport_catalogue {
 
+	void TransportCatalogue::AddBus(Bus bus) {
+		buses_.push_back(std::move(bus));
+		buses_to_find_[buses_.back().bus_name] = &buses_.back();
+		for (Stop* stop : buses_.back().stops_vector) {
+			stop_info_[stop].insert(FindBus(buses_.back().bus_name));
+		}
+		AddBusInfo();
+	}
+
+	void TransportCatalogue::AddStop(Stop stop) {
+		stops_.push_back(std::move(stop));
+		stops_to_find_[stops_.back().stop_name] = &stops_.back();
+	}
+
 	Bus* TransportCatalogue::FindBus(std::string_view bus_number) {
 		auto it = buses_to_find_.find(bus_number);
 		if (it != buses_to_find_.end()) {
@@ -24,18 +38,8 @@ namespace transport_catalogue {
 		}
 	}
 
-	/*size_t CalculateUniqueStops(std::vector<Stop*>& stops) {
-		std::vector<Stop*> unique_stops_temp(stops);
-		std::sort(unique_stops_temp.begin(), unique_stops_temp.end());
-		auto last = std::unique(unique_stops_temp.begin(), unique_stops_temp.end());
-		unique_stops_temp.erase(last, unique_stops_temp.end());
-		return unique_stops_temp.size();
-	}*/
-
 	void TransportCatalogue::AddBusInfo() {
 		bus_info_[buses_.back().bus_name].bus_name = buses_.back().bus_name;
-		//bus_info_[buses_.back().bus_name].unique_stops = CalculateUniqueStops(buses_.back().stops_vector);
-				
 		bus_info_[buses_.back().bus_name].unique_stops = buses_.back().stops_unique.size();
 
 		uint64_t full_lng = 0;
