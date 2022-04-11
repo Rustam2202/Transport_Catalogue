@@ -108,6 +108,7 @@ namespace svg {
 	template <typename Owner>
 	class PathProps {
 	public:
+
 		Owner& SetFillColor(Color color = std::monostate{} /*NoneColor*/) {
 			fill_color_ = std::move(color);
 			return AsOwner();

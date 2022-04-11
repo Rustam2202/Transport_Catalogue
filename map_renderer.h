@@ -25,6 +25,8 @@ namespace renderer {
 
 	class SphereProjector {
 	public:
+		SphereProjector() {}
+
 		template <typename PointInputIt>
 		SphereProjector(PointInputIt points_begin, PointInputIt points_end, double max_width, double max_height, double padding) : padding_(padding) {
 			if (points_begin == points_end) {
@@ -94,10 +96,13 @@ namespace renderer {
 		LabelOffset bus_label_offset{ 0,0 };
 		svg::Color underlayer_color;
 		std::vector<svg::Color> color_palette;
+		//SphereProjector sphere_projector;
 	};
 
 	class MapRenderer {
 	public:
+		MapRenderer() {	}
+		//MapRenderer(std::vector<geo::Coordinates> coordinates):	sphere_projector_(coordinates.begin(), coordinates.end(), settings_.width, settings_.height, settings_.padding) {}
 
 		void SetWidth(double width) { settings_.width = width; }
 		void SetHeight(double height) { settings_.height = height; }
@@ -123,10 +128,56 @@ namespace renderer {
 			settings_.color_palette.push_back(std::move(color));
 		}
 
+		void MakeSphereProjector(std::vector<geo::Coordinates> coordinates) {
+			SphereProjector sp(coordinates.begin(), coordinates.end(), settings_.width, settings_.height, settings_.padding);
+			sphere_projector_ = std::move(sp);
+		}
+
+		void AddPolyline(std::vector<geo::Coordinates> coordinates) {
+			svg::Polyline poly;
+			for (auto coordinate : coordinates) {
+				poly.AddPoint(sphere_projector_(coordinate));
+			}
+			poly.SetFillColor("none");
+			poly.SetStrokeColor(settings_.color_palette[0]); // 
+			poly.SetStrokeWidth(settings_.line_width);
+			poly.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
+			poly.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
+			objects_.Add(poly);
+		}
+
+		void AddText() {
+
+		}
+
+		void Rendering(std::ostream& output) {
+			objects_.Render(output);
+		}
+
 	private:
-		svg::Document map_;
+		std::vector<std::pair<std::string, svg::Point>> stops_;
+		svg::Document objects_;
 		RenderSettings settings_;
+		SphereProjector sphere_projector_;
 	};
 
 } // namespace renderer
 
+/*
+"render_settings": {
+	"width": 600,
+	"height" : 400,
+	"padding" : 50,
+	"stop_radius" : 5,
+	"line_width" : 14,
+	"bus_label_font_size" : 20,
+	"bus_label_offset" : [7,15] ,
+	"stop_label_font_size" : 20,
+	"stop_label_offset" : [7,-3] ,
+	"underlayer_color" : [255,255,255,0.] ,
+	"underlayer_width": 3,
+	"color_palette" : ["green",[255,160,0],"red"]},
+	"stat_requests": [{	"id": 1218663236,"type" : "Map"	}
+]
+}
+*/

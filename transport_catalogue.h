@@ -29,6 +29,10 @@ namespace transport_catalogue {
 
 		Stop* FindStop(std::string_view stop_name);
 
+		const std::deque<Bus>& GetBuses() { return buses_; }
+
+		const std::deque<Stop>& GetStops() { return stops_; }
+
 		BusInfoType& GetBusInfo() { return bus_info_; }
 
 		StopInfoType& GetStopInfo() { return stop_info_; }
