@@ -87,7 +87,7 @@ namespace renderer {
 
 	struct PointOnMap {
 		std::string_view stop_name;
-		/*geo::Coordinates*/ svg::Point coordinates;
+	    svg::Point coordinates;
 	};
 
 	struct RenderSettings
@@ -165,16 +165,11 @@ namespace renderer {
 
 		void AddBusWithStops(std::string_view bus_name, std::string_view stop_name, const geo::Coordinates& coordinate) {
 			buses_[bus_name].push_back({ stop_name, sphere_projector_(coordinate) });
-			points_.push_back(&buses_[bus_name].back());
+			points_.push_back({ stop_name, sphere_projector_(coordinate) });
 		}
 
 		void Sorting() {
-			//	std::sort(/*std::execution::par,*/ stops_on_bus_.begin(), stops_on_bus_.end(),[](const auto lhs, const auto rhs) {return lhs.first < rhs.first; });
-			/*for (auto bus : buses_) {
-				bus_names_.push_back(bus.first);
-			}
-			std::sort(bus_names_.begin(), bus_names_.end());*/
-			std::sort(points_.begin(), points_.end(), [](PointOnMap* lhs, PointOnMap* rhs) {return (*lhs).stop_name < (*rhs).stop_name; });
+			std::sort(points_.begin(), points_.end(), [](PointOnMap lhs, PointOnMap rhs) {return lhs.stop_name < rhs.stop_name; });
 		}
 
 		void AddBusesLines() {
@@ -268,12 +263,12 @@ namespace renderer {
 		void AddStopsNames() {
 			for (auto point : points_) {
 				svg::Text text_main;
-				text_main.SetPosition(point->coordinates);
+				text_main.SetPosition(point.coordinates);
 				text_main.SetOffset(settings_.stop_label_offset);
 				text_main.SetFontSize(settings_.stop_label_font_size);
 				text_main.SetFontFamily("Verdana");
 				//text.SetFontWeight();
-				text_main.SetData(point->stop_name);
+				text_main.SetData(point.stop_name);
 				objects_.Add(std::move(text_main));
 
 				svg::Text text_layer;
@@ -287,14 +282,14 @@ namespace renderer {
 				text_layer.SetStrokeWidth(settings_.underlayer_width);
 				text_layer.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
 				text_layer.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
-				text_layer.SetData(point->stop_name);
+				text_layer.SetData(point.stop_name);
 				objects_.Add(std::move(text_layer));
 			}
 		}
 
 		void AddCircle() {
 			for (auto point : points_) {
-				svg::Circle circle(point->coordinates, settings_.stop_radius);
+				svg::Circle circle(point.coordinates, settings_.stop_radius);
 				circle.SetFillColor("white");
 				objects_.Add(circle);
 			}
@@ -305,13 +300,13 @@ namespace renderer {
 		}
 
 	private:
-		std::vector<std::pair<std::string, svg::Point>> stops_;
+		//std::vector<std::pair<std::string, svg::Point>> stops_;
 		svg::Document objects_;
 		RenderSettings settings_;
 		SphereProjector sphere_projector_;
 		std::map<std::string_view, std::vector<PointOnMap>> buses_;
 		//std::vector<std::pair<std::string_view, std::vector<PointOnMap>>> buses_;
-		std::vector<PointOnMap*> points_;
+		std::vector<PointOnMap> points_;
 		//std::vector<std::string_view> bus_names_;
 	};
 

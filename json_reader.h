@@ -75,6 +75,7 @@ inline void ReadJSON(std::istream& input = std::cin, std::ostream& output = std:
 		rh.FindAllCoordinaties();
 		rh.AddBusesData();
 		rh.DrawMap();
+		map.Rendering(output);
 		//map.Rendering(/*output*/ std::cout);
 		//rh.RenderMap().Render(output);
 		//json::Document doc_map; // Load string from output

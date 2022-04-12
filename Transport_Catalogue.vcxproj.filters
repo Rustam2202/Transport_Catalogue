@@ -136,5 +136,8 @@
     <None Include="input_svg.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="output_svg.svg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
