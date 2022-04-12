@@ -133,5 +133,8 @@
     <None Include="s10_final_opentest_3_answer.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="input_svg.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

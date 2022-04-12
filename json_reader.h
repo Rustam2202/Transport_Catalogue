@@ -38,9 +38,23 @@ inline void ReadJSON(std::istream& input = std::cin, std::ostream& output = std:
 		map.SetUnderlayerWidth(render_settings.AsMap().at("underlayer_width").AsDouble());
 		map.SetBusLabelFontSize(render_settings.AsMap().at("bus_label_font_size").AsInt());
 		map.SetStopLabelFontSize(render_settings.AsMap().at("stop_label_font_size").AsInt());
-		map.SetBusLabelOffset({ render_settings.AsMap().at("bus_label_offset").AsArray()[0].AsDouble(), render_settings.AsMap().at("bus_label_offset").AsArray()[1].AsDouble() });
-		map.SetStopLabelOffset({ render_settings.AsMap().at("stop_label_offset").AsArray()[0].AsDouble(), render_settings.AsMap().at("stop_label_offset").AsArray()[1].AsDouble() });
-		map.SetUnderlayerColor(render_settings.AsMap().at("underlayer_color").AsString());
+		map.SetBusLabelOffset( render_settings.AsMap().at("bus_label_offset").AsArray()[0].AsDouble(), render_settings.AsMap().at("bus_label_offset").AsArray()[1].AsDouble() );
+		map.SetStopLabelOffset( render_settings.AsMap().at("stop_label_offset").AsArray()[0].AsDouble(), render_settings.AsMap().at("stop_label_offset").AsArray()[1].AsDouble() );
+		//map.SetUnderlayerColor(render_settings.AsMap().at("underlayer_color").AsString());
+
+		if (render_settings.AsMap().at("underlayer_color").IsString()) {
+			map.SetUnderlayerColor(render_settings.AsMap().at("underlayer_color").AsString());
+		}
+		else if (render_settings.AsMap().at("underlayer_color").IsArray()) {
+			Node color = render_settings.AsMap().at("underlayer_color").AsArray();
+			if (color.AsArray().size() == 3) {
+				map.SetUnderlayerColor(color.AsArray()[0].AsInt(), color.AsArray()[1].AsInt(), color.AsArray()[2].AsInt());
+			}
+			else if (color.AsArray().size() == 4) {
+				map.SetUnderlayerColor(color.AsArray()[0].AsInt(), color.AsArray()[1].AsInt(), color.AsArray()[2].AsInt(), color.AsArray()[3].AsDouble());
+			}
+		}
+
 		for (Node colors : render_settings.AsMap().at("color_palette").AsArray()) {
 			if (colors.IsArray()) {
 				if (colors.AsArray().size() == 3) {
@@ -58,19 +72,21 @@ inline void ReadJSON(std::istream& input = std::cin, std::ostream& output = std:
 
 	// Draw map
 	{
-		rh.CalculateSphereProjector();
-		rh.AddBusesLines();
-		//map.Rendering();
-		map.Rendering(/*output*/ std::cout);
+		rh.FindAllCoordinaties();
+		rh.AddBusesData();
+		rh.DrawMap();
+		//map.Rendering(/*output*/ std::cout);
 		//rh.RenderMap().Render(output);
 		//json::Document doc_map; // Load string from output
 
 	}
 
-	Array result;
-	rh.CompileStats(base.AsMap().at("stat_requests").AsArray(), result);
-	Document doc(std::move(result));
-	Print(doc, output);
+	//{
+	//	Array result;
+	//	rh.CompileStats(base.AsMap().at("stat_requests").AsArray(), result);
+	//	Document doc(std::move(result));
+	//	json::Print(doc, output);
+	//}
 }
 
 

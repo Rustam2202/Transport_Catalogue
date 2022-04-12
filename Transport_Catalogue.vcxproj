@@ -77,6 +77,7 @@
     <None Include="input3.json" />
     <None Include="input4.json" />
     <None Include="input6.json" />
+    <None Include="input_svg.json" />
     <None Include="s10_final_opentest_1.json" />
     <None Include="s10_final_opentest_1_answer.json" />
     <None Include="s10_final_opentest_2.json" />

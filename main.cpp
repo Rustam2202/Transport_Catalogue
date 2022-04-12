@@ -18,7 +18,7 @@ int main() {
 	*/
 	using namespace std;
 
-	fstream file("s10_final_opentest_1.json"s); // s10_final_opentest_1
+	fstream file("input_svg.json"s); // s10_final_opentest_1
 	istream& strm(file);
 	ReadJSON(strm, std::cout);
 

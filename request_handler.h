@@ -37,53 +37,34 @@ public:
 	void InsertBuses(Array base);
 	void CompileStats(Array base, Array& stats);
 
-	// Этот метод будет нужен в следующей части итогового проекта
 	svg::Document RenderMap() const {
 		//return renderer_.Rendering();
 	}
 
-	std::vector<geo::Coordinates> FindAllCoordinaties() {
+	void FindAllCoordinaties() {
 		std::vector<geo::Coordinates> result;
-		for (auto stop : catalogue_.GetStops()) {
-			result.push_back(stop.coodinates);
+		for (const auto& stop : catalogue_.GetStopInfo()) {
+			if (!stop.second.empty()) {
+				result.push_back(stop.first->coodinates);
+			}
 		}
-		return result;
+		renderer_.MakeSphereProjector(result);
 	}
 
-	void CalculateSphereProjector() {
-		renderer_.MakeSphereProjector(FindAllCoordinaties());
-	}
-
-	void AddBusesLines() {
-		for (auto bus : catalogue_.GetBuses()) {
-			std::vector<geo::Coordinates> result;
+	void AddBusesData() {
+		for (Bus bus : catalogue_.GetBuses()) {
 			for (Stop* stop : bus.stops_vector) {
-				result.push_back(stop->coodinates);
-			}
-			renderer_.AddPolyline(result);
-		}
-	}
-
-	void AddBusText() {
-		/*std::deque<Bus> buses_vect(catalogue_.GetBuses());
-			std::sort(buses_vect.begin(), buses_vect.end(),
-			[](const Bus& lhs, const Bus& rhs) {return lhs.bus_name < rhs.bus_name; });*/
-
-		for (auto bus : catalogue_.GetBuses()) {
-			if (bus.is_ring) {
-
+				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates);
 			}
 		}
 	}
 
-	void AddRounds() {
-
+	void DrawMap() {
+		renderer_.AddBusesLines();
+		renderer_.AddBusesNames();
+		renderer_.AddCircle();
+		renderer_.AddStopsNames();
 	}
-
-	void AddStopText() {
-
-	}
-
 
 private:
 	Dict MakeDictStop(int request_id, std::string_view stop_name);
