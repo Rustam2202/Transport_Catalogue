@@ -87,7 +87,7 @@ namespace renderer {
 
 	struct PointOnMap {
 		std::string_view stop_name;
-	    svg::Point coordinates;
+		svg::Point coordinates;
 	};
 
 	struct RenderSettings
@@ -106,16 +106,6 @@ namespace renderer {
 		std::vector<svg::Color> color_palette;
 		//SphereProjector sphere_projector;
 	};
-
-	/*class Hasher {
-	public:
-
-		size_t operator()(std::string_view name)const {
-			return string_hasher_(name);
-		}
-	private:
-		std::hash<std::string_view> string_hasher_;
-	};*/
 
 	class MapRenderer {
 	public:
@@ -142,7 +132,7 @@ namespace renderer {
 		void SetUnderlayerColor(int r, int g, int b, double o) {
 			svg::Rgba rgba(r, g, b, o);
 			svg::Color color(rgba);
-			settings_.color_palette.push_back(std::move(color));
+			settings_.underlayer_color = std::move(color);
 		}
 
 		void SetColorPalette(std::string color) { settings_.color_palette.push_back(color); }
@@ -163,7 +153,7 @@ namespace renderer {
 			sphere_projector_ = std::move(sp);
 		}
 
-		void AddBusWithStops(std::string_view bus_name, std::string_view stop_name, const geo::Coordinates& coordinate) {
+		void AddBusWithStops(std::string bus_name, std::string_view stop_name, const geo::Coordinates& coordinate) {
 			buses_[bus_name].push_back({ stop_name, sphere_projector_(coordinate) });
 			points_.push_back({ stop_name, sphere_projector_(coordinate) });
 		}
@@ -179,9 +169,18 @@ namespace renderer {
 					continue;
 				}
 				svg::Polyline polyline;
-				for (const PointOnMap& stop : bus.second) {
-					polyline.AddPoint(stop.coordinates);
+				for (int i = 0; i < bus.second.size(); ++i) {
+					polyline.AddPoint(bus.second[i].coordinates);
 				}
+				if (bus.second.front().stop_name != bus.second.back().stop_name) {
+					for (int i = bus.second.size() - 2; i >= 0; --i) {
+						polyline.AddPoint(bus.second[i].coordinates);
+					}
+				}
+
+				/*for (const PointOnMap& stop : bus.second) {
+					polyline.AddPoint(stop.coordinates);
+				}*/
 				polyline.SetFillColor("none");
 				polyline.SetStrokeColor(settings_.color_palette[color_numb]); // 
 				polyline.SetStrokeWidth(settings_.line_width);
@@ -216,15 +215,20 @@ namespace renderer {
 				text_main.SetFillColor(settings_.color_palette[color_numb]);
 
 				text_layer.SetPosition(bus.second.front().coordinates);
+				text_layer.SetOffset(settings_.bus_label_offset);
+				text_layer.SetFontSize(settings_.stop_label_font_size);
+				text_layer.SetFontFamily("Verdana");
+				text_layer.SetFontWeight("bold");
+				text_layer.SetData(bus.first);
 				text_layer.SetFillColor(settings_.underlayer_color);
 				text_layer.SetStrokeColor(settings_.underlayer_color);
 				text_layer.SetStrokeWidth(settings_.underlayer_width);
 				text_layer.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
 				text_layer.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
-				text_layer.SetData(bus.first);
 				text_layer.SetFillColor(settings_.color_palette[color_numb]);
-				objects_.Add(std::move(text_main));
+
 				objects_.Add(std::move(text_layer));
+				objects_.Add(std::move(text_main));
 
 				if (bus.second.front().stop_name != bus.second.back().stop_name) {
 					svg::Text text_main_2;
@@ -238,17 +242,22 @@ namespace renderer {
 					text_main_2.SetData(bus.first);
 					text_main_2.SetFillColor(settings_.color_palette[color_numb]);
 
+					text_layer_2.SetOffset(settings_.bus_label_offset);
+					text_layer_2.SetFontSize(settings_.stop_label_font_size);
+					text_layer_2.SetFontFamily("Verdana");
+					text_layer_2.SetFontWeight("bold");
+					text_layer_2.SetData(bus.first);
+					text_layer_2.SetFillColor(settings_.color_palette[color_numb]);
 					text_layer_2.SetPosition(bus.second.back().coordinates);
 					text_layer_2.SetFillColor(settings_.underlayer_color);
 					text_layer_2.SetStrokeColor(settings_.underlayer_color);
 					text_layer_2.SetStrokeWidth(settings_.underlayer_width);
 					text_layer_2.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
 					text_layer_2.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
-					text_layer_2.SetData(bus.first);
 					text_layer_2.SetFillColor(settings_.color_palette[color_numb]);
 
-					objects_.Add(std::move(text_main_2));
 					objects_.Add(std::move(text_layer_2));
+					objects_.Add(std::move(text_main_2));
 				}
 
 				if (color_numb < settings_.color_palette.size()) {
@@ -262,21 +271,12 @@ namespace renderer {
 
 		void AddStopsNames() {
 			for (auto point : points_) {
-				svg::Text text_main;
-				text_main.SetPosition(point.coordinates);
-				text_main.SetOffset(settings_.stop_label_offset);
-				text_main.SetFontSize(settings_.stop_label_font_size);
-				text_main.SetFontFamily("Verdana");
-				//text.SetFontWeight();
-				text_main.SetData(point.stop_name);
-				objects_.Add(std::move(text_main));
 
 				svg::Text text_layer;
-				/*text_layer.SetPosition(point->coordinates);
+				text_layer.SetPosition(point.coordinates);
 				text_layer.SetOffset(settings_.stop_label_offset);
 				text_layer.SetFontSize(settings_.stop_label_font_size);
-				text_layer.SetFontFamily("Verdana");*/
-				//text.SetFontWeight();
+				text_layer.SetFontFamily("Verdana");
 				text_layer.SetFillColor(settings_.underlayer_color);
 				text_layer.SetStrokeColor(settings_.underlayer_color);
 				text_layer.SetStrokeWidth(settings_.underlayer_width);
@@ -284,6 +284,15 @@ namespace renderer {
 				text_layer.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
 				text_layer.SetData(point.stop_name);
 				objects_.Add(std::move(text_layer));
+
+				svg::Text text_main;
+				text_main.SetPosition(point.coordinates);
+				text_main.SetOffset(settings_.stop_label_offset);
+				text_main.SetFontSize(settings_.stop_label_font_size);
+				text_main.SetFontFamily("Verdana");
+				text_main.SetData(point.stop_name);
+				text_main.SetFillColor("black");
+				objects_.Add(std::move(text_main));
 			}
 		}
 
@@ -304,7 +313,7 @@ namespace renderer {
 		svg::Document objects_;
 		RenderSettings settings_;
 		SphereProjector sphere_projector_;
-		std::map<std::string_view, std::vector<PointOnMap>> buses_;
+		std::map<std::string, std::vector<PointOnMap>> buses_;
 		//std::vector<std::pair<std::string_view, std::vector<PointOnMap>>> buses_;
 		std::vector<PointOnMap> points_;
 		//std::vector<std::string_view> bus_names_;

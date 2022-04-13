@@ -25,6 +25,8 @@ using namespace json;
 using namespace transport_catalogue;
 using namespace std::literals;
 
+using PointInfo = std::vector<std::pair<std::string_view, geo::Coordinates>>;
+
 class RequestHandler : public renderer::MapRenderer, transport_catalogue::TransportCatalogue {
 public:
 
@@ -37,11 +39,11 @@ public:
 	void InsertBuses(Array base);
 	void CompileStats(Array base, Array& stats);
 
-	svg::Document RenderMap() const {
-		//return renderer_.Rendering();
-	}
+	//svg::Document RenderMap() const {
+	//	//return renderer_.Rendering();
+	//}
 
-	void FindAllCoordinaties() {
+	void SetZoom() {
 		std::vector<geo::Coordinates> result;
 		for (const auto& stop : catalogue_.GetStopInfo()) {
 			if (!stop.second.empty()) {
@@ -53,14 +55,18 @@ public:
 
 	void AddBusesData() {
 		for (Bus bus : catalogue_.GetBuses()) {
+			//points_[bus.bus_name] = bus.stops_vector;
 			for (Stop* stop : bus.stops_vector) {
 				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates);
+				//points_[bus.bus_name].push_back({ stop->stop_name, stop->coodinates });
 			}
 		}
 	}
 
 	void DrawMap() {
+
 		renderer_.AddBusesLines();
+		renderer_.Sorting();
 		renderer_.AddBusesNames();
 		renderer_.AddCircle();
 		renderer_.AddStopsNames();
@@ -69,7 +75,11 @@ public:
 private:
 	Dict MakeDictStop(int request_id, std::string_view stop_name);
 	Dict MakeDictBus(int request_id, std::string_view bus_name);
+	Dict MakeDictMap(int request_id);
 
 	transport_catalogue::TransportCatalogue& catalogue_;
 	renderer::MapRenderer& renderer_;
+
+	//std::map<std::string_view, PointInfo> points_;
+	std::map<std::string_view, std::vector<Stop*>&> points_;
 };

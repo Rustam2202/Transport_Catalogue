@@ -69,25 +69,25 @@ inline void ReadJSON(std::istream& input = std::cin, std::ostream& output = std:
 			}
 		}
 	}
+	std::stringstream out_str;
 
 	// Draw map
 	{
-		rh.FindAllCoordinaties();
+		rh.SetZoom();
 		rh.AddBusesData();
 		rh.DrawMap();
-		map.Rendering(output);
+		//map.Rendering(out_str);
 		//map.Rendering(/*output*/ std::cout);
 		//rh.RenderMap().Render(output);
 		//json::Document doc_map; // Load string from output
-
 	}
 
-	//{
-	//	Array result;
-	//	rh.CompileStats(base.AsMap().at("stat_requests").AsArray(), result);
-	//	Document doc(std::move(result));
-	//	json::Print(doc, output);
-	//}
+	{
+		Array result;
+		rh.CompileStats(base.AsMap().at("stat_requests").AsArray(), result);
+		Document doc(std::move(result));
+		json::Print(doc, output);
+	}
 }
 
 

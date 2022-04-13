@@ -54,6 +54,9 @@ void RequestHandler::CompileStats(json::Array base, json::Array& stats) {
 		else if (stat_data.AsMap().at("type").AsString() == "Bus") {
 			stats.push_back(MakeDictBus(stat_data.AsMap().at("id").AsInt(), stat_data.AsMap().at("name").AsString()));
 		}
+		else if (stat_data.AsMap().at("type").AsString() == "Map") {
+			stats.push_back(MakeDictMap(stat_data.AsMap().at("id").AsInt()));
+		}
 	}
 }
 
@@ -97,4 +100,13 @@ Dict RequestHandler::MakeDictBus(int request_id, std::string_view bus_name) {
 			{"unique_stop_count"s, (int)bus_info_finded.unique_stops}
 		};
 	}
+}
+
+Dict RequestHandler::MakeDictMap(int request_id) {
+	std::stringstream s;
+	renderer_.Rendering(s);
+	return{
+		{"map", s.str()},
+		{"request_id"s, request_id }
+	};
 }
