@@ -2,113 +2,58 @@
   "base_requests": [
     {
       "type": "Bus",
-      "name": "14",
-      "stops": [
-        "Lisa Chaykin str",
-        "Electronets",
-        "Dokuchaev str",
-        "Lisa Chaykin str"
-      ],
-      "is_roundtrip": true
-    },
-    {
-      "type": "Bus",
       "name": "114",
-      "stops": [
-        "Sea gate",
-        "River bridge",
-        "Electronets"
-      ],
+      "stops": [ "Морской вокзал", "Ривьерский мост" ],
       "is_roundtrip": false
     },
     {
       "type": "Stop",
-      "name": "River bridge",
+      "name": "Ривьерский мост",
       "latitude": 43.587795,
       "longitude": 39.716901,
-      "road_distances": {
-        "Sea gate": 850,
-        "Electronets": 5000
-      }
+      "road_distances": { "Морской вокзал": 850 }
     },
     {
       "type": "Stop",
-      "name": "Sea gate",
+      "name": "Морской вокзал",
       "latitude": 43.581969,
       "longitude": 39.719848,
-      "road_distances": {
-        "River bridge": 850
-      }
-    },
-    {
-      "type": "Stop",
-      "name": "Electronets",
-      "latitude": 43.598701,
-      "longitude": 39.730623,
-      "road_distances": {
-        "Dokuchaev str": 3000,
-        "Lisa Chaykin str": 4300,
-        "River bridge": 5000
-      }
-    },
-    {
-      "type": "Stop",
-      "name": "Dokuchaev str",
-      "latitude": 43.585586,
-      "longitude": 39.733879,
-      "road_distances": {
-        "Lisa Chaykin str": 2000,
-        "Electronets": 3000
-      }
-    },
-    {
-      "type": "Stop",
-      "name": "Lisa Chaykin str",
-      "latitude": 43.590317,
-      "longitude": 39.746833,
-      "road_distances": {
-        "Sea gate": 4300,
-        "Dokuchaev str": 2000
-      }
+      "road_distances": { "Ривьерский мост": 850 }
     }
   ],
   "render_settings": {
-    "width": 600,
-    "height": 400,
-    "padding": 50,
+    "width": 200,
+    "height": 200,
+    "padding": 30,
     "stop_radius": 5,
     "line_width": 14,
     "bus_label_font_size": 20,
-    "bus_label_offset": [
-      7,
-      15
-    ],
+    "bus_label_offset": [ 7, 15 ],
     "stop_label_font_size": 20,
-    "stop_label_offset": [
-      7,
-      -3
-    ],
-    "underlayer_color": [
-      255,
-      255,
-      255,
-      0.85
-    ],
+    "stop_label_offset": [ 7, -3 ],
+    "underlayer_color": [ 255, 255, 255, 0.85 ],
     "underlayer_width": 3,
     "color_palette": [
       "green",
-      [
-        255,
-        160,
-        0
-      ],
+      [ 255, 160, 0 ],
       "red"
     ]
   },
   "stat_requests": [
     {
-      "id": 1218663236,
+      "id": 1,
       "type": "Map"
+    },
+    {
+      "id": 2,
+      "type": "Stop",
+      "name": "Ривьерский мост"
+    },
+    {
+      "id": 3,
+      "type": "Bus",
+      "name": "114"
     }
   ]
 }
+  

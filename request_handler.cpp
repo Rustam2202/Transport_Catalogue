@@ -106,7 +106,7 @@ Dict RequestHandler::MakeDictMap(int request_id) {
 	std::stringstream s;
 	renderer_.Rendering(s);
 	return{
-		{"map", s.str()},
+		{"map"s, s.str()},
 		{"request_id"s, request_id }
 	};
 }
