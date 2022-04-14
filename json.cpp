@@ -324,9 +324,9 @@ namespace json {
 			switch (c)
 			{
 			case '\\':out << "\\\\"; break;
-			case '\r':out << "\\\r"; break;
+			case '\r':out << "\\r"; break;
 			case '\"':out << "\\\""; break;
-			case '\t':out << "\\\t"; break;
+			case '\t':out << "\\t"; break;
 			case '\n':out << "\\n"; break;
 			default:out << c;
 			}

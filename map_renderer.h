@@ -185,7 +185,7 @@ namespace renderer {
 				polyline.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
 				objects_.Add(std::move(polyline));
 
-				if (color_numb < settings_.color_palette.size()) {
+				if (color_numb < settings_.color_palette.size() - 1) {
 					color_numb++;
 				}
 				else {
@@ -255,7 +255,7 @@ namespace renderer {
 					objects_.Add(std::move(text_main_2));
 				}
 
-				if (color_numb < settings_.color_palette.size()) {
+				if (color_numb < settings_.color_palette.size() - 1) {
 					color_numb++;
 				}
 				else {

@@ -89,6 +89,7 @@
     <None Include="speed.json" />
     <None Include="output.json" />
     <None Include="input5.json" />
+    <None Include="test_1.svg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

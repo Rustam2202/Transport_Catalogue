@@ -60,6 +60,22 @@
     },
     {
       "type": "Stop",
+      "name": "Улица Лизы",
+      "latitude": 43.590217,
+      "longitude": 39.746533,
+      "road_distances": {
+        "Электросети": 4300,
+        "Улица Докучаева": 2000
+      }
+    },
+    {
+      "type": "Bus",
+      "name": "4",
+      "stops": [ ],
+      "is_roundtrip": false
+    },
+    {
+      "type": "Stop",
       "name": "Улица Лизы Чайкиной",
       "latitude": 43.590317,
       "longitude": 39.746833,
