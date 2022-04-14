@@ -327,7 +327,7 @@ namespace json {
 			case '\r':out << "\\\r"; break;
 			case '\"':out << "\\\""; break;
 			case '\t':out << "\\\t"; break;
-			case '\n':out << "\n"; break;
+			case '\n':out << "\\n"; break;
 			default:out << c;
 			}
 		}

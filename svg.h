@@ -150,7 +150,7 @@ namespace svg {
 				out << " stroke-width=\""sv << *stroke_width_ << "\""sv;
 			}
 			if (stroke_linecap_) {
-				out << " stroke-linecap =\"" << *stroke_linecap_ << "\""sv;
+				out << " stroke-linecap=\"" << *stroke_linecap_ << "\""sv;
 			}
 			if (stroke_linejoin_) {
 				out << " stroke-linejoin=\"" << *stroke_linejoin_ << "\""sv;

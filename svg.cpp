@@ -166,7 +166,7 @@ namespace svg {
 		for (const auto& object : objects_) {
 			object.get()->Render(ctx);
 		}
-		out << "</svg>\n"sv;
+		out << "</svg>"sv;
 	}
 
 }  // namespace svg

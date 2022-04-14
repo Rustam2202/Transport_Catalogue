@@ -57,7 +57,7 @@ public:
 		for (Bus bus : catalogue_.GetBuses()) {
 			//points_[bus.bus_name] = bus.stops_vector;
 			for (Stop* stop : bus.stops_vector) {
-				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates);
+				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates); // stop_names repeat
 				//points_[bus.bus_name].push_back({ stop->stop_name, stop->coodinates });
 			}
 		}
