@@ -54,17 +54,17 @@ public:
 	}
 
 	void AddBusesData() {
-		for (Bus bus : catalogue_.GetBuses()) {
-			//points_[bus.bus_name] = bus.stops_vector;
-			for (Stop* stop : bus.stops_vector) {
-				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates); // stop_names repeat
-				//points_[bus.bus_name].push_back({ stop->stop_name, stop->coodinates });
+		for (const Bus& bus : catalogue_.GetBuses()) {
+			if (bus.stops_vector.empty()) {
+				continue;
+			}
+			for (const Stop* stop : bus.stops_vector) {
+				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates);
 			}
 		}
 	}
 
 	void DrawMap() {
-
 		renderer_.AddBusesLines();
 		renderer_.Sorting();
 		renderer_.AddBusesNames();
@@ -79,7 +79,4 @@ private:
 
 	transport_catalogue::TransportCatalogue& catalogue_;
 	renderer::MapRenderer& renderer_;
-
-	//std::map<std::string_view, PointInfo> points_;
-	std::map<std::string_view, std::vector<Stop*>&> points_;
 };

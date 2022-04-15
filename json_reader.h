@@ -73,9 +73,11 @@ inline void ReadJSON(std::istream& input = std::cin, std::ostream& output = std:
 
 	// Draw map
 	{
+		LOG_DURATION("Draw map");
 		rh.SetZoom();
 		rh.AddBusesData();
 		rh.DrawMap();
+
 		//map.Rendering(output);
 		//map.Rendering(out_str);
 		//map.Rendering(/*output*/ std::cout);
@@ -84,20 +86,21 @@ inline void ReadJSON(std::istream& input = std::cin, std::ostream& output = std:
 	}
 
 	{
+		LOG_DURATION("Compile status");
 		Array result;
 		rh.CompileStats(base.AsMap().at("stat_requests").AsArray(), result);
 		Document doc(std::move(result));
 		json::Print(doc, output);
 		return;
 
-		std::fstream answer("s10_final_opentest_1_answer.json"s);
+		/*std::fstream answer("s10_final_opentest_1_answer.json"s);
 		std::istream& istrm(answer);
 		Node answ = Load(istrm).GetRoot();
 		Document doc_answ(answ);
-		
+
 		auto a=doc.GetRoot().AsArray().back().AsMap().at("map").AsString();
 		auto b = doc_answ.GetRoot().AsArray().back().AsMap().at("map").AsString();
-		assert(doc.GetRoot().AsArray().back().AsMap().at("map").AsString() == doc_answ.GetRoot().AsArray().back().AsMap().at("map").AsString());
+		assert(doc.GetRoot().AsArray().back().AsMap().at("map").AsString() == doc_answ.GetRoot().AsArray().back().AsMap().at("map").AsString());*/
 	}
 }
 

@@ -1,3 +1,4 @@
+#include "log_duration.h"
 #include "request_handler.h"
 
 /*

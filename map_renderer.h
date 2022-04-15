@@ -5,7 +5,6 @@
 #include "svg.h"
 
 #include <algorithm>
-#include <array>
 #include <execution>
 #include <map>
 #include <string>
@@ -83,8 +82,6 @@ namespace renderer {
 		double zoom_coeff_ = 0;
 	};
 
-	using LabelOffset = std::array<double, 2>;
-
 	struct PointOnMap {
 		std::string_view stop_name;
 		svg::Point coordinates;
@@ -153,12 +150,12 @@ namespace renderer {
 
 		void AddBusWithStops(std::string bus_name, std::string_view stop_name, const geo::Coordinates& coordinate) {
 			buses_[bus_name].push_back({ stop_name, sphere_projector_(coordinate) });
-			points_.push_back({ stop_name, sphere_projector_(coordinate) }); // 
+			points_.push_back({ stop_name, sphere_projector_(coordinate) });
 		}
 
 		void Sorting() {
-			std::sort(points_.begin(), points_.end(), [](PointOnMap lhs, PointOnMap rhs) {return lhs.stop_name < rhs.stop_name; });
-			auto last = std::unique(points_.begin(), points_.end(), [](const PointOnMap& lhs, const PointOnMap& rhs) {return lhs.stop_name == rhs.stop_name; });
+			std::sort(/*std::execution::par,*/ points_.begin(), points_.end(), [](PointOnMap lhs, PointOnMap rhs) {return lhs.stop_name < rhs.stop_name; });
+			auto last = std::unique(/*std::execution::par,*/ points_.begin(), points_.end(), [](const PointOnMap& lhs, const PointOnMap& rhs) {return lhs.stop_name == rhs.stop_name; });
 			points_.erase(last, points_.end());
 		}
 
@@ -241,7 +238,7 @@ namespace renderer {
 
 					text_layer_2.SetPosition(bus.second.back().coordinates);
 					text_layer_2.SetOffset(settings_.bus_label_offset);
-					text_layer_2.SetFontSize(settings_.stop_label_font_size);
+					text_layer_2.SetFontSize(settings_.bus_label_font_size);
 					text_layer_2.SetFontFamily("Verdana");
 					text_layer_2.SetFontWeight("bold");
 					text_layer_2.SetData(bus.first);
