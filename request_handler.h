@@ -59,15 +59,15 @@ public:
 				continue;
 			}
 			for (const Stop* stop : bus.stops_vector) {
-				renderer_.AddBusWithStops(bus.bus_name, stop->stop_name, stop->coodinates);
+				renderer_.AddBusWithStops(bus.bus_name, bus.is_ring, stop->stop_name, stop->coodinates);
 				renderer_.AddPoint(stop->stop_name, stop->coodinates);
 			}
-			if (bus.is_ring == false) {
-				for (int i = bus.stops_vector.size() - 2; i >= 0; --i) {
-					//polyline.AddPoint(bus.second[i].coordinates);
-					renderer_.AddBusWithStops(bus.bus_name, bus.stops_vector[i]->stop_name, bus.stops_vector[i]->coodinates);	
-				}
-			}
+			//if (bus.is_ring == false) {
+			//	for (int i = bus.stops_vector.size() - 2; i >= 0; --i) {
+			//		//polyline.AddPoint(bus.second[i].coordinates);
+			//		renderer_.AddBusWithStops(bus.bus_name, bus.stops_vector[i]->stop_name, bus.stops_vector[i]->coodinates);	
+			//	}
+			//}
 		}
 	}
 

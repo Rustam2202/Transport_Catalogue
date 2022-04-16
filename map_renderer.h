@@ -148,8 +148,8 @@ namespace renderer {
 			sphere_projector_ = std::move(sp);
 		}
 
-		void AddBusWithStops(std::string bus_name, std::string_view stop_name, const geo::Coordinates& coordinate) {
-			buses_[bus_name].push_back({ stop_name, sphere_projector_(coordinate) });
+		void AddBusWithStops(std::string bus_name, bool is_ring, std::string_view stop_name, const geo::Coordinates& coordinate) {
+			buses_[{bus_name, is_ring}].push_back({ stop_name, sphere_projector_(coordinate) });
 		}
 
 		void AddPoint(std::string_view stop_name, const geo::Coordinates& coordinate) {
@@ -172,6 +172,12 @@ namespace renderer {
 				for (int i = 0; i < bus.second.size(); ++i) {
 					polyline.AddPoint(bus.second[i].coordinates);
 				}
+				if (bus.first.second == false) {
+					for (int i = bus.second.size() - 2; i >= 0; --i) {
+						polyline.AddPoint(bus.second[i].coordinates);
+					}
+				}
+
 				/*if (bus.second.front().stop_name != bus.second.back().stop_name) {
 					for (int i = bus.second.size() - 2; i >= 0; --i) {
 						polyline.AddPoint(bus.second[i].coordinates);
@@ -208,7 +214,7 @@ namespace renderer {
 				text_main.SetFontSize(settings_.bus_label_font_size);
 				text_main.SetFontFamily("Verdana");
 				text_main.SetFontWeight("bold");
-				text_main.SetData(bus.first);
+				text_main.SetData(bus.first.first);
 				text_main.SetFillColor(settings_.color_palette[color_numb]);
 
 				text_layer.SetPosition(bus.second.front().coordinates);
@@ -216,7 +222,7 @@ namespace renderer {
 				text_layer.SetFontSize(settings_.bus_label_font_size);
 				text_layer.SetFontFamily("Verdana");
 				text_layer.SetFontWeight("bold");
-				text_layer.SetData(bus.first);
+				text_layer.SetData(bus.first.first);
 				text_layer.SetFillColor(settings_.underlayer_color);
 				text_layer.SetStrokeColor(settings_.underlayer_color);
 				text_layer.SetStrokeWidth(settings_.underlayer_width);
@@ -227,24 +233,24 @@ namespace renderer {
 				objects_.Add(std::move(text_main));
 
 				// if not ring
-				if (bus.second.size()%2!=0 && bus.second.front().stop_name != bus.second[bus.second.size() / 2].stop_name   /*bus.second.front().stop_name != bus.second.back().stop_name*/) {
+				if (bus.first.second == false && bus.second.front().stop_name != bus.second.back().stop_name) {
 					svg::Text text_main_2;
 					svg::Text text_layer_2;
 
-					text_main_2.SetPosition(bus.second[bus.second.size() / 2].coordinates);
+					text_main_2.SetPosition(bus.second.back().coordinates);
 					text_main_2.SetOffset(settings_.bus_label_offset);
 					text_main_2.SetFontSize(settings_.bus_label_font_size);
 					text_main_2.SetFontFamily("Verdana");
 					text_main_2.SetFontWeight("bold");
-					text_main_2.SetData(bus.first);
+					text_main_2.SetData(bus.first.first);
 					text_main_2.SetFillColor(settings_.color_palette[color_numb]);
 
-					text_layer_2.SetPosition(bus.second[bus.second.size() / 2].coordinates);
+					text_layer_2.SetPosition(bus.second.back().coordinates);
 					text_layer_2.SetOffset(settings_.bus_label_offset);
 					text_layer_2.SetFontSize(settings_.bus_label_font_size);
 					text_layer_2.SetFontFamily("Verdana");
 					text_layer_2.SetFontWeight("bold");
-					text_layer_2.SetData(bus.first);
+					text_layer_2.SetData(bus.first.first);
 					text_layer_2.SetFillColor(settings_.underlayer_color);
 					text_layer_2.SetStrokeColor(settings_.underlayer_color);
 					text_layer_2.SetStrokeWidth(settings_.underlayer_width);
@@ -308,7 +314,7 @@ namespace renderer {
 		svg::Document objects_;
 		RenderSettings settings_;
 		SphereProjector sphere_projector_;
-		std::map<std::string, std::vector<PointOnMap>> buses_;
+		std::map<std::pair<std::string, bool>, std::vector<PointOnMap>> buses_;
 		std::vector<PointOnMap> points_;
 	};
 
