@@ -20,7 +20,7 @@ int main() {
 
 	using namespace std;
 	{
-		fstream input_file("s10_final_opentest_3.json"s); // s10_final_opentest_1
+		fstream input_file("input_svg.json"s); // s10_final_opentest_1
 		fstream output_file;
 		istream& strm(input_file);
 		output_file.open("output_svg.json");

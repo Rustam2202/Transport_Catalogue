@@ -150,6 +150,9 @@ namespace renderer {
 
 		void AddBusWithStops(std::string bus_name, std::string_view stop_name, const geo::Coordinates& coordinate) {
 			buses_[bus_name].push_back({ stop_name, sphere_projector_(coordinate) });
+		}
+
+		void AddPoint(std::string_view stop_name, const geo::Coordinates& coordinate) {
 			points_.push_back({ stop_name, sphere_projector_(coordinate) });
 		}
 
@@ -169,11 +172,11 @@ namespace renderer {
 				for (int i = 0; i < bus.second.size(); ++i) {
 					polyline.AddPoint(bus.second[i].coordinates);
 				}
-				if (bus.second.front().stop_name != bus.second.back().stop_name) {
+				/*if (bus.second.front().stop_name != bus.second.back().stop_name) {
 					for (int i = bus.second.size() - 2; i >= 0; --i) {
 						polyline.AddPoint(bus.second[i].coordinates);
 					}
-				}
+				}*/
 
 				polyline.SetStrokeColor(settings_.color_palette[color_numb]);
 				polyline.SetFillColor(); // "none"
@@ -224,11 +227,11 @@ namespace renderer {
 				objects_.Add(std::move(text_main));
 
 				// if not ring
-				if (bus.second.front().stop_name != bus.second.back().stop_name) {
+				if (bus.second.size()%2!=0 && bus.second.front().stop_name != bus.second[bus.second.size() / 2].stop_name   /*bus.second.front().stop_name != bus.second.back().stop_name*/) {
 					svg::Text text_main_2;
 					svg::Text text_layer_2;
 
-					text_main_2.SetPosition(bus.second.back().coordinates);
+					text_main_2.SetPosition(bus.second[bus.second.size() / 2].coordinates);
 					text_main_2.SetOffset(settings_.bus_label_offset);
 					text_main_2.SetFontSize(settings_.bus_label_font_size);
 					text_main_2.SetFontFamily("Verdana");
@@ -236,7 +239,7 @@ namespace renderer {
 					text_main_2.SetData(bus.first);
 					text_main_2.SetFillColor(settings_.color_palette[color_numb]);
 
-					text_layer_2.SetPosition(bus.second.back().coordinates);
+					text_layer_2.SetPosition(bus.second[bus.second.size() / 2].coordinates);
 					text_layer_2.SetOffset(settings_.bus_label_offset);
 					text_layer_2.SetFontSize(settings_.bus_label_font_size);
 					text_layer_2.SetFontFamily("Verdana");
