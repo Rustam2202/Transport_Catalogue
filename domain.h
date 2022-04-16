@@ -8,22 +8,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-/*
- * В этом файле вы можете разместить классы/структуры, которые являются частью предметной области (domain)
- * вашего приложения и не зависят от транспортного справочника. Например Автобусные маршруты и Остановки.
- *
- * Их можно было бы разместить и в transport_catalogue.h, однако вынесение их в отдельный
- * заголовочный файл может оказаться полезным, когда дело дойдёт до визуализации карты маршрутов:
- * визуализатор карты (map_renderer) можно будет сделать независящим от транспортного справочника.
- *
- * Если структура вашего приложения не позволяет так сделать, просто оставьте этот файл пустым.
- *
- */
-
-namespace renderer {
-    
-}
-
 namespace transport_catalogue {
 
 	struct Stop
@@ -61,16 +45,6 @@ namespace transport_catalogue {
 
 		size_t operator()(std::pair<Stop*, Stop*> stops) const {
 			return string_hasher_(stops.first->stop_name + stops.second->stop_name);
-		}
-
-		size_t operator()(std::pair<std::string_view, Stop*> stops) const {
-			if (stops.second == nullptr) {
-				return string_hasher_(stops.first);
-			}
-			return string_hasher_(stops.first) + string_hasher_(stops.second->stop_name);
-		}
-		size_t operator()(std::pair<const std::string&, const std::string&> a)const {
-			return string_hasher_(a.first + a.second);
 		}
 
 	private:

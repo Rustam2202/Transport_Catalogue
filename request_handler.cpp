@@ -1,13 +1,7 @@
-#include "log_duration.h"
 #include "request_handler.h"
 
-/*
- * Здесь можно было бы разместить код обработчика запросов к базе, содержащего логику, которую не
- * хотелось бы помещать ни в transport_catalogue, ни в json reader.
- *
- * Если вы затрудняетесь выбрать, что можно было бы поместить в этот файл,
- * можете оставить его пустым.
- */
+#include <algorithm>
+#include <execution>
 
 void RequestHandler::InsertStops(Array base) {
 	for (Node base_data : base) {
@@ -110,4 +104,25 @@ Dict RequestHandler::MakeDictMap(int request_id) {
 		{"map"s, s.str()},
 		{"request_id"s, request_id }
 	};
+}
+
+void RequestHandler::SetZoom() {
+	std::vector<geo::Coordinates> result;
+	for (const auto& stop : catalogue_.GetStopInfo()) {
+		if (!stop.second.empty()) {
+			result.push_back(stop.first->coodinates);
+		}
+	}
+	renderer_.MakeSphereProjector(result);
+}
+
+void RequestHandler::AddBusesData() {
+	for (const Bus& bus : catalogue_.GetBuses()) {
+		if (bus.stops_vector.empty()) {
+			continue;
+		}
+		for (const Stop* stop : bus.stops_vector) {
+			renderer_.AddBusWithStops(bus.bus_name, bus.is_ring, stop->stop_name, stop->coodinates);
+		}
+	}
 }
