@@ -4,6 +4,30 @@
 
 namespace renderer {
 
+	void MapRenderer::SetRender(
+		double width,
+		double height,
+		double padding,
+		double radius,
+		double line_width,
+		double underlayer_width,
+		int bus_label_font_size,
+		int stop_label_font_size,
+		double bus_offset_dx, double bus_offset_dy,
+		double stop_offset_dx, double stop_offset_dy
+	) {
+		settings_.width = width;
+		settings_.height = height;
+		settings_.padding = padding;
+		settings_.stop_radius = radius;
+		settings_.line_width = line_width;
+		settings_.underlayer_width = underlayer_width;
+		settings_.bus_label_font_size = bus_label_font_size;
+		settings_.stop_label_font_size = stop_label_font_size;
+		settings_.bus_label_offset = { bus_offset_dx,bus_offset_dy };
+		settings_.stop_label_offset = { stop_offset_dx,stop_offset_dy };
+	}
+
 	void MapRenderer::SetUnderlayerColor(int r, int g, int b) {
 		svg::Rgb rgb(r, g, b);
 		svg::Color color(rgb);
@@ -41,7 +65,7 @@ namespace renderer {
 		points_.erase(last, points_.end());
 	}
 
-	void MapRenderer::AddBusesLines() {
+	void MapRenderer::RenderBusesLines() {
 		size_t color_numb = 0;
 		for (auto bus : buses_) {
 			if (bus.second.empty()) {
@@ -73,7 +97,7 @@ namespace renderer {
 		}
 	}
 
-	void MapRenderer::AddBusesNames() {
+	void MapRenderer::RenderBusesNames() {
 		size_t color_numb = 0;
 		for (auto bus : buses_) {
 			if (bus.second.empty()) {
@@ -143,7 +167,7 @@ namespace renderer {
 		}
 	}
 
-	void MapRenderer::AddCircle() {
+	void MapRenderer::RenderCircle() {
 		for (const PointOnMap& point : points_) {
 			svg::Circle circle(point.coordinates, settings_.stop_radius);
 			circle.SetFillColor("white");
@@ -151,7 +175,7 @@ namespace renderer {
 		}
 	}
 
-	void MapRenderer::AddStopsNames() {
+	void MapRenderer::RenderStopsNames() {
 		for (const PointOnMap& point : points_) {
 			svg::Text text_main;
 			svg::Text text_layer;

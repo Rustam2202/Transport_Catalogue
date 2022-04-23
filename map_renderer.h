@@ -61,16 +61,10 @@ namespace renderer {
 	class MapRenderer {
 	public:
 
-		void SetWidth(double width) { settings_.width = width; }
-		void SetHeight(double height) { settings_.height = height; }
-		void SetPadding(double padding) { settings_.padding = padding; }
-		void SetStopRadius(double radius) { settings_.stop_radius = radius; }
-		void SetLineWidth(double width) { settings_.line_width = width; }
-		void SetUnderlayerWidth(double width) { settings_.underlayer_width = width; }
-		void SetBusLabelFontSize(int size) { settings_.bus_label_font_size = size; }
-		void SetStopLabelFontSize(int size) { settings_.stop_label_font_size = size; }
-		void SetStopLabelOffset(double dx, double dy) { settings_.stop_label_offset = { dx,dy }; }
-		void SetBusLabelOffset(double dx, double dy) { settings_.bus_label_offset = { dx,dy }; }
+		void SetRender(double width, double height, double padding, double radius, double line_width, double underlayer_width, int bus_label_font_size, 
+			int stop_label_font_size, double bus_offset_dx, double bus_offset_dy, double stop_offset_dx, double stop_offset_dy
+		);
+
 		void SetUnderlayerColor(std::string color) { settings_.underlayer_color = color; }
 		void SetUnderlayerColor(int r, int g, int b);
 		void SetUnderlayerColor(int r, int g, int b, double o);
@@ -82,10 +76,10 @@ namespace renderer {
 		void AddBusWithStops(std::string bus_name, bool is_ring, std::string_view stop_name, const geo::Coordinates& coordinate);
 		void Sorting();
 
-		void AddBusesLines();
-		void AddBusesNames();
-		void AddCircle();
-		void AddStopsNames();
+		void RenderBusesLines();
+		void RenderBusesNames();
+		void RenderCircle();
+		void RenderStopsNames();
 
 		void Rendering(std::ostream& output) { objects_.Render(output); }
 
