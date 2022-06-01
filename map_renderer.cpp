@@ -72,7 +72,7 @@ namespace renderer {
 				continue;
 			}
 			svg::Polyline polyline;
-			for (int i = 0; i < bus.second.size(); ++i) {
+			for (size_t i = 0; i < bus.second.size(); ++i) {
 				polyline.AddPoint(bus.second[i].coordinates);
 			}
 			if (bus.first.second == false) {

@@ -22,6 +22,7 @@
     <ClInclude Include="domain.h" />
     <ClInclude Include="geo.h" />
     <ClInclude Include="json.h" />
+    <ClInclude Include="json_builder.h" />
     <ClInclude Include="json_reader.h" />
     <ClInclude Include="log_duration.h" />
     <ClInclude Include="map_renderer.h" />
@@ -34,6 +35,7 @@
     <ClCompile Include="domain.cpp" />
     <ClCompile Include="geo.cpp" />
     <ClCompile Include="json.cpp" />
+    <ClCompile Include="json_builder.cpp" />
     <ClCompile Include="json_reader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_renderer.cpp" />

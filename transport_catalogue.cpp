@@ -43,7 +43,7 @@ namespace transport_catalogue {
 		bus_info_[buses_.back().bus_name].unique_stops = buses_.back().stops_unique.size();
 
 		uint64_t full_lng = 0;
-		for (int i = 1; i < buses_.back().stops_vector.size(); ++i) {
+		for (size_t i = 1; i < buses_.back().stops_vector.size(); ++i) {
 			bus_info_[buses_.back().bus_name].route_length += geo::ComputeDistance(buses_.back().stops_vector[i - 1]->coodinates, buses_.back().stops_vector[i]->coodinates);
 			full_lng += GetDistanceBetweenStops(buses_.back().stops_vector[i - 1]->stop_name, buses_.back().stops_vector[i]->stop_name);
 		}
