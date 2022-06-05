@@ -8,10 +8,10 @@
 int main() {
 	using namespace std;
 
-	fstream input_file("input_svg.json"s); // s10_final_opentest_1
+	fstream input_file("s10_final_opentest_1.json"s); // s10_final_opentest_1
 	fstream output_file;
 	istream& strm(input_file);
-	output_file.open("output_svg.json");
+	output_file.open("output3.json");
 	//ReadJSON(std::cin, std::cout); 
 	ReadJSON(strm, output_file);
 	output_file.close();

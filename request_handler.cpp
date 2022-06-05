@@ -3,12 +3,15 @@
 #include <algorithm>
 #include <execution>
 
-Dict RequestHandler::MakeDictStop(int request_id, std::string_view stop_name) {
+Node RequestHandler::MakeDictStop(int request_id, std::string_view stop_name) {
 	const StopInfoType& stop_info = catalogue_.GetStopInfo();
 	Stop* stop_finded = catalogue_.FindStop(stop_name);
 
 	if (stop_finded == nullptr) {
-		return { {"request_id"s, request_id}, {"error_message"s, "not found"s} };
+		return Builder{}.StartDict()
+			.Key("request_id"s).Value(request_id)
+			.Key("error_message"s).Value("not found"s)
+			.EndDict().Build();
 	}
 	else {
 		Array buses_arr;
@@ -17,41 +20,45 @@ Dict RequestHandler::MakeDictStop(int request_id, std::string_view stop_name) {
 			for (Bus* bus : buses) {
 				buses_arr.push_back(bus->bus_name);
 			}
-			std::sort(std::execution::par, buses_arr.begin(), buses_arr.end(), [](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
+			std::sort(std::execution::par, buses_arr.begin(), buses_arr.end(),
+				[](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
 		}
-		return {
-			{"buses"s, buses_arr},
-			{"request_id"s, request_id}
-		};
+		return Builder{}.StartDict()
+			.Key("buses"s).Value(buses_arr)
+			.Key("request_id"s).Value(request_id)
+			.EndDict().Build();
 	}
 }
 
-Dict RequestHandler::MakeDictBus(int request_id, std::string_view bus_name) {
+Node RequestHandler::MakeDictBus(int request_id, std::string_view bus_name) {
 	const BusInfoType& bus_info = catalogue_.GetBusInfo();
 	Bus* bus_finded = catalogue_.FindBus(bus_name);
 
 	if (bus_finded == nullptr) {
-		return { {"request_id"s, request_id}, {"error_message"s, "not found"s} };
+		return Builder{}.StartDict()
+			.Key("request_id"s).Value(request_id)
+			.Key("error_message").Value("not found"s)
+			.EndDict().Build();
 	}
 	else {
 		const BusInfo& bus_info_finded = bus_info.at(bus_name);
-		return{
-			{"curvature"s, bus_info_finded.curvature},
-			{"request_id"s, request_id},
-			{ "route_length"s, (double)bus_info_finded.route_length_on_road},
-			{"stop_count"s, (int)bus_info_finded.stops_on_route},
-			{"unique_stop_count"s, (int)bus_info_finded.unique_stops}
-		};
+		return Builder{}.StartDict()
+			.Key("curvature"s).Value(bus_info_finded.curvature)
+			.Key("request_id"s).Value(request_id)
+			.Key("route_length"s).Value((double)bus_info_finded.route_length_on_road)
+			.Key("stop_count"s).Value((int)bus_info_finded.stops_on_route)
+			.Key("unique_stop_count"s).Value((int)bus_info_finded.unique_stops)
+			.EndDict().Build();
 	}
 }
 
-Dict RequestHandler::MakeDictMap(int request_id) {
+Node RequestHandler::MakeDictMap(int request_id) {
 	std::stringstream s;
 	renderer_.Rendering(s);
-	return{
-		{"map"s, s.str()},
-		{"request_id"s, request_id }
-	};
+	return Builder{}.StartDict()
+		.Key("map"s).Value(s.str())
+		.Key("request_id"s).Value(request_id)
+		.EndDict().Build();
 }
 
 void RequestHandler::SetZoom() {

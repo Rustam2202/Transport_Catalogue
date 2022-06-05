@@ -85,24 +85,25 @@ void SetMapRender(MapRenderer& map, Node render_settings) {
 	}
 }
 
-void CompileStats(RequestHandler& rh, Array base, Array& stats) {
+Node CompileStats(RequestHandler& rh, Array base) {
+	Builder result;
+	result.StartArray();
 	for (Node stat_data : base) {
 		if (stat_data.AsDict().at("type").AsString() == "Stop") {
-			stats.push_back(rh.MakeDictStop(stat_data.AsDict().at("id").AsInt(), stat_data.AsDict().at("name").AsString()));
+			result.Value(rh.MakeDictStop(stat_data.AsDict().at("id").AsInt(), stat_data.AsDict().at("name").AsString()).GetValue());
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
-			stats.push_back(rh.MakeDictBus(stat_data.AsDict().at("id").AsInt(), stat_data.AsDict().at("name").AsString()));
+			result.Value(rh.MakeDictBus(stat_data.AsDict().at("id").AsInt(), stat_data.AsDict().at("name").AsString()).GetValue());
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Map") {
-			stats.push_back(rh.MakeDictMap(stat_data.AsDict().at("id").AsInt()));
+			result.Value(rh.MakeDictMap(stat_data.AsDict().at("id").AsInt()).GetValue());
 		}
 	}
+	return result.EndArray().Build();
 }
 
 void PrintStats(RequestHandler& rh, Array base, std::ostream& output) {
-	Array result;
-	CompileStats(rh, base, result);
-	Document doc(std::move(result));
+	Document doc(CompileStats(rh, base));
 	json::Print(doc, output);
 }
 
