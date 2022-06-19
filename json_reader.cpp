@@ -86,8 +86,9 @@ void SetMapRender(MapRenderer& map, Node render_settings) {
 	}
 }
 
-void SetRouter() {
-
+void SetRouter(TransportRouter& router, Node routing_settings) {
+	router.SetBusWaitTime(routing_settings.AsDict().at("bus_wait_time").AsInt());
+	router.SetBusVelocity(routing_settings.AsDict().at("bus_velocity").AsInt());
 }
 
 Node CompileStats(RequestHandler& rh, Array base) {
@@ -117,18 +118,19 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 
 	TransportCatalogue catalogue;
 	MapRenderer map;
-	RequestHandler rh(catalogue, map);
-	TransportRouter tr;
+	RequestHandler handler(catalogue, map);
 
 	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 	SetMapRender(map, base.AsDict().at("render_settings"));
-	SetRouter();
 
-	rh.SetZoom();
-	rh.AddBusesData();
-	rh.DrawMap();
+	TransportRouter router(catalogue);
+	SetRouter(router, base.AsDict().at("routing_settings"));
 
-	PrintStats(rh, base.AsDict().at("stat_requests").AsArray(), output);
+	handler.SetZoom();
+	handler.AddBusesData();
+	handler.DrawMap();
+
+	PrintStats(handler, base.AsDict().at("stat_requests").AsArray(), output);
 }

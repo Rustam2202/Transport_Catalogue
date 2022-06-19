@@ -151,10 +151,28 @@
     <None Include="test_1.svg">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="test_12_1_input.json">
+    <None Include="s12_final_opentest_1.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="s12_final_opentest_1_answer.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="s12_final_opentest_2.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="s12_final_opentest_2_answer.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="s12_final_opentest_3.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="s12_final_opentest_3_answer.json">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="test_12_1_answer.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test_12_1_input.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
