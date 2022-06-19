@@ -1,5 +1,6 @@
 #include "json_reader.h"
 #include "request_handler.h"
+#include "transport_router.h"
 
 using namespace transport_catalogue;
 using namespace json;
@@ -85,6 +86,10 @@ void SetMapRender(MapRenderer& map, Node render_settings) {
 	}
 }
 
+void SetRouter() {
+
+}
+
 Node CompileStats(RequestHandler& rh, Array base) {
 	Builder result;
 	result.StartArray();
@@ -113,11 +118,13 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 	TransportCatalogue catalogue;
 	MapRenderer map;
 	RequestHandler rh(catalogue, map);
+	TransportRouter tr;
 
 	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 	SetMapRender(map, base.AsDict().at("render_settings"));
+	SetRouter();
 
 	rh.SetZoom();
 	rh.AddBusesData();

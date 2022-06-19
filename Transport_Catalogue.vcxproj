@@ -67,6 +67,8 @@
     <None Include="output.json" />
     <None Include="input5.json" />
     <None Include="test_1.svg" />
+    <None Include="test_12_1_answer.json" />
+    <None Include="test_12_1_input.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

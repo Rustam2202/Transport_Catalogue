@@ -8,11 +8,12 @@
 int main() {
 	using namespace std;
 
-	fstream input_file("s10_final_opentest_1.json"s); // s10_final_opentest_1
+	fstream input_file("test_12_1_input.json"s); // s10_final_opentest_1
 	fstream output_file;
 	istream& strm(input_file);
-	output_file.open("output3.json");
-	//ReadJSON(std::cin, std::cout); 
+	output_file.open("test_12_1_output.json");
 	ReadJSON(strm, output_file);
 	output_file.close();
 }
+
+//ReadJSON(std::cin, std::cout);
