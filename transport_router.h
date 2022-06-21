@@ -3,6 +3,7 @@
 #include "graph.h"
 #include "transport_catalogue.h"
 
+#include <vector>
 #include <unordered_map>
 
 struct WaitAndBus {
@@ -25,15 +26,18 @@ public:
 		}
 		for (const Bus& bus : catalogue.GetBuses()) {
 			//size_t i = 0;
-			for (size_t i = 0; i < bus.stops_vector.size() - 1; ++i
-				/*const auto& stop : bus.stops_vector*/) {
-				graph::Edge<WaitAndBus> temp;
-				temp.from = stops_name_and_id_.at(bus.stops_vector[i]->stop_name);
-				temp.to = stops_name_and_id_.at(bus.stops_vector[i + 1]->stop_name);
-				uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[i]->stop_name, bus.stops_vector[i + 1]->stop_name);
-				temp.weight.movement = CalculateMoveWeight(dist);
-				if (i == 0 || HasTransfer(catalogue, bus.stops_vector[i]->stop_name)) {
-					temp.weight.wait = bus_wait_time_;
+			for (size_t j = 0; j < bus.stops_vector.size() - 1; ++j) {
+				for (size_t i = j; i < bus.stops_vector.size() - 1; ++i) {
+					graph::Edge<WaitAndBus> temp;
+					temp.from = stops_name_and_id_.at(bus.stops_vector[i]->stop_name);
+					temp.to = stops_name_and_id_.at(bus.stops_vector[i + 1]->stop_name);
+					uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[i]->stop_name, bus.stops_vector[i + 1]->stop_name);
+					temp.weight.movement = CalculateMoveWeight(dist);
+					if (i == 0 || HasTransfer(catalogue, bus.stops_vector[i]->stop_name)) {
+						temp.weight.wait = bus_wait_time_;
+					}
+					
+					graph_.AddEdge(temp);
 				}
 			}
 		}
@@ -58,10 +62,15 @@ private:
 		return stop.size() > 1;
 	}
 
+	void AddEdge(graph::Edge<WaitAndBus> item) {
+		edges_.push_back(item);
+	}
+
 	int bus_wait_time_ = 0;
 	int bus_velocity_ = 0;
 	//std::unordered_map<int, string_view> stops_id_and_name_;
 	std::unordered_map<string_view, int, transport_catalogue::Hasher> stops_name_and_id_;
 	WaitAndBus weight_;
-	graph::DirectedWeightedGraph<Stop> graph_;
+	graph::DirectedWeightedGraph<WaitAndBus> graph_;
+	std::vector<graph::Edge<WaitAndBus>> edges_;
 };
