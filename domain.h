@@ -46,6 +46,9 @@ namespace transport_catalogue {
 		size_t operator()(std::pair<Stop*, Stop*> stops) const {
 			return string_hasher_(stops.first->stop_name + stops.second->stop_name);
 		}
+		size_t operator()(std::string_view name, int id)const {
+			return string_hasher_(name) + id;
+		}
 
 	private:
 		std::hash<std::string_view> string_hasher_;

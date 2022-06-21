@@ -1,21 +1,40 @@
 
+#include "domain.h"
 #include "graph.h"
 #include "transport_catalogue.h"
 
 #include <unordered_map>
 
+struct WaitAndBus {
+	double wait = 0;
+	double movement = 0;
+};
+
 class TransportRouter {
 public:
-	TransportRouter(TransportCatalogue& catalogue) :graph_(catalogue.GetStops().size() * 2) {
+	TransportRouter(TransportCatalogue& catalogue, int wait_time, int velocity) :
+		graph_(catalogue.GetStops().size()),
+		bus_wait_time_(wait_time),
+		bus_velocity_(velocity)
+	{
 		size_t i = 0;
 		for (const auto& stop : catalogue.GetStops()) {
 			stops_name_and_id_[stop.stop_name] = i;
-			stops_id_and_name_[i] = stop.stop_name;
+			//stops_id_and_name_[i] = stop.stop_name;
 			i++;
 		}
-		for (const auto& bus : catalogue.GetBuses()) {
-			for (const auto& stop : bus.stops_vector) {
-
+		for (const Bus& bus : catalogue.GetBuses()) {
+			//size_t i = 0;
+			for (size_t i = 0; i < bus.stops_vector.size() - 1; ++i
+				/*const auto& stop : bus.stops_vector*/) {
+				graph::Edge<WaitAndBus> temp;
+				temp.from = stops_name_and_id_.at(bus.stops_vector[i]->stop_name);
+				temp.to = stops_name_and_id_.at(bus.stops_vector[i + 1]->stop_name);
+				uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[i]->stop_name, bus.stops_vector[i + 1]->stop_name);
+				temp.weight.movement = CalculateMoveWeight(dist);
+				if (i == 0 || HasTransfer(catalogue, bus.stops_vector[i]->stop_name)) {
+					temp.weight.wait = bus_wait_time_;
+				}
 			}
 		}
 	}
@@ -28,9 +47,21 @@ public:
 	}
 
 private:
+
+	double CalculateMoveWeight(uint64_t dist) {
+		return (static_cast<double>(60) * dist) / (1000 * bus_velocity_);
+	}
+
+	bool HasTransfer(TransportCatalogue& catalogue, string_view this_stop) {
+		const auto& stops = catalogue.GetStopInfo();
+		const auto& stop = stops.at(catalogue.FindStop(this_stop));
+		return stop.size() > 1;
+	}
+
 	int bus_wait_time_ = 0;
 	int bus_velocity_ = 0;
-	std::unordered_map<int, string_view> stops_id_and_name_;
-	std::unordered_map<string_view, int> stops_name_and_id_;
+	//std::unordered_map<int, string_view> stops_id_and_name_;
+	std::unordered_map<string_view, int, transport_catalogue::Hasher> stops_name_and_id_;
+	WaitAndBus weight_;
 	graph::DirectedWeightedGraph<Stop> graph_;
 };
