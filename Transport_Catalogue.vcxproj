@@ -76,6 +76,7 @@
     <None Include="test_12_1_answer.json" />
     <None Include="test_12_1_input.json" />
     <None Include="test_12_2_input.json" />
+    <None Include="test_12_3_input.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

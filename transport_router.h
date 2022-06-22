@@ -28,12 +28,12 @@ namespace transport_catalogue {
 
 			for (const Bus& bus : catalogue.GetBuses()) {
 				if (bus.is_ring) {
-					for (size_t k = 0; k < bus.stops_vector.size(); ++k) {
-						for (size_t j = k + 1; j < bus.stops_vector.size() - 1; ++j) {
+					for (size_t rout_stop_num = 0; rout_stop_num < bus.stops_vector.size(); ++rout_stop_num) {
+						for (size_t rout_stop_num_incr = rout_stop_num + 1; rout_stop_num_incr < bus.stops_vector.size(); ++rout_stop_num_incr) {
 							graph::Edge<WaitAndBus> temp;
-							temp.from = stops_name_and_id_.at(bus.stops_vector[k]->stop_name);
-							temp.to = stops_name_and_id_.at(bus.stops_vector[j]->stop_name);
-							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
+							temp.from = stops_name_and_id_.at(bus.stops_vector[rout_stop_num]->stop_name);
+							temp.to = stops_name_and_id_.at(bus.stops_vector[rout_stop_num_incr]->stop_name);
+							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[rout_stop_num_incr - 1]->stop_name, bus.stops_vector[rout_stop_num_incr]->stop_name);
 							temp.weight.movement = CalculateMoveWeight(dist);
 							if (graph_.GetEdgeCount()) {
 								temp.weight.movement += graph_.GetEdge(graph_.GetEdgeCount() - 1).weight.movement;
@@ -45,7 +45,7 @@ namespace transport_catalogue {
 				}
 				else {
 					for (size_t k = 0; k < bus.stops_vector.size(); ++k) {
-						for (size_t j = k + 1; j < bus.stops_vector.size() - 1; ++j) {
+						for (size_t j = k + 1; j < bus.stops_vector.size(); ++j) {
 							graph::Edge<WaitAndBus> temp;
 							temp.from = stops_name_and_id_.at(bus.stops_vector[k]->stop_name);
 							temp.to = stops_name_and_id_.at(bus.stops_vector[j]->stop_name);
@@ -58,12 +58,12 @@ namespace transport_catalogue {
 							graph_.AddEdge(temp);
 						}
 					}
-					for (size_t k = bus.stops_vector.size() - 1; k > 0; --k) {
-						for (size_t j = k - 1; j > 0; --j) {
+					for (int k = bus.stops_vector.size() - 1; k > -1; --k) {
+						for (int j = k - 1; j > -1; --j) {
 							graph::Edge<WaitAndBus> temp;
 							temp.from = stops_name_and_id_.at(bus.stops_vector[k]->stop_name);
 							temp.to = stops_name_and_id_.at(bus.stops_vector[j]->stop_name);
-							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
+							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j + 1]->stop_name, bus.stops_vector[j]->stop_name);
 							temp.weight.movement = CalculateMoveWeight(dist);
 							if (graph_.GetEdgeCount()) {
 								temp.weight.movement += graph_.GetEdge(graph_.GetEdgeCount() - 1).weight.movement;
