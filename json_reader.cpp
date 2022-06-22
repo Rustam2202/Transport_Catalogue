@@ -131,7 +131,7 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
 	);
 	graph::Router<WaitAndBus> router(graph.GetGraph());
-	router.BuildRoute(0, 3);
+	auto result = router.BuildRoute(0, 3);
 
 	handler.SetZoom();
 	handler.AddBusesData();
