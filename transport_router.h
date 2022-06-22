@@ -33,8 +33,11 @@ namespace transport_catalogue {
 							graph::Edge<WaitAndBus> temp;
 							temp.from = stops_name_and_id_.at(bus.stops_vector[k]->stop_name);
 							temp.to = stops_name_and_id_.at(bus.stops_vector[j]->stop_name);
-							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[k]->stop_name, bus.stops_vector[j]->stop_name);
+							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
 							temp.weight.movement = CalculateMoveWeight(dist);
+							if (graph_.GetEdgeCount()) {
+								temp.weight.movement += graph_.GetEdge(graph_.GetEdgeCount() - 1).weight.movement;
+							}
 							temp.weight.wait = bus_wait_time_;
 							graph_.AddEdge(temp);
 						}
@@ -46,8 +49,11 @@ namespace transport_catalogue {
 							graph::Edge<WaitAndBus> temp;
 							temp.from = stops_name_and_id_.at(bus.stops_vector[k]->stop_name);
 							temp.to = stops_name_and_id_.at(bus.stops_vector[j]->stop_name);
-							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[k]->stop_name, bus.stops_vector[j]->stop_name);
+							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
 							temp.weight.movement = CalculateMoveWeight(dist);
+							if (graph_.GetEdgeCount()) {
+								temp.weight.movement += graph_.GetEdge(graph_.GetEdgeCount() - 1).weight.movement;
+							}
 							temp.weight.wait = bus_wait_time_;
 							graph_.AddEdge(temp);
 						}
@@ -57,8 +63,11 @@ namespace transport_catalogue {
 							graph::Edge<WaitAndBus> temp;
 							temp.from = stops_name_and_id_.at(bus.stops_vector[k]->stop_name);
 							temp.to = stops_name_and_id_.at(bus.stops_vector[j]->stop_name);
-							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[k]->stop_name, bus.stops_vector[j]->stop_name);
+							uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
 							temp.weight.movement = CalculateMoveWeight(dist);
+							if (graph_.GetEdgeCount()) {
+								temp.weight.movement += graph_.GetEdge(graph_.GetEdgeCount() - 1).weight.movement;
+							}
 							temp.weight.wait = bus_wait_time_;
 							graph_.AddEdge(temp);
 						}
@@ -88,7 +97,7 @@ namespace transport_catalogue {
 
 		void AddEdge(graph::Edge<WaitAndBus> item) {
 			edges_.push_back(item);
-			
+
 		}
 
 		int bus_wait_time_ = 0;
