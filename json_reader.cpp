@@ -1,6 +1,6 @@
 #include "json_reader.h"
 #include "request_handler.h"
-#include "transport_router.h"
+//#include "transport_router.h"
 
 using namespace transport_catalogue;
 using namespace json;
@@ -86,23 +86,29 @@ void SetMapRender(MapRenderer& map, Node render_settings) {
 	}
 }
 
-void SetRouter(TransportRouter& router, Node routing_settings) {
-	router.SetBusWaitTime(routing_settings.AsDict().at("bus_wait_time").AsInt());
-	router.SetBusVelocity(routing_settings.AsDict().at("bus_velocity").AsInt());
-}
-
 Node CompileStats(RequestHandler& rh, Array base) {
 	Builder result;
 	result.StartArray();
 	for (Node stat_data : base) {
 		if (stat_data.AsDict().at("type").AsString() == "Stop") {
-			result.Value(rh.MakeDictStop(stat_data.AsDict().at("id").AsInt(), stat_data.AsDict().at("name").AsString()).GetValue());
+			result.Value(rh.MakeDictStop(
+				stat_data.AsDict().at("id").AsInt(),
+				stat_data.AsDict().at("name").AsString())
+				.GetValue());
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
-			result.Value(rh.MakeDictBus(stat_data.AsDict().at("id").AsInt(), stat_data.AsDict().at("name").AsString()).GetValue());
+			result.Value(rh.MakeDictBus(stat_data.AsDict().at("id").AsInt(),
+				stat_data.AsDict().at("name").AsString()).GetValue());
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Map") {
 			result.Value(rh.MakeDictMap(stat_data.AsDict().at("id").AsInt()).GetValue());
+		}
+		else if (stat_data.AsDict().at("type").AsString() == "Route") {
+			rh.MakeDictRoute(
+				stat_data.AsDict().at("id").AsInt(),
+				stat_data.AsDict().at("from").AsString(),
+				stat_data.AsDict().at("to").AsString())
+				.GetValue();
 		}
 	}
 	return result.EndArray().Build();
@@ -118,20 +124,20 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 
 	TransportCatalogue catalogue;
 	MapRenderer map;
-	RequestHandler handler(catalogue, map);
 
 	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 	SetMapRender(map, base.AsDict().at("render_settings"));
 
-	TransportRouter graph(
+	TransportRouter router(
 		catalogue,
 		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
 		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
 	);
-	graph::Router<WaitAndBus> router(graph.GetGraph());
-	auto result = router.BuildRoute(0, 3);
+	//graph::Router<WaitAndBus> router(graph.GetGraph());
+
+	RequestHandler handler(catalogue, map, router);
 
 	handler.SetZoom();
 	handler.AddBusesData();

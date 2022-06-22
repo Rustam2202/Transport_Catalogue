@@ -61,6 +61,10 @@ Node RequestHandler::MakeDictMap(int request_id) {
 		.EndDict().Build();
 }
 
+Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
+
+}
+
 void RequestHandler::SetZoom() {
 	std::vector<geo::Coordinates> result;
 	for (const auto& stop : catalogue_.GetStopInfo()) {
