@@ -1,6 +1,7 @@
 
 #include "domain.h"
 #include "graph.h"
+#include "router.h"
 #include "transport_catalogue.h"
 
 #include <vector>
@@ -10,7 +11,22 @@ namespace transport_catalogue {
 	struct WaitAndBus {
 		double wait = 0;
 		double movement = 0;
+
+		bool operator<(const WaitAndBus& rhs) const {
+			return movement + wait < rhs.movement + rhs.wait;
+		}
+		bool operator>(const WaitAndBus& rhs) const {
+			return movement + wait > rhs.movement + rhs.wait;
+		}
+		const WaitAndBus operator+(WaitAndBus& rhs) {
+			WaitAndBus temp{ wait + rhs.wait,movement + rhs.movement };
+			return temp;
+		}
 	};
+
+	 WaitAndBus operator+(const WaitAndBus& lhs, const WaitAndBus& rhs) {
+		return { lhs.wait + rhs.wait,lhs.movement + rhs.movement };
+	}
 
 	class TransportRouter {
 	public:
@@ -83,6 +99,10 @@ namespace transport_catalogue {
 			bus_velocity_ = vel;
 		}
 
+		const graph::DirectedWeightedGraph<WaitAndBus>& GetGraph() {
+			return graph_;
+		}
+
 	private:
 
 		double CalculateMoveWeight(uint64_t dist) {
@@ -107,5 +127,6 @@ namespace transport_catalogue {
 		WaitAndBus weight_;
 		graph::DirectedWeightedGraph<WaitAndBus> graph_;
 		std::vector<graph::Edge<WaitAndBus>> edges_;
+		//graph::Router<WaitAndBus> router_;
 	};
 }
