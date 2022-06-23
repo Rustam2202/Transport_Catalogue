@@ -64,10 +64,11 @@ Node RequestHandler::MakeDictMap(int request_id) {
 Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
 	auto route = router_.BuildRoute(from, to);
 	double total_time = 0.0;
-	//route.value().edges;
-	//route.value().weight;*/
 	return Builder{}.StartDict()
+		.Key("items")
+		.StartArray()
 
+		.EndArray()
 		.EndDict().Build();
 }
 
