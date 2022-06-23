@@ -5,6 +5,7 @@
 #include "router.h"
 #include "transport_catalogue.h"
 
+#include <optional>
 #include <vector>
 #include <unordered_map>
 #include <string_view>
@@ -26,6 +27,13 @@ struct WaitAndMovement {
 inline WaitAndMovement operator+(const WaitAndMovement& lhs, const WaitAndMovement& rhs) {
 	return { lhs.wait + rhs.wait,lhs.movement + rhs.movement };
 }
+
+struct RouteInfo{
+	std::optional<std::string_view> stop_name;
+	std::optional<std::string_view> bus_name;
+	std::optional<size_t> span_count;
+	double time;
+};
 
 class TransportGraph {
 	using StopIdInfo = std::unordered_map<std::string_view, int, Hasher>;
@@ -59,12 +67,24 @@ public:
 		router_(GetGraph())
 	{}
 
-	void BuildRoute(std::string_view from, std::string_view to) {
-		auto result = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
-		for (size_t edge_id : result.value().edges) {
-			auto bus_name = GetBusNameById(edge_id);
-			auto& stop_name = stops_.at(GetGraph().GetEdge(edge_id).from);
+	std::vector<RouteInfo> BuildRoute(std::string_view from, std::string_view to) {
+		std::vector<RouteInfo> result;
+		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
+		for (size_t edge_id : route.value().edges) {
+			auto& temp = GetGraph().GetEdge(edge_id);
+			RouteInfo wait_part;
+			wait_part.stop_name = stops_.at(GetGraph().GetEdge(edge_id).from).stop_name;
+			wait_part.time = route.value().weight.wait;
+			result.push_back(wait_part);
+			RouteInfo move_part;
+			move_part.bus_name = GetBusNameById(edge_id);
+			move_part.time = route.value().weight.movement;
+			result.push_back(move_part);
+
+			//auto bus_name = GetBusNameById(edge_id);
+			//auto& stop_name = stops_.at(GetGraph().GetEdge(edge_id).from);
 		}
+		return result;
 	}
 
 private:

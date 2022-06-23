@@ -22,6 +22,7 @@ TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int
 				route_length += dist;
 				temp.weight.movement = CalculateMoveWeight(route_length);
 				temp.weight.wait = bus_wait_time_;
+				temp.span_count = j - k;
 				graph_.AddEdge(temp);
 				id_to_bus_name_.push_back(bus.bus_name);
 			}
@@ -37,6 +38,7 @@ TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int
 					route_length += dist;
 					temp.weight.movement = CalculateMoveWeight(route_length);
 					temp.weight.wait = bus_wait_time_;
+					temp.span_count =  k-j;
 					graph_.AddEdge(temp);
 					id_to_bus_name_.push_back(bus.bus_name);
 				}

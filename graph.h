@@ -15,6 +15,7 @@ namespace graph {
 		VertexId from;
 		VertexId to;
 		Weight weight;
+		size_t span_count;
 	};
 
 	template <typename Weight>
