@@ -1,6 +1,6 @@
 #include "json_reader.h"
 #include "request_handler.h"
-//#include "transport_router.h"
+#include "transport_router.h"
 
 using namespace transport_catalogue;
 using namespace json;
@@ -135,9 +135,9 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
 		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
 	);
-	//graph::Router<WaitAndBus> router(graph.GetGraph());
-
+	
 	RequestHandler handler(catalogue, map, router);
+
 
 	handler.SetZoom();
 	handler.AddBusesData();

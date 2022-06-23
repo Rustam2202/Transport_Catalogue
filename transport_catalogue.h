@@ -20,7 +20,7 @@ namespace transport_catalogue {
 	using StopInfoType = std::unordered_map<Stop*, std::unordered_set<Bus*>, Hasher>;
 
 	class TransportCatalogue {
-		friend class TransportRouter;
+	//	friend class TransportRouter;
 
 	public:
 		void AddBus(Bus bus);

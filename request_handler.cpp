@@ -62,7 +62,10 @@ Node RequestHandler::MakeDictMap(int request_id) {
 }
 
 Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
+	router_.BuildRoute(from, to);
+	return Builder{}.StartDict()
 
+		.EndDict().Build();
 }
 
 void RequestHandler::SetZoom() {
