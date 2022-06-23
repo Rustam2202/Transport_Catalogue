@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graph.h"
 #include "json.h"
 #include "json_builder.h"
 #include "map_renderer.h"
@@ -12,7 +13,7 @@ using namespace transport_catalogue;
 
 class RequestHandler : public MapRenderer, TransportCatalogue {
 public:
-	RequestHandler(TransportCatalogue& catalogue, MapRenderer& renderer, TransportRouter& router) :
+	RequestHandler(TransportCatalogue& catalogue, MapRenderer& renderer, TransportRoter& router) :
 		catalogue_(catalogue),
 		renderer_(renderer),
 		router_(router)
@@ -30,5 +31,5 @@ public:
 private:
 	transport_catalogue::TransportCatalogue& catalogue_;
 	renderer::MapRenderer& renderer_;
-	TransportRouter& router_;
+	TransportRoter& router_;
 };

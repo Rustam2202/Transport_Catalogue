@@ -130,12 +130,12 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 	SetMapRender(map, base.AsDict().at("render_settings"));
 
-	TransportRouter router(
+	TransportRoter router(
 		catalogue,
 		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
 		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
 	);
-	
+
 	RequestHandler handler(catalogue, map, router);
 
 

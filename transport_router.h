@@ -11,42 +11,54 @@
 
 using namespace transport_catalogue;
 
-struct WaitAndBus {
+struct WaitAndMovement {
 	double wait = 0;
 	double movement = 0;
 
-	bool operator<(const WaitAndBus& rhs) const {
+	bool operator<(const WaitAndMovement& rhs) const {
 		return movement + wait < rhs.movement + rhs.wait;
 	}
-	bool operator>(const WaitAndBus& rhs) const {
+	bool operator>(const WaitAndMovement& rhs) const {
 		return movement + wait > rhs.movement + rhs.wait;
 	}
 };
 
-inline WaitAndBus operator+(const WaitAndBus& lhs, const WaitAndBus& rhs) {
+inline WaitAndMovement operator+(const WaitAndMovement& lhs, const WaitAndMovement& rhs) {
 	return { lhs.wait + rhs.wait,lhs.movement + rhs.movement };
 }
 
-class TransportRouter {
+class TransportGraph {
+	using StopIdInfo = std::unordered_map<std::string_view, int, Hasher>;
+	using GraphType = graph::DirectedWeightedGraph<WaitAndMovement>;
+
 public:
-	TransportRouter(TransportCatalogue& catalogue, int wait_time, int velocity);
+	TransportGraph(TransportCatalogue& catalogue, int wait_time, int velocity);
 
-	const graph::DirectedWeightedGraph<WaitAndBus>& GetGraph() { return graph_; }
-
-	void BuildRoute(std::string_view from, std::string_view to) {
-		auto result = router_.BuildRoute(stops_name_and_id_.at(from), stops_name_and_id_.at(to));
-	}
+	const GraphType& GetGraph() { return graph_; }
+	size_t GetIdOfStopName(std::string_view name) { return stops_name_and_id_.at(name); }
 
 private:
-
 	double CalculateMoveWeight(uint64_t dist) {
 		return (static_cast<double>(60) * dist) / (1000 * bus_velocity_);
 	}
 
 	int bus_wait_time_ = 0;
 	int bus_velocity_ = 0;
-	std::unordered_map<std::string_view, int, transport_catalogue::Hasher> stops_name_and_id_;
-	WaitAndBus weight_;
-	graph::DirectedWeightedGraph<WaitAndBus> graph_;
-	graph::Router<WaitAndBus> router_{ graph_ };
+	StopIdInfo stops_name_and_id_;
+	WaitAndMovement weight_;
+	GraphType graph_;
+};
+
+class TransportRoter :public TransportGraph {
+public:
+	TransportRoter(TransportCatalogue& catalogue, int wait_time, int velocity) :
+		TransportGraph(catalogue, wait_time, velocity),
+		router_(GetGraph()) {}
+
+	auto BuildRoute(std::string_view from, std::string_view to) {
+		return router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
+	}
+
+private:
+	graph::Router<WaitAndMovement> router_;
 };
