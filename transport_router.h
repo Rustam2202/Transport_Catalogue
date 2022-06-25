@@ -56,7 +56,7 @@ private:
 	int bus_velocity_ = 0;
 	StopIdInfo stops_name_to_id_;
 	EdgeIdToBusName id_to_bus_name_;
-	GraphType graph_;
+	GraphType graph_{};
 };
 
 class TransportRoter :public TransportGraph {
@@ -67,23 +67,23 @@ public:
 		router_(GetGraph())
 	{}
 
-	std::vector<RouteInfo> BuildRoute(std::string_view from, std::string_view to) {
-		std::vector<RouteInfo> result;
+	std::optional<std::vector<RouteInfo>> BuildRoute(std::string_view from, std::string_view to) {
+		std::optional<std::vector<RouteInfo>> result{ 0 };
 		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
 		if (route == std::nullopt) {
-			return result;
+			return std::nullopt;
 		}
 		for (size_t edge_id : route.value().edges) {
 			RouteInfo wait_part;
 			wait_part.stop_name = stops_.at(GetGraph().GetEdge(edge_id).from).stop_name;
 			GetGraph().GetEdge(edge_id).weight.wait;
 			wait_part.time = GetGraph().GetEdge(edge_id).weight.wait;
-			result.push_back(wait_part);
+			result.value().push_back(wait_part);
 			RouteInfo move_part;
 			move_part.bus_name = GetBusNameById(edge_id);
 			move_part.time = GetGraph().GetEdge(edge_id).weight.movement;
 			move_part.span_count = GetGraph().GetEdge(edge_id).span_count;
-			result.push_back(move_part);
+			result.value().push_back(move_part);
 		}
 		return result;
 	}

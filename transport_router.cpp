@@ -1,10 +1,9 @@
 #include "transport_router.h"
 
 TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int velocity) :
-	graph_(catalogue.GetStops().size()),
 	bus_wait_time_(wait_time),
-	bus_velocity_(velocity)
-	//router_(graph_)
+	bus_velocity_(velocity),
+	graph_(catalogue.GetStops().size())
 {
 	size_t i = 0;
 	for (const auto& stop : catalogue.GetStops()) {

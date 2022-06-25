@@ -62,16 +62,16 @@ Node RequestHandler::MakeDictMap(int request_id) {
 }
 
 Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
-	std::vector<RouteInfo> route = router_.BuildRoute(from, to);
+	std::optional<std::vector<RouteInfo>> route = router_.BuildRoute(from, to);
 
-	if (route.empty()) {
+	if (route == std::nullopt) {
 		return Builder{}.StartDict().Key("request_id"s).Value(request_id).Key("error_message"s).Value("not found"s).EndDict().Build();
 	}
 	Builder result;
 	double total_time = 0.0;
-	
+
 	result.StartDict().Key("items").StartArray();
-	for (auto it = route.begin(); it != route.end(); ++it) {
+	for (auto it = route.value().begin(); it != route.value().end(); ++it) {
 		result.StartDict()
 			.Key("stop_name").Value((std::string)(*it).stop_name.value())
 			.Key("time").Value((*it).time)
@@ -89,7 +89,7 @@ Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::s
 	}
 	result.EndArray();
 	result.Key("request_id").Value(request_id);
-	result.Key("total_time").Value(  total_time).EndDict();
+	result.Key("total_time").Value(total_time).EndDict();
 	return result.Build();
 }
 
