@@ -181,5 +181,14 @@
     <None Include="test_12_3_input.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="test_12_2_answer.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test_12_3_answer.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test_12_4_input.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

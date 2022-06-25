@@ -63,9 +63,13 @@ Node RequestHandler::MakeDictMap(int request_id) {
 
 Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
 	std::vector<RouteInfo> route = router_.BuildRoute(from, to);
+
+	if (route.empty()) {
+		return Builder{}.StartDict().Key("request_id"s).Value(request_id).Key("error_message"s).Value("not found"s).EndDict().Build();
+	}
+	Builder result;
 	double total_time = 0.0;
 	
-	Builder result;
 	result.StartDict().Key("items").StartArray();
 	for (auto it = route.begin(); it != route.end(); ++it) {
 		result.StartDict()

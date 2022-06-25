@@ -73,6 +73,9 @@ public:
 	std::vector<RouteInfo> BuildRoute(std::string_view from, std::string_view to) {
 		std::vector<RouteInfo> result;
 		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
+		if (route == std::nullopt) {
+			return result;
+		}
 		for (size_t edge_id : route.value().edges) {
 			//auto& temp = GetGraph().GetEdge(edge_id);
 			RouteInfo wait_part;

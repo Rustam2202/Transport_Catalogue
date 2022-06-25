@@ -75,8 +75,11 @@
     <None Include="test_1.svg" />
     <None Include="test_12_1_answer.json" />
     <None Include="test_12_1_input.json" />
+    <None Include="test_12_2_answer.json" />
     <None Include="test_12_2_input.json" />
+    <None Include="test_12_3_answer.json" />
     <None Include="test_12_3_input.json" />
+    <None Include="test_12_4_input.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
