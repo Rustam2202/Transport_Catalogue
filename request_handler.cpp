@@ -62,13 +62,31 @@ Node RequestHandler::MakeDictMap(int request_id) {
 }
 
 Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
-	auto route = router_.BuildRoute(from, to);
+	std::vector<RouteInfo> route = router_.BuildRoute(from, to);
 	double total_time = 0.0;
 	//route.value().edges;
 	//route.value().weight;*/
-	return Builder{}.StartDict()
 
-		.EndDict().Build();
+	Builder result;
+	result.StartDict().Key("items").StartArray();
+	for (auto it = route.begin(); it != route.end(); ++it) {
+		result.StartDict()
+			.Key("stop_name").Value((*it).stop_name.value().data())
+			.Key("time").Value((*it).time)
+			.Key("type").Value("Wait")
+			.EndDict();
+		it++;
+		result.StartDict()
+			.Key("bus").Value((*it).bus_name.value().data())
+			.Key("span_count").Value((*it).span_count.value())
+			.Key("time").Value((*it).time)
+			.Key("type").Value("Bus")
+			.EndDict();
+	}
+	result.EndArray();
+	result.Key("request_id").Value(request_id);
+	result.Key("total_time").Value(total_time).EndDict();
+	return result.Build();
 }
 
 void RequestHandler::SetZoom() {

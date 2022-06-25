@@ -28,10 +28,13 @@ inline WaitAndMovement operator+(const WaitAndMovement& lhs, const WaitAndMoveme
 	return { lhs.wait + rhs.wait,lhs.movement + rhs.movement };
 }
 
-struct RouteInfo{
+struct RouteInfo {
 	std::optional<std::string_view> stop_name;
 	std::optional<std::string_view> bus_name;
-	std::optional<size_t> span_count;
+	std::optional<int> span_count;
+	/*std::string_view stop_name;
+	std::string_view bus_name;
+	size_t span_count;*/
 	double time;
 };
 
@@ -71,7 +74,7 @@ public:
 		std::vector<RouteInfo> result;
 		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
 		for (size_t edge_id : route.value().edges) {
-			auto& temp = GetGraph().GetEdge(edge_id);
+			//auto& temp = GetGraph().GetEdge(edge_id);
 			RouteInfo wait_part;
 			wait_part.stop_name = stops_.at(GetGraph().GetEdge(edge_id).from).stop_name;
 			wait_part.time = route.value().weight.wait;
@@ -79,6 +82,7 @@ public:
 			RouteInfo move_part;
 			move_part.bus_name = GetBusNameById(edge_id);
 			move_part.time = route.value().weight.movement;
+			move_part.span_count = GetGraph().GetEdge(edge_id).span_count;
 			result.push_back(move_part);
 
 			//auto bus_name = GetBusNameById(edge_id);

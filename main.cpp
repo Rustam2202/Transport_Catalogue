@@ -15,7 +15,7 @@ int main() {
 	output_file.open("test_12_1_output.json");
 	{
 		LOG_DURATION("speed");
-		ReadJSON(strm, output_file); 
+		ReadJSON(strm, std::cout /*output_file*/); 
 	}
 	output_file.close();
 }
