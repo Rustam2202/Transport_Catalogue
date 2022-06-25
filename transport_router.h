@@ -32,9 +32,6 @@ struct RouteInfo {
 	std::optional<std::string_view> stop_name;
 	std::optional<std::string_view> bus_name;
 	std::optional<int> span_count;
-	/*std::string_view stop_name;
-	std::string_view bus_name;
-	size_t span_count;*/
 	double time;
 };
 
@@ -77,19 +74,16 @@ public:
 			return result;
 		}
 		for (size_t edge_id : route.value().edges) {
-			//auto& temp = GetGraph().GetEdge(edge_id);
 			RouteInfo wait_part;
 			wait_part.stop_name = stops_.at(GetGraph().GetEdge(edge_id).from).stop_name;
-			wait_part.time = route.value().weight.wait;
+			GetGraph().GetEdge(edge_id).weight.wait;
+			wait_part.time = GetGraph().GetEdge(edge_id).weight.wait;
 			result.push_back(wait_part);
 			RouteInfo move_part;
 			move_part.bus_name = GetBusNameById(edge_id);
-			move_part.time = route.value().weight.movement;
+			move_part.time = GetGraph().GetEdge(edge_id).weight.movement;
 			move_part.span_count = GetGraph().GetEdge(edge_id).span_count;
 			result.push_back(move_part);
-
-			//auto bus_name = GetBusNameById(edge_id);
-			//auto& stop_name = stops_.at(GetGraph().GetEdge(edge_id).from);
 		}
 		return result;
 	}

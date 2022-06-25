@@ -9,13 +9,13 @@
 int main() {
 	using namespace std;
 
-	fstream input_file("test_12_4_input.json"s);
+	fstream input_file("test_12_1_input.json"s);
 	fstream output_file;
 	istream& strm(input_file);
 	output_file.open("test_12_4_output.json"s);
 	{
 		LOG_DURATION("speed"s);
-		ReadJSON(strm, /*std::cout*/ output_file); 
+		ReadJSON(strm, std::cout /*output_file*/); 
 	}
 	output_file.close();
 }
