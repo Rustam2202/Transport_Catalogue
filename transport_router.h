@@ -12,6 +12,8 @@
 
 using namespace transport_catalogue;
 
+
+
 struct WaitAndMovement {
 	double wait = 0;
 	double movement = 0;
@@ -34,6 +36,12 @@ struct RouteInfo {
 	std::optional<int> span_count;
 	double time;
 };
+
+struct Routes {
+	std::optional<std::vector<RouteInfo>> route;
+	double weight;
+};
+
 
 class TransportGraph {
 	using StopIdInfo = std::unordered_map<std::string_view, int, Hasher>;
@@ -67,11 +75,15 @@ public:
 		router_(GetGraph())
 	{}
 
-	std::optional<std::vector<RouteInfo>> BuildRoute(std::string_view from, std::string_view to) {
+	//std::optional<std::vector<RouteInfo>> BuildRoute(std::string_view from, std::string_view to) {
+	Routes BuildRoute(std::string_view from, std::string_view to) {
+		Routes routes;
 		std::optional<std::vector<RouteInfo>> result{ 0 };
 		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
 		if (route == std::nullopt) {
-			return std::nullopt;
+			routes.route = std::nullopt;	
+			return routes;
+			// return std::nullopt;
 		}
 		for (size_t edge_id : route.value().edges) {
 			RouteInfo wait_part;
@@ -85,7 +97,10 @@ public:
 			move_part.span_count = GetGraph().GetEdge(edge_id).span_count;
 			result.value().push_back(move_part);
 		}
-		return result;
+		routes.route = result;
+		routes.weight = route.value().weight.movement + route.value().weight.wait;
+	//	return result;
+		return routes;
 	}
 
 private:
