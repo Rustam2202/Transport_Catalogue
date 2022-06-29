@@ -31,7 +31,8 @@ namespace renderer {
 	void MapRenderer::SetUnderlayerColor(int r, int g, int b) {
 		svg::Rgb rgb(r, g, b);
 		svg::Color color(rgb);
-		settings_.color_palette.push_back(std::move(color));
+	//	settings_.color_palette.push_back(std::move(color));
+		settings_.underlayer_color = std::move(color);
 	}
 	void MapRenderer::SetUnderlayerColor(int r, int g, int b, double o) {
 		svg::Rgba rgba(r, g, b, o);
