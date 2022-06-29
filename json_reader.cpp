@@ -139,7 +139,6 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 
 	RequestHandler handler(catalogue, map, router);
 
-
 	handler.SetZoom();
 	handler.AddBusesData();
 	handler.DrawMap();
