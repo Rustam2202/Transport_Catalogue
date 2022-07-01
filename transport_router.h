@@ -12,21 +12,28 @@
 
 using namespace transport_catalogue;
 
+const int MIN_IN_HOUR = 60;
+const int METERS_IN_KILOMETERS = 1000;
 
-
-struct WaitAndMovement {
+struct WeightInfo {
 	double wait = 0;
 	double movement = 0;
 
-	bool operator<(const WaitAndMovement& rhs) const {
+	bool operator<(const WeightInfo& rhs) const {
 		return movement + wait < rhs.movement + rhs.wait;
 	}
-	bool operator>(const WaitAndMovement& rhs) const {
+	bool operator>(const WeightInfo& rhs) const {
 		return movement + wait > rhs.movement + rhs.wait;
+	}
+	bool operator==(const WeightInfo& rhs) const {
+		return movement + wait == rhs.movement + rhs.wait;
+	}
+	bool operator!=(const WeightInfo& rhs) const {
+		return !(*this == rhs);
 	}
 };
 
-inline WaitAndMovement operator+(const WaitAndMovement& lhs, const WaitAndMovement& rhs) {
+inline WeightInfo operator+(const WeightInfo& lhs, const WeightInfo& rhs) {
 	return { lhs.wait + rhs.wait,lhs.movement + rhs.movement };
 }
 
@@ -45,7 +52,7 @@ struct Routes {
 
 class TransportGraph {
 	using StopIdInfo = std::unordered_map<std::string_view, int, Hasher>;
-	using GraphType = graph::DirectedWeightedGraph<WaitAndMovement>;
+	using GraphType = graph::DirectedWeightedGraph<WeightInfo>;
 	using EdgeIdToBusName = std::vector<std::string_view>; // index = edgeId, value = bus_name
 
 public:
@@ -57,9 +64,10 @@ public:
 
 private:
 	double CalculateMoveWeight(uint64_t dist) {
-		return (static_cast<double>(60) * dist) / (1000 * bus_velocity_);
+		return (static_cast<double>(MIN_IN_HOUR) * dist) / (METERS_IN_KILOMETERS * bus_velocity_);
 	}
 
+	void CalculateAndAddEdge(const Bus& bus, TransportCatalogue& catalogue, double& route_length, int k, int j);
 	int bus_wait_time_ = 0;
 	int bus_velocity_ = 0;
 	StopIdInfo stops_name_to_id_;
@@ -75,35 +83,9 @@ public:
 		router_(GetGraph())
 	{}
 
-	//std::optional<std::vector<RouteInfo>> BuildRoute(std::string_view from, std::string_view to) {
-	Routes BuildRoute(std::string_view from, std::string_view to) {
-		Routes routes;
-		std::optional<std::vector<RouteInfo>> result{ 0 };
-		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
-		if (route == std::nullopt) {
-			routes.route = std::nullopt;	
-			return routes;
-			// return std::nullopt;
-		}
-		for (size_t edge_id : route.value().edges) {
-			RouteInfo wait_part;
-			wait_part.stop_name = stops_.at(GetGraph().GetEdge(edge_id).from).stop_name;
-			GetGraph().GetEdge(edge_id).weight.wait;
-			wait_part.time = GetGraph().GetEdge(edge_id).weight.wait;
-			result.value().push_back(wait_part);
-			RouteInfo move_part;
-			move_part.bus_name = GetBusNameById(edge_id);
-			move_part.time = GetGraph().GetEdge(edge_id).weight.movement;
-			move_part.span_count = GetGraph().GetEdge(edge_id).span_count;
-			result.value().push_back(move_part);
-		}
-		routes.route = result;
-		routes.weight = route.value().weight.movement + route.value().weight.wait;
-	//	return result;
-		return routes;
-	}
+	Routes BuildRoute(std::string_view from, std::string_view to);
 
 private:
 	const std::deque<Stop>& stops_;
-	graph::Router<WaitAndMovement> router_;
+	graph::Router<WeightInfo> router_;
 };
