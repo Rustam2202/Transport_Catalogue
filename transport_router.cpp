@@ -1,15 +1,22 @@
 #include "transport_router.h"
 
 void TransportGraph::CalculateAndAddEdge(const Bus& bus, TransportCatalogue& catalogue,
-	double& route_length, int k, int j) {
+	double& route_length, int k, int j, bool is_ring) {
 	graph::Edge<WeightInfo> temp;
 	temp.from = stops_name_to_id_.at(bus.stops_vector[k]->stop_name);
 	temp.to = stops_name_to_id_.at(bus.stops_vector[j]->stop_name);
-	uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
+	uint64_t dist = 0;
+	if (is_ring) {
+		dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
+		temp.span_count = j - k;
+	}
+	else {
+		dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j + 1]->stop_name, bus.stops_vector[j]->stop_name);
+		temp.span_count = k - j;
+	}
 	route_length += dist;
 	temp.weight.movement = CalculateMoveWeight(route_length);
 	temp.weight.wait = bus_wait_time_;
-	temp.span_count = j - k;
 	graph_.AddEdge(temp);
 	id_to_bus_name_.push_back(bus.bus_name);
 }
@@ -28,7 +35,7 @@ TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int
 		for (int k = 0; k < bus.stops_vector.size(); ++k) {
 			double route_length = 0;
 			for (int j = k + 1; j < bus.stops_vector.size(); ++j) {
-				CalculateAndAddEdge(bus, catalogue, route_length, k, j);
+				CalculateAndAddEdge(bus, catalogue, route_length, k, j, true);
 
 				/*graph::Edge<WeightInfo> temp;
 				temp.from = stops_name_to_id_.at(bus.stops_vector[k]->stop_name);
@@ -44,12 +51,13 @@ TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int
 		}
 
 		if (!bus.is_ring) {
-			for (int k = 1; k < bus.stops_vector.size(); ++k) {
+			for (int k = bus.stops_vector.size() - 1; k > -1; --k) {
 				double route_length = 0;
-				for (int j = k - 1; j < bus.stops_vector.size(); ++j) {
-					CalculateAndAddEdge(bus, catalogue, route_length, j, k);
+				for (int j = k - 1; j > -1; --j) {
+					CalculateAndAddEdge(bus, catalogue, route_length, k, j, false);
 				}
 			}
+
 			//if (!bus.is_ring) {
 			//	for (int k = bus.stops_vector.size() - 1; k > -1; --k) {
 			//		double route_length = 0;

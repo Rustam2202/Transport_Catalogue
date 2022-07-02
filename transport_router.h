@@ -66,8 +66,9 @@ private:
 	double CalculateMoveWeight(uint64_t dist) {
 		return (static_cast<double>(MIN_IN_HOUR) * dist) / (METERS_IN_KILOMETERS * bus_velocity_);
 	}
+	void CalculateAndAddEdge(const Bus& bus, TransportCatalogue& catalogue,
+		double& route_length, int k, int j, bool is_ring);
 
-	void CalculateAndAddEdge(const Bus& bus, TransportCatalogue& catalogue, double& route_length, int k, int j);
 	int bus_wait_time_ = 0;
 	int bus_velocity_ = 0;
 	StopIdInfo stops_name_to_id_;
