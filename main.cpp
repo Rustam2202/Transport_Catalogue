@@ -1,28 +1,33 @@
-#include "json_reader.h"
-#include "log_duration.h"
-#include "map_renderer.h"
-#include "request_handler.h"
-
 #include <fstream>
-#include <string>
+#include <iostream>
+#include <string_view>
 
-int main() {
-	using namespace std;
+using namespace std::literals;
 
-	fstream input_file("test_12_2_input.json"s);
-	fstream output_file;
-	istream& strm(input_file);
-	output_file.open("output.json"s);
-	{
-		//LOG_DURATION("speed"s);
-		ReadJSON(strm, cout /*output_file*/); 
-	}
-	output_file.close();
+void PrintUsage(std::ostream& stream = std::cerr) {
+	stream << "Usage: transport_catalogue [make_base|process_requests]\n"sv;
 }
 
-//int main() {
-//	ReadJSON(std::cin, std::cout);
-//}
+int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		PrintUsage();
+		return 1;
+	}
 
-// s12_final_opentest_3
-// test_12_4_input
+	const std::string_view mode(argv[1]);
+
+	if (mode == "make_base"sv) {
+
+		// make base here
+
+	}
+	else if (mode == "process_requests"sv) {
+
+		// process requests here
+
+	}
+	else {
+		PrintUsage();
+		return 1;
+	}
+}
