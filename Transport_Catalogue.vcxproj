@@ -51,38 +51,9 @@
     <ClCompile Include="transport_router.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="input.json" />
-    <None Include="input2.json" />
-    <None Include="input3.json" />
-    <None Include="input4.json" />
-    <None Include="input6.json" />
-    <None Include="input_svg.json" />
-    <None Include="output_svg.json" />
-    <None Include="output_svg.svg" />
-    <None Include="s10_final_opentest_1.json" />
-    <None Include="s10_final_opentest_1_answer.json" />
-    <None Include="s10_final_opentest_2.json" />
-    <None Include="s10_final_opentest_2_answer.json" />
-    <None Include="s10_final_opentest_3.json" />
-    <None Include="s10_final_opentest_3_answer.json" />
-    <None Include="s12_final_opentest_1.json" />
-    <None Include="s12_final_opentest_1_answer.json" />
-    <None Include="s12_final_opentest_2.json" />
-    <None Include="s12_final_opentest_2_answer.json" />
-    <None Include="s12_final_opentest_3.json" />
-    <None Include="s12_final_opentest_3_answer.json" />
-    <None Include="speed.json" />
-    <None Include="output.json" />
-    <None Include="input5.json" />
-    <None Include="test_1.svg" />
-    <None Include="test_12_1_answer.json" />
-    <None Include="test_12_1_input.json" />
-    <None Include="test_12_2_answer.json" />
-    <None Include="test_12_2_input.json" />
-    <None Include="test_12_3_answer.json" />
-    <None Include="test_12_3_input.json" />
-    <None Include="test_12_4_answer.json" />
-    <None Include="test_12_4_input.json" />
+    <None Include="make_base_1.json" />
+    <None Include="process_requests_1.json" />
+    <None Include="process_requests_1_out.json" />
     <None Include="transport_catalogue.proto" />
   </ItemGroup>
   <ItemGroup>

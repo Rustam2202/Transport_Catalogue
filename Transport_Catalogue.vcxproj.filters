@@ -103,104 +103,17 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="input.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="output.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="input2.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="input3.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="input4.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="speed.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="input5.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="input6.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s10_final_opentest_1.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s10_final_opentest_1_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s10_final_opentest_2.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s10_final_opentest_2_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s10_final_opentest_3.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s10_final_opentest_3_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="input_svg.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="output_svg.svg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="output_svg.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_1.svg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s12_final_opentest_1.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s12_final_opentest_1_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s12_final_opentest_2.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s12_final_opentest_2_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s12_final_opentest_3.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="s12_final_opentest_3_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_1_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_1_input.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_2_input.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_3_input.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_2_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_3_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_4_input.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="test_12_4_answer.json">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="transport_catalogue.proto">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="make_base_1.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="process_requests_1.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="process_requests_1_out.json">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
