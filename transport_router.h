@@ -12,32 +12,47 @@
 
 using namespace transport_catalogue;
 
-struct WaitAndMovement {
+const int MIN_IN_HOUR = 60;
+const int METERS_IN_KILOMETERS = 1000;
+
+struct WeightInfo {
 	double wait = 0;
 	double movement = 0;
 
-	bool operator<(const WaitAndMovement& rhs) const {
+	bool operator<(const WeightInfo& rhs) const {
 		return movement + wait < rhs.movement + rhs.wait;
 	}
-	bool operator>(const WaitAndMovement& rhs) const {
+	bool operator>(const WeightInfo& rhs) const {
 		return movement + wait > rhs.movement + rhs.wait;
+	}
+	bool operator==(const WeightInfo& rhs) const {
+		return movement + wait == rhs.movement + rhs.wait;
+	}
+	bool operator!=(const WeightInfo& rhs) const {
+		return !(*this == rhs);
 	}
 };
 
-inline WaitAndMovement operator+(const WaitAndMovement& lhs, const WaitAndMovement& rhs) {
+inline WeightInfo operator+(const WeightInfo& lhs, const WeightInfo& rhs) {
 	return { lhs.wait + rhs.wait,lhs.movement + rhs.movement };
 }
 
-struct RouteInfo{
+struct RouteInfo {
 	std::optional<std::string_view> stop_name;
 	std::optional<std::string_view> bus_name;
-	std::optional<size_t> span_count;
+	std::optional<int> span_count;
 	double time;
 };
 
+struct Routes {
+	std::optional<std::vector<RouteInfo>> route;
+	double weight;
+};
+
+
 class TransportGraph {
 	using StopIdInfo = std::unordered_map<std::string_view, int, Hasher>;
-	using GraphType = graph::DirectedWeightedGraph<WaitAndMovement>;
+	using GraphType = graph::DirectedWeightedGraph<WeightInfo>;
 	using EdgeIdToBusName = std::vector<std::string_view>; // index = edgeId, value = bus_name
 
 public:
@@ -49,14 +64,16 @@ public:
 
 private:
 	double CalculateMoveWeight(uint64_t dist) {
-		return (static_cast<double>(60) * dist) / (1000 * bus_velocity_);
+		return (static_cast<double>(MIN_IN_HOUR) * dist) / (METERS_IN_KILOMETERS * bus_velocity_);
 	}
+	void CalculateAndAddEdge(const Bus& bus, TransportCatalogue& catalogue,
+		double& route_length, int k, int j, bool is_ring);
 
 	int bus_wait_time_ = 0;
 	int bus_velocity_ = 0;
 	StopIdInfo stops_name_to_id_;
 	EdgeIdToBusName id_to_bus_name_;
-	GraphType graph_;
+	GraphType graph_{};
 };
 
 class TransportRoter :public TransportGraph {
@@ -67,27 +84,9 @@ public:
 		router_(GetGraph())
 	{}
 
-	std::vector<RouteInfo> BuildRoute(std::string_view from, std::string_view to) {
-		std::vector<RouteInfo> result;
-		auto route = router_.BuildRoute(GetIdOfStopName(from), GetIdOfStopName(to));
-		for (size_t edge_id : route.value().edges) {
-			auto& temp = GetGraph().GetEdge(edge_id);
-			RouteInfo wait_part;
-			wait_part.stop_name = stops_.at(GetGraph().GetEdge(edge_id).from).stop_name;
-			wait_part.time = route.value().weight.wait;
-			result.push_back(wait_part);
-			RouteInfo move_part;
-			move_part.bus_name = GetBusNameById(edge_id);
-			move_part.time = route.value().weight.movement;
-			result.push_back(move_part);
-
-			//auto bus_name = GetBusNameById(edge_id);
-			//auto& stop_name = stops_.at(GetGraph().GetEdge(edge_id).from);
-		}
-		return result;
-	}
+	Routes BuildRoute(std::string_view from, std::string_view to);
 
 private:
 	const std::deque<Stop>& stops_;
-	graph::Router<WaitAndMovement> router_;
+	graph::Router<WeightInfo> router_;
 };

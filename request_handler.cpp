@@ -62,14 +62,34 @@ Node RequestHandler::MakeDictMap(int request_id) {
 }
 
 Node RequestHandler::MakeDictRoute(int request_id, std::string_view from, std::string_view to) {
-	auto route = router_.BuildRoute(from, to);
-	double total_time = 0.0;
-	return Builder{}.StartDict()
-		.Key("items")
-		.StartArray()
+	Routes route;
+	route = router_.BuildRoute(from, to);
 
-		.EndArray()
-		.EndDict().Build();
+	if (route.route == std::nullopt) {
+		return Builder{}.StartDict().Key("request_id"s).Value(request_id).Key("error_message"s).Value("not found"s).EndDict().Build();
+	}
+	Builder result;
+	double total_time = route.weight;
+
+	result.StartDict().Key("items").StartArray();
+	for (auto it = route.route.value().begin(); it != route.route.value().end(); ++it) {
+		result.StartDict()
+			.Key("stop_name").Value((std::string)(*it).stop_name.value())
+			.Key("time").Value((*it).time)
+			.Key("type").Value("Wait"s)
+			.EndDict();
+		it++;
+		result.StartDict()
+			.Key("bus").Value((std::string)(*it).bus_name.value().data())
+			.Key("span_count").Value((*it).span_count.value())
+			.Key("time").Value((*it).time)
+			.Key("type").Value("Bus"s)
+			.EndDict();
+	}
+	result.EndArray();
+	result.Key("request_id").Value(request_id);
+	result.Key("total_time").Value(total_time).EndDict();
+	return result.Build();
 }
 
 void RequestHandler::SetZoom() {

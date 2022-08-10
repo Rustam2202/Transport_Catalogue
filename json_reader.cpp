@@ -104,11 +104,12 @@ Node CompileStats(RequestHandler& rh, Array base) {
 			result.Value(rh.MakeDictMap(stat_data.AsDict().at("id").AsInt()).GetValue());
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Route") {
+			result.Value(
 			rh.MakeDictRoute(
 				stat_data.AsDict().at("id").AsInt(),
 				stat_data.AsDict().at("from").AsString(),
 				stat_data.AsDict().at("to").AsString())
-				.GetValue();
+				.GetValue());
 		}
 	}
 	return result.EndArray().Build();
@@ -137,7 +138,6 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 	);
 
 	RequestHandler handler(catalogue, map, router);
-
 
 	handler.SetZoom();
 	handler.AddBusesData();
