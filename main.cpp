@@ -1,3 +1,5 @@
+#include "serialization.h"
+
 #include <fstream>
 #include <iostream>
 #include <string_view>
@@ -17,7 +19,6 @@ int main(int argc, char* argv[]) {
 	const std::string_view mode(argv[1]);
 
 	if (mode == "make_base"sv) {
-
 		// make base here
 
 	}

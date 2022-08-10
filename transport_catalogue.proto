@@ -8,12 +8,13 @@ message Coordinates{
 message Stop{
 	string stop_name=1;
 	Coordinates coodinates=2;
+	uint32 index=3;
 }
 
 message Bus{
 	string bus_name=1;
-	repeated uint32 index_unique_stops=2;
-	repeated uint32 index_route_stops=3;
+	repeated uint32 indexes_unique_stops=2;
+	repeated uint32 indexes_route_stops=3;
 	bool is_ring =4;
 }
 
