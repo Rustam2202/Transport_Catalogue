@@ -1,3 +1,4 @@
+
 #include "serialization.h"
 
 #include <fstream>
@@ -11,16 +12,20 @@ void PrintUsage(std::ostream& stream = std::cerr) {
 }
 
 int main(int argc, char* argv[]) {
+	using namespace std;
+	
 	if (argc != 2) {
 		PrintUsage();
 		return 1;
 	}
 
 	const std::string_view mode(argv[1]);
+	fstream input_file("make_base_1.json"s);
+	istream& strm(input_file);
 
 	if (mode == "make_base"sv) {
 		// make base here
-
+		Serialization(strm);
 	}
 	else if (mode == "process_requests"sv) {
 

@@ -105,10 +105,10 @@ Node CompileStats(RequestHandler& rh, Array base) {
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Route") {
 			result.Value(
-			rh.MakeDictRoute(
-				stat_data.AsDict().at("id").AsInt(),
-				stat_data.AsDict().at("from").AsString(),
-				stat_data.AsDict().at("to").AsString())
+				rh.MakeDictRoute(
+					stat_data.AsDict().at("id").AsInt(),
+					stat_data.AsDict().at("from").AsString(),
+					stat_data.AsDict().at("to").AsString())
 				.GetValue());
 		}
 	}
@@ -144,4 +144,31 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 	handler.DrawMap();
 
 	PrintStats(handler, base.AsDict().at("stat_requests").AsArray(), output);
+}
+
+void ReadSerializationSettings(Array base) {
+	//for (Node base_data : base) {
+	//	if (base_data.AsDict().at("file").AsString() == "Stop") {
+	//		Stop stop;
+	//		stop.stop_name = base_data.AsDict().at("name").AsString();
+	//		stop.coodinates.lat = base_data.AsDict().at("latitude").AsDouble();
+	//		stop.coodinates.lng = base_data.AsDict().at("longitude").AsDouble();
+	//		catalogue.AddStop(std::move(stop));
+	//	}
+	//}
+}
+
+
+TransportCatalogue MakeBase(std::istream& input) {
+	Node base = Load(input).GetRoot();
+
+	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
+
+	TransportCatalogue catalogue;
+
+	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
+	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
+	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
+
+	return catalogue;
 }

@@ -5,6 +5,15 @@ set(CMAKE_CXX_STANDARD 17)
 
 set (CMAKE_PREFIX_PATH "C:/dev/ProtoBuf/path/to/protobuf/package")
 
+file(GLOB HEADERS "*.h")
+file(GLOB SOURCES "*.cpp" "*.cc")
+#file(GLOB PROTO_FILES "*.proto")
+
+#protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
+
+# source_group("Proto Files" ${PROTO_FILES})
+
+
 # Эта команда найдёт собранный нами пакет Protobuf.
 # REQUIRED означает, что библиотека обязательна.
 # Путь для поиска укажем в параметрах команды cmake.
@@ -18,7 +27,14 @@ find_package(Threads REQUIRED)
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS transport_catalogue.proto)
 
 # добавляем цель - person_test
-add_executable(transport_catalogue ${PROTO_SRCS} ${PROTO_HDRS} main.cpp)
+# add_executable(transport_catalogue ${PROTO_SRCS} ${PROTO_HDRS} main.cpp)
+add_executable(transport_catalogue
+    ${PROTO_SRCS}
+    ${PROTO_HDRS}
+    ${HEADERS}
+    ${SOURCES}
+    ${PROTO_FILES}
+)
 
 # find_package определила переменную Protobuf_INCLUDE_DIRS,
 # которую нужно использовать как include-путь.

@@ -1,11 +1,12 @@
-#include <transport_catalogue.pb.h>
+//#include <transport_catalogue.pb.h>
 
-void Serialization() {
+#include "json_reader.h"
 
-	Coordinates coord;
-	Stop stop;
-	stop.stop_name();
+#include <fstream>
+#include <iostream>
 
-	TransportCatalogue tc;
-	
+using namespace std;
+
+void Serialization(std::istream& strm = cin) {
+	TransportCatalogue catalogue = MakeBase(strm);
 }
