@@ -8,4 +8,4 @@
 
 void ReadJSON(std::istream& input = std::cin, std::ostream& output = std::cout);
 
-TransportCatalogue MakeBase(std::istream& input);
+pair<TransportCatalogue,string> MakeBase(std::istream& input);

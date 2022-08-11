@@ -146,7 +146,7 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 	PrintStats(handler, base.AsDict().at("stat_requests").AsArray(), output);
 }
 
-TransportCatalogue MakeBase(std::istream& input) {
+pair<TransportCatalogue, string> MakeBase(std::istream& input) {
 	Node base = Load(input).GetRoot();
 
 	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
@@ -157,5 +157,5 @@ TransportCatalogue MakeBase(std::istream& input) {
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 
-	return catalogue;
+	return { catalogue,file_name };
 }
