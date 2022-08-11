@@ -14,7 +14,8 @@ message Stop {
 }
 
 message StopInfo {
-	repeated uint32 bus_name_indexes = 1;
+	string stop_name = 1;
+	repeated uint32 bus_name_indexes = 2;
 }
 
 message Bus {
