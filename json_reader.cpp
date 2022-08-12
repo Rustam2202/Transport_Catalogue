@@ -157,5 +157,5 @@ pair<TransportCatalogue, string> MakeBase(std::istream& input) {
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 
-	return { catalogue,file_name };
+	return { std::move(catalogue),file_name };
 }
