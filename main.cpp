@@ -13,27 +13,32 @@ void PrintUsage(std::ostream& stream = std::cerr) {
 
 int main(int argc, char* argv[]) {
 	using namespace std;
+
+	ifstream base_input("make_base_1.json"s);
+	Serialization(base_input);
+
+	ifstream request_input("process_requests_1.json"s);
+	DeSerialization(request_input);
 	
-	if (argc != 2) {
-		PrintUsage();
-		return 1;
-	}
+	//if (argc != 2) {
+	//	PrintUsage();
+	//	return 1;
+	//}
 
-	const std::string_view mode(argv[1]);
-	fstream input_file("make_base_1.json"s);
-	istream& strm(input_file);
+	//const std::string_view mode(argv[1]);
+	//fstream input_file("make_base_1.json"s);
+	//istream& strm(input_file);
 
-	if (mode == "make_base"sv) {
-		// make base here
-		Serialization(strm);
-	}
-	else if (mode == "process_requests"sv) {
-
-		// process requests here
-
-	}
-	else {
-		PrintUsage();
-		return 1;
-	}
+	//if (mode == "make_base"sv) {
+	//	// make base here
+	//	Serialization(strm);
+	//}
+	//else if (mode == "process_requests"sv) {
+	//	// process requests here
+	//	DeSerialization(strm);
+	//}
+	//else {
+	//	PrintUsage();
+	//	return 1;
+	//}
 }

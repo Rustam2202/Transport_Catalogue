@@ -159,3 +159,24 @@ pair<TransportCatalogue, string> MakeBase(std::istream& input) {
 
 	return { std::move(catalogue),file_name };
 }
+
+void ProcessRequest(std::istream& input){
+	Node base = Load(input).GetRoot();
+
+	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
+
+	
+
+	for (Node stat_data : base.AsArray()) {
+		/*if (stat_data.AsDict().at("type").AsString() == "Stop") {
+			result.Value(rh.MakeDictStop(
+				stat_data.AsDict().at("id").AsInt(),
+				stat_data.AsDict().at("name").AsString())
+				.GetValue());
+		}
+		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
+			result.Value(rh.MakeDictBus(stat_data.AsDict().at("id").AsInt(),
+				stat_data.AsDict().at("name").AsString()).GetValue());
+		}*/
+	}
+}

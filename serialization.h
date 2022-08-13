@@ -8,11 +8,11 @@
 
 using namespace std;
 
-void Serialization(std::istream &strm = cin)
+void Serialization(std::istream& strm = cin)
 {
 	auto [catalogue, file_name] = MakeBase(strm);
 	TC_Proto::TransportCatalogue tc;
-	for (const auto &bus : catalogue.GetBusInfo())
+	for (const auto& bus : catalogue.GetBusInfo())
 	{
 		TC_Proto::BusInfo bus_info;
 		bus_info.set_bus_name(bus.second.bus_name.data());
@@ -23,11 +23,11 @@ void Serialization(std::istream &strm = cin)
 		tc.add_buses()->CopyFrom(bus_info);
 	}
 
-	for (const auto &stop : catalogue.GetStopInfo())
+	for (const auto& stop : catalogue.GetStopInfo())
 	{
 		TC_Proto::StopInfo stop_info;
 		stop_info.set_stop_name(stop.first->stop_name.data());
-		for (const auto &bus : stop.second)
+		for (const auto& bus : stop.second)
 		{
 			stop_info.add_bus_name(bus->bus_name.data());
 		}
@@ -36,5 +36,18 @@ void Serialization(std::istream &strm = cin)
 
 	ofstream ostrm;
 	ostrm.open(file_name);
-	tc.SerializePartialToOstream(&ostrm);
+	tc.SerializeToOstream(&ostrm);
+}
+
+void DeSerialization(std::istream& strm = cin) {
+	Node base = Load(strm).GetRoot();
+	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
+	const auto& dict = base.AsDict().at("stat_requests");
+
+	TC_Proto::TransportCatalogue tc;
+	ifstream data_base(file_name);
+	tc.ParseFromIstream(&data_base);
+	auto& b = tc.buses().Get(0).bus_name();
+
+	ProcessRequest(strm);
 }
