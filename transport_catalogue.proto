@@ -13,17 +13,16 @@ message Stop {
 	uint32 index = 3;
 }
 
-message StopInfo {
-	string stop_name = 1;
-//	repeated uint32 bus_name_indexes = 2;
-repeated string bus_name = 2;
-}
-
 message Bus {
 	string bus_name = 1;
 	repeated uint32 stops_unique_indexed = 2;
 	repeated uint32 stops_vector_indexes = 3;
 	bool is_ring = 4;
+}
+
+message StopInfo {
+	string stop_name = 1;
+	repeated string bus_name = 2;
 }
 
 message BusInfo {

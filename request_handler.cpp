@@ -1,7 +1,6 @@
 #include "request_handler.h"
 
 #include <algorithm>
-#include <execution>
 
 Node RequestHandler::MakeDictStop(int request_id, std::string_view stop_name) {
 	const StopInfoType& stop_info = catalogue_.GetStopInfo();
@@ -20,7 +19,7 @@ Node RequestHandler::MakeDictStop(int request_id, std::string_view stop_name) {
 			for (Bus* bus : buses) {
 				buses_arr.push_back(bus->bus_name);
 			}
-			std::sort(std::execution::par, buses_arr.begin(), buses_arr.end(),
+			std::sort(buses_arr.begin(), buses_arr.end(),
 				[](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
 		}
 		return Builder{}.StartDict()
