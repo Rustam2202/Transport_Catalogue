@@ -34,8 +34,9 @@ void Serialization(std::istream& strm = cin) {
 	}
 
 	ofstream ostrm;
-	ostrm.open(file_name);
+	ostrm.open(file_name, ios::binary);
 	tc.SerializeToOstream(&ostrm);
+	ostrm.close();
 }
 
 void DeSerialization(std::istream& strm = std::cin, std::ostream& output = std::cout) {
@@ -43,7 +44,7 @@ void DeSerialization(std::istream& strm = std::cin, std::ostream& output = std::
 	json::Node base = Load(strm).GetRoot();
 	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
 	const auto& requests = base.AsDict().at("stat_requests");
-	ifstream data_base_file(file_name);
+	ifstream data_base_file(file_name, ios::binary);
 
 	tc.ParseFromIstream(&data_base_file);
 
@@ -53,35 +54,81 @@ void DeSerialization(std::istream& strm = std::cin, std::ostream& output = std::
 		if (stat_data.AsDict().at("type").AsString() == "Stop") {
 			size_t i = 0;
 			bool founded = false;
-			result.StartDict().Key("buses").StartArray();
-			for (i; i < tc.stops().size(); ++i) {
-				if (stat_data.AsDict().at("name").AsString() == tc.stops().Get(i).stop_name()) {
+
+			for (auto it = tc.stops().begin(); it != tc.stops().end(); ++it, ++i) {
+				if (stat_data.AsDict().at("name").AsString() == (*it).stop_name()) {
 					founded = true;
 					break;
 				}
 			}
+
+			//for (i; i < tc.stops().size(); ++i) {
+			//	if (stat_data.AsDict().at("name").AsString() == tc.stops().Get(i).stop_name()) {
+			//		founded = true;
+			//		break;
+			//	}
+			//}
+
+			if (founded == false) {
+				result.StartDict()
+					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
+					.Key("error_message"s).Value("not found"s)
+					.EndDict();
+			}
+			else {
+				Array buses_arr;
+				if (tc.buses_size() > 0) {
+					for (const auto& bus : tc.buses()) {
+						buses_arr.push_back(bus.bus_name());
+					}
+					std::sort(buses_arr.begin(), buses_arr.end(),
+						[](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
+				}
+				result.StartDict()
+					.Key("buses"s).Value(buses_arr)
+					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt());
+					
+
+				/*result.StartDict().Key("buses").StartArray();
 			for (auto it = tc.stops().Get(i).bus_name().begin(); it != tc.stops().Get(i).bus_name().end(); ++it) {
 				result.Value(*it);
+			}*/
+				result.Key("request_id").Value(stat_data.AsDict().at("id").AsInt()).EndDict();
 			}
-			result.EndArray().Key("request_id").Value(stat_data.AsDict().at("id").AsInt()).EndDict();
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
 			size_t i = 0;
 			bool founded = false;
-			for (i; i < tc.stops().size(); ++i) {
-				if (stat_data.AsDict().at("name").AsString() == tc.buses().Get(i).bus_name()) {
+
+			for (auto it = tc.buses().begin(); it != tc.buses().end(); ++it, ++i) {
+				if (stat_data.AsDict().at("name").AsString() == (*it).bus_name()) {
 					founded = true;
 					break;
 				}
 			}
-			result.StartDict();
-			result
-				.Key("curvature").Value(tc.buses().Get(i).curvature())
-				.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
-				.Key("route_length").Value(static_cast<int>(tc.buses().Get(i).route_length_on_road()))
-				.Key("stop_count").Value(static_cast<int>(tc.buses().Get(i).stops_on_route()))
-				.Key("unique_stop_count").Value(static_cast<int>(tc.buses().Get(i).unique_stops()))
-				.EndDict();
+
+			//for (i; i < tc.stops().size(); ++i) {
+			//	if (stat_data.AsDict().at("name").AsString() == tc.buses().Get(i).bus_name()) {
+			//		founded = true;
+			//		break;
+			//	}
+			//}
+
+			if (founded == false) {
+				result.StartDict()
+					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
+					.Key("error_message").Value("not found"s)
+					.EndDict();
+			}
+			else {
+				result.StartDict()
+					.Key("curvature").Value(tc.buses().Get(i).curvature())
+					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
+					.Key("route_length").Value(static_cast<int>(tc.buses().Get(i).route_length_on_road()))
+					.Key("stop_count").Value(static_cast<int>(tc.buses().Get(i).stops_on_route()))
+					.Key("unique_stop_count").Value(static_cast<int>(tc.buses().Get(i).unique_stops()))
+					.EndDict();
+			}
 		}
 	}
 	result.EndArray();

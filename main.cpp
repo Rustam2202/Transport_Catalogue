@@ -14,10 +14,10 @@ void PrintUsage(std::ostream& stream = std::cerr) {
 int main(int argc, char* argv[]) {
 	using namespace std;
 
-	ifstream base_input("make_base_1.json"s);
+	ifstream base_input("make_base_3.json"s);
 	Serialization(base_input);
 
-	ifstream request_input("process_requests_1.json"s);
+	ifstream request_input("process_requests_3.json"s);
 	DeSerialization(request_input, std::cout);
 
 	//if (argc != 2) {
