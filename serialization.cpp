@@ -3,8 +3,7 @@
 void Serialization(std::istream& strm) {
 	auto [catalogue, file_name] = MakeBase(strm);
 	TC_Proto::TransportCatalogue tc;
-	for (const auto& bus : catalogue.GetBusInfo())
-	{
+	for (const auto& bus : catalogue.GetBusInfo()) {
 		TC_Proto::BusInfo bus_info;
 		bus_info.set_bus_name(bus.second.bus_name.data());
 		bus_info.set_curvature(bus.second.curvature);
@@ -14,12 +13,10 @@ void Serialization(std::istream& strm) {
 		tc.add_buses()->CopyFrom(bus_info);
 	}
 
-	for (const auto& stop : catalogue.GetStopInfo())
-	{
+	for (const auto& stop : catalogue.GetStopInfo()) {
 		TC_Proto::StopInfo stop_info;
 		stop_info.set_stop_name(stop.first->stop_name.data());
-		for (const auto& bus : stop.second)
-		{
+		for (const auto& bus : stop.second) {
 			stop_info.add_bus_name(bus->bus_name.data());
 		}
 		tc.add_stops()->CopyFrom(stop_info);
@@ -28,7 +25,6 @@ void Serialization(std::istream& strm) {
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
 	tc.SerializeToOstream(&ostrm);
-	ostrm.close();
 }
 
 void DeSerialization(std::istream& strm, std::ostream& output) {
@@ -44,24 +40,13 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	result.StartArray();
 	for (const auto& stat_data : base.AsDict().at("stat_requests").AsArray()) {
 		if (stat_data.AsDict().at("type").AsString() == "Stop") {
-			size_t i = 0;
-			bool founded = false;
-
-			for (const auto& stop : tc.stops()) {
-				if(stop.stop_name() == stat_data.AsDict().at("name").AsString()) {
-					founded = true;
-					break;
-				}
+			auto it = tc.stops().begin();
+			while (it != tc.stops().end()) {
+				++it;
 			}
+			int index = it - tc.stops().begin();
 
-			//for (auto it = tc.stops().begin(); it != tc.stops().end(); ++it, ++i) {
-			//	if (stat_data.AsDict().at("name").AsString() == (*it).stop_name()) {
-			//		founded = true;
-			//		break;
-			//	}
-			//}
-
-			if (founded == false) {
+			if (it == tc.stops().end()) {
 				result.StartDict()
 					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
 					.Key("error_message"s).Value("not found"s)
@@ -70,7 +55,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 			else {
 				Array buses_arr;
 				if (tc.buses_size() > 0) {
-					for (const auto& bus : tc.stops().Get(i).bus_name()) {
+					for (const auto& bus : tc.stops().Get(index).bus_name()) {
 						buses_arr.push_back(bus);
 					}
 					std::sort(buses_arr.begin(), buses_arr.end(),
@@ -103,7 +88,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				result.StartDict()
 					.Key("curvature").Value(tc.buses().Get(i).curvature())
 					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
-					.Key("route_length").Value(static_cast<int>(tc.buses().Get(i).route_length_on_road()))
+					.Key("route_length").Value(static_cast<double>(tc.buses().Get(i).route_length_on_road()))
 					.Key("stop_count").Value(static_cast<int>(tc.buses().Get(i).stops_on_route()))
 					.Key("unique_stop_count").Value(static_cast<int>(tc.buses().Get(i).unique_stops()))
 					.EndDict();
