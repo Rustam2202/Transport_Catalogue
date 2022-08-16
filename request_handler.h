@@ -28,8 +28,12 @@ public:
 	void AddBusesData();
 	void DrawMap();
 
+	TransportCatalogue& GetCatalogue() {
+		return catalogue_;
+	}
+
 private:
-	transport_catalogue::TransportCatalogue& catalogue_;
-	renderer::MapRenderer& renderer_;
+	TransportCatalogue& catalogue_;
+	MapRenderer& renderer_;
 	TransportRoter& router_;
 };

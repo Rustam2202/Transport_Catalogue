@@ -146,14 +146,29 @@ void ReadJSON(std::istream& input, std::ostream& output) {
 	PrintStats(handler, base.AsDict().at("stat_requests").AsArray(), output);
 }
 
-pair<TransportCatalogue, string> MakeBase(std::istream& input) {
+RequestHandler MakeBase(std::string& file_name, std::istream& input) {
 	TransportCatalogue catalogue;
+	MapRenderer map;
+
 	Node base = Load(input).GetRoot();
-	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
+	file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
 
 	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
+	SetMapRender(map, base.AsDict().at("render_settings"));
+	TransportRoter router(
+		catalogue,
+		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
+		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
+	);
 
-	return { std::move(catalogue),file_name };
+	RequestHandler handler(catalogue, map, router);
+
+	handler.SetZoom();
+	handler.AddBusesData();
+	handler.DrawMap();
+
+	return handler;
 }
+

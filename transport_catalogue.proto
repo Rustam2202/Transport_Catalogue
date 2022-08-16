@@ -2,16 +2,48 @@ syntax = "proto3";
 
 package TC_Proto;
 
+ message Coordinates {
+    double x = 1;
+    double y = 2;
+ }
+
+ message RGBa{
+	uint32 red = 1;
+	uint32 green = 2;
+	uint32 blue = 3;
+	optional double opacity = 4;
+ }
+
+ message Color{
+	 optional string color_str = 1;
+	 optional RGBa color_rgba = 2;
+ }
+
+ message RenderSettings {
+	double width = 1;
+	double height = 2;
+	double padding = 3;
+	double stop_radius = 4;
+	double line_width = 5;
+	double underlayer_width = 6;
+	int32 bus_label_font_size = 7;
+	int32 stop_label_font_size = 8;
+	Coordinates stop_label_offset = 9;
+	Coordinates bus_label_offset = 10;
+	Color underlayer_color = 11;
+	repeated Color color_palette = 12;
+}
+
 message StopInfo {
 	string stop_name = 1;
 	repeated uint32 bus_names_indexes = 2;
+	repeated Coordinates coordinaties = 3;
 }
 
 message BusInfo {
 	string bus_name = 1;
 	uint32 stops_on_route = 2;
 	uint32 unique_stops = 3;
-	//double route_length = 4;
 	uint64 route_length_on_road = 4;
 	double curvature = 5;
 }
@@ -19,6 +51,7 @@ message BusInfo {
 message TransportCatalogue {
 	repeated StopInfo stops_info = 1;
 	repeated BusInfo buses_info = 2;
+	RenderSettings render_settings = 3;
 }
 
 // C:/dev/ProtoBuf/path/to/protobuf/package/bin/protoc --cpp_out . transport_catalogue.proto

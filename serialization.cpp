@@ -1,8 +1,31 @@
 #include "serialization.h"
 
+
 void Serialization(std::istream& strm) {
-	auto [catalogue, file_name] = MakeBase(strm);
+	Node base = Load(strm).GetRoot();
+	TransportCatalogue catalogue;
+	MapRenderer map;
+
+	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
+	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
+	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
+	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
+	SetMapRender(map, base.AsDict().at("render_settings"));
+	TransportRoter router(
+		catalogue,
+		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
+		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
+	);
+	RequestHandler handler(catalogue, map, router);
+	handler.SetZoom();
+	handler.AddBusesData();
+	handler.DrawMap();
+
+	//RequestHandler handler = MakeBase(file_name, strm);
+	//TransportCatalogue& catalogue = handler.GetCatalogue();
+
 	TC_Proto::TransportCatalogue tc;
+
 	int index = 0;
 	for (auto& bus : catalogue.GetBusInfo()) {
 		TC_Proto::BusInfo bus_info;
@@ -28,6 +51,7 @@ void Serialization(std::istream& strm) {
 		}
 		tc.add_stops_info()->CopyFrom(stop_info);
 	}
+
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
 	tc.SerializeToOstream(&ostrm);
@@ -49,7 +73,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 			const std::string& stop_name = stat_data.AsDict().at("name").AsString();
 
 			auto it = tc.stops_info().begin();
-			while (it!= tc.stops_info().end()) {
+			while (it != tc.stops_info().end()) {
 				if ((*it).stop_name() == stop_name) {
 					break;
 				}
