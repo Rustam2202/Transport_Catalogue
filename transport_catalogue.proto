@@ -2,43 +2,23 @@ syntax = "proto3";
 
 package TC_Proto;
 
-message Coordinates{
-	double lat=1;
-	double lng=2;
-}
-
-message Stop {
-	string stop_name = 1;
-	Coordinates coodinates = 2;
-	uint32 index = 3;
-}
-
-message Bus {
-	string bus_name = 1;
-	repeated uint32 stops_unique_indexed = 2;
-	repeated uint32 stops_vector_indexes = 3;
-	bool is_ring = 4;
-}
-
 message StopInfo {
 	string stop_name = 1;
-	repeated string bus_name = 2;
+	repeated uint32 bus_names_indexes = 2;
 }
 
 message BusInfo {
 	string bus_name = 1;
 	uint32 stops_on_route = 2;
 	uint32 unique_stops = 3;
-	double route_length = 4;
-	uint64 route_length_on_road = 5;
-	double curvature = 6;
+	//double route_length = 4;
+	uint64 route_length_on_road = 4;
+	double curvature = 5;
 }
 
 message TransportCatalogue {
-	repeated StopInfo stops = 1;
-	repeated BusInfo buses = 2;
- //  repeated Stop stops=1;
- //  repeated Bus buses=2;
+	repeated StopInfo stops_info = 1;
+	repeated BusInfo buses_info = 2;
 }
 
 // C:/dev/ProtoBuf/path/to/protobuf/package/bin/protoc --cpp_out . transport_catalogue.proto
