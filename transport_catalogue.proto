@@ -7,16 +7,27 @@ package TC_Proto;
     double y = 2;
  }
 
- message RGBa{
+ message RGB {
 	uint32 red = 1;
 	uint32 green = 2;
 	uint32 blue = 3;
-	optional double opacity = 4;
+ }
+
+ message RGBa {
+	uint32 red = 1;
+	uint32 green = 2;
+	uint32 blue = 3;
+	double opacity = 4;
  }
 
  message Color{
-	 optional string color_str = 1;
-	 optional RGBa color_rgba = 2;
+	 oneof color{
+	 string color_str = 1;
+	 RGB color_rgb = 2;
+	 RGBa color_rgba = 3;
+	 }
+	//optional string color_str = 1;
+	//optional RGBa color_rgba = 3;
  }
 
  message RenderSettings {

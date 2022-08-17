@@ -13,7 +13,7 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 	settings.mutable_stop_label_offset()->set_x(base.AsDict().at("bus_label_offset").AsArray()[0].AsDouble());
 	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("bus_label_offset").AsArray()[1].AsDouble());
 	settings.mutable_bus_label_offset()->set_x(base.AsDict().at("stop_label_offset").AsArray()[0].AsDouble());
-	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
+	settings.mutable_bus_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
 
 	if (base.AsDict().at("underlayer_color").IsString()) {
 		settings.mutable_underlayer_color()->set_color_str(base.AsDict().at("underlayer_color").AsString());
@@ -21,11 +21,11 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 	else if (base.AsDict().at("underlayer_color").IsArray()) {
 		Node color = base.AsDict().at("underlayer_color").AsArray();
 		if (color.AsArray().size() == 3) {
-			TC_Proto::RGBa rgba;
-			rgba.set_red(color.AsArray()[0].AsInt());
-			rgba.set_green(color.AsArray()[1].AsInt());
-			rgba.set_blue(color.AsArray()[2].AsInt());
-			settings.mutable_underlayer_color()->mutable_color_rgba()->CopyFrom(rgba);
+			TC_Proto::RGB rgb;
+			rgb.set_red(color.AsArray()[0].AsInt());
+			rgb.set_green(color.AsArray()[1].AsInt());
+			rgb.set_blue(color.AsArray()[2].AsInt());
+			settings.mutable_underlayer_color()->mutable_color_rgb()->CopyFrom(rgb);
 		}
 		else if (color.AsArray().size() == 4) {
 			TC_Proto::RGBa rgba;
@@ -40,11 +40,12 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 	for (Node colors : base.AsDict().at("color_palette").AsArray()) {
 		if (colors.IsArray()) {
 			if (colors.AsArray().size() == 3) {
-				TC_Proto::RGBa rgba;
-				rgba.set_red(colors.AsArray()[0].AsInt());
-				rgba.set_green(colors.AsArray()[1].AsInt());
-				rgba.set_blue(colors.AsArray()[2].AsInt());
-				settings.add_color_palette()->CopyFrom(rgba);
+				TC_Proto::RGB rgb;
+				rgb.set_red(colors.AsArray()[0].AsInt());
+				rgb.set_green(colors.AsArray()[1].AsInt());
+				rgb.set_blue(colors.AsArray()[2].AsInt());
+
+				settings.add_color_palette()->mutable_color_rgb()->CopyFrom(rgb);
 			}
 			else if (colors.AsArray().size() == 4) {
 				TC_Proto::RGBa rgba;
@@ -52,7 +53,7 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 				rgba.set_green(colors.AsArray()[1].AsInt());
 				rgba.set_blue(colors.AsArray()[2].AsInt());
 				rgba.set_opacity(colors.AsArray()[3].AsDouble());
-				settings.add_color_palette()->CopyFrom(rgba);
+				settings.add_color_palette()->mutable_color_rgba()->CopyFrom(rgba);
 			}
 		}
 		else if (colors.IsString()) {
@@ -104,7 +105,6 @@ void Serialization(std::istream& strm) {
 		tc.add_stops_info()->CopyFrom(stop_info);
 	}
 	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
-	
 
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
@@ -119,7 +119,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	ifstream data_base_file(file_name, ios::binary);
 
 	tc.ParseFromIstream(&data_base_file);
-
+	MapRenderer render;
 	Builder result;
 	result.StartArray();
 	for (const auto& stat_data : base.AsDict().at("stat_requests").AsArray()) {
@@ -181,21 +181,55 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					.EndDict();
 			}
 		}
+		else if (stat_data.AsDict().at("type").AsString() == "Map") {
+			render.SetRender(tc.render_settings().width(), tc.render_settings().height(), tc.render_settings().padding()
+				, tc.render_settings().stop_radius(), tc.render_settings().line_width(), tc.render_settings().underlayer_width()
+				, tc.render_settings().bus_label_font_size(), tc.render_settings().stop_label_font_size()
+				, tc.render_settings().bus_label_offset().x(), tc.render_settings().bus_label_offset().y()
+				, tc.render_settings().stop_label_offset().x(), tc.render_settings().stop_label_offset().y()
+			);
+
+			if (tc.render_settings().underlayer_color().has_color_rgb()) {
+				render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_rgb().red(),
+					tc.render_settings().underlayer_color().color_rgb().green(),
+					tc.render_settings().underlayer_color().color_rgb().blue()
+				);
+			}
+			else if (tc.render_settings().underlayer_color().has_color_rgba()) {
+				render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_rgba().red(),
+					tc.render_settings().underlayer_color().color_rgba().green(),
+					tc.render_settings().underlayer_color().color_rgba().blue(),
+					tc.render_settings().underlayer_color().color_rgba().opacity()
+				);
+			}
+			else if (tc.render_settings().underlayer_color().has_color_rgba()) {
+				render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_str());
+			}
+
+			for (const auto& color : tc.render_settings().color_palette()) {
+				auto a = color;
+				if (color.has_color_rgb()) {
+					auto b = tc.render_settings().underlayer_color().color_rgb().red();
+					render.SetColorPalette(tc.render_settings().underlayer_color().color_rgb().red(),
+						tc.render_settings().underlayer_color().color_rgb().green(),
+						tc.render_settings().underlayer_color().color_rgb().blue()
+					);
+				}
+				else if (color.has_color_rgba()) {
+					render.SetColorPalette(tc.render_settings().underlayer_color().color_rgba().red(),
+						tc.render_settings().underlayer_color().color_rgba().green(),
+						tc.render_settings().underlayer_color().color_rgba().blue(),
+						tc.render_settings().underlayer_color().color_rgba().opacity()
+					);
+				}
+				else if (color.has_color_str()) {
+					auto s = tc.render_settings().underlayer_color().color_str();
+					render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_str().c_str());
+				}
+
+			}
+		}
 	}
 	result.EndArray();
 	json::Print(Document(result.Build()), output);
 }
-
-//TC_Proto::RenderSettings settings;
-//settings.set_width(map.GetSettings().width);
-//settings.set_height(map.GetSettings().height);
-//settings.set_padding(map.GetSettings().padding);
-//settings.set_stop_radius(map.GetSettings().stop_radius);
-//settings.set_line_width(map.GetSettings().line_width);
-//settings.set_underlayer_width(map.GetSettings().underlayer_width);
-//settings.set_bus_label_font_size(map.GetSettings().bus_label_font_size);
-//settings.set_stop_label_font_size(map.GetSettings().stop_label_font_size);
-//settings.mutable_stop_label_offset()->set_x(map.GetSettings().stop_label_offset.x);
-//settings.mutable_stop_label_offset()->set_y(map.GetSettings().stop_label_offset.y);
-//settings.mutable_bus_label_offset()->set_x(map.GetSettings().bus_label_offset.x);
-//settings.mutable_stop_label_offset()->set_y(map.GetSettings().bus_label_offset.y);
