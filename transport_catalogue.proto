@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package TC_Proto;
 
- message Coordinates {
+ message Offset {
     double x = 1;
     double y = 2;
  }
@@ -28,8 +28,8 @@ package TC_Proto;
 	double underlayer_width = 6;
 	int32 bus_label_font_size = 7;
 	int32 stop_label_font_size = 8;
-	Coordinates stop_label_offset = 9;
-	Coordinates bus_label_offset = 10;
+	Offset stop_label_offset = 9;
+	Offset bus_label_offset = 10;
 	Color underlayer_color = 11;
 	repeated Color color_palette = 12;
 }
@@ -37,7 +37,8 @@ package TC_Proto;
 message StopInfo {
 	string stop_name = 1;
 	repeated uint32 bus_names_indexes = 2;
-	repeated Coordinates coordinaties = 3;
+	double lat = 3;
+    double lng = 4;
 }
 
 message BusInfo {

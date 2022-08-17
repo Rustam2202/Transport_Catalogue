@@ -1,5 +1,66 @@
 #include "serialization.h"
 
+TC_Proto::RenderSettings MakeRendersettings(Node base) {
+	TC_Proto::RenderSettings settings;
+	settings.set_width(base.AsDict().at("width").AsDouble());
+	settings.set_height(base.AsDict().at("height").AsDouble());
+	settings.set_padding(base.AsDict().at("padding").AsDouble());
+	settings.set_stop_radius(base.AsDict().at("stop_radius").AsDouble());
+	settings.set_line_width(base.AsDict().at("line_width").AsDouble());
+	settings.set_underlayer_width(base.AsDict().at("underlayer_width").AsDouble());
+	settings.set_bus_label_font_size(base.AsDict().at("bus_label_font_size").AsInt());
+	settings.set_stop_label_font_size(base.AsDict().at("stop_label_font_size").AsInt());
+	settings.mutable_stop_label_offset()->set_x(base.AsDict().at("bus_label_offset").AsArray()[0].AsDouble());
+	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("bus_label_offset").AsArray()[1].AsDouble());
+	settings.mutable_bus_label_offset()->set_x(base.AsDict().at("stop_label_offset").AsArray()[0].AsDouble());
+	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
+
+	if (base.AsDict().at("underlayer_color").IsString()) {
+		settings.mutable_underlayer_color()->set_color_str(base.AsDict().at("underlayer_color").AsString());
+	}
+	else if (base.AsDict().at("underlayer_color").IsArray()) {
+		Node color = base.AsDict().at("underlayer_color").AsArray();
+		if (color.AsArray().size() == 3) {
+			TC_Proto::RGBa rgba;
+			rgba.set_red(color.AsArray()[0].AsInt());
+			rgba.set_green(color.AsArray()[1].AsInt());
+			rgba.set_blue(color.AsArray()[2].AsInt());
+			settings.mutable_underlayer_color()->mutable_color_rgba()->CopyFrom(rgba);
+		}
+		else if (color.AsArray().size() == 4) {
+			TC_Proto::RGBa rgba;
+			rgba.set_red(color.AsArray()[0].AsInt());
+			rgba.set_green(color.AsArray()[1].AsInt());
+			rgba.set_blue(color.AsArray()[2].AsInt());
+			rgba.set_opacity(color.AsArray()[3].AsDouble());
+			settings.mutable_underlayer_color()->mutable_color_rgba()->CopyFrom(rgba);
+		}
+	}
+
+	for (Node colors : base.AsDict().at("color_palette").AsArray()) {
+		if (colors.IsArray()) {
+			if (colors.AsArray().size() == 3) {
+				TC_Proto::RGBa rgba;
+				rgba.set_red(colors.AsArray()[0].AsInt());
+				rgba.set_green(colors.AsArray()[1].AsInt());
+				rgba.set_blue(colors.AsArray()[2].AsInt());
+				settings.add_color_palette()->CopyFrom(rgba);
+			}
+			else if (colors.AsArray().size() == 4) {
+				TC_Proto::RGBa rgba;
+				rgba.set_red(colors.AsArray()[0].AsInt());
+				rgba.set_green(colors.AsArray()[1].AsInt());
+				rgba.set_blue(colors.AsArray()[2].AsInt());
+				rgba.set_opacity(colors.AsArray()[3].AsDouble());
+				settings.add_color_palette()->CopyFrom(rgba);
+			}
+		}
+		else if (colors.IsString()) {
+			settings.add_color_palette()->set_color_str(colors.AsString());
+		}
+	}
+	return settings;
+}
 
 void Serialization(std::istream& strm) {
 	Node base = Load(strm).GetRoot();
@@ -11,18 +72,6 @@ void Serialization(std::istream& strm) {
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 	SetMapRender(map, base.AsDict().at("render_settings"));
-	TransportRoter router(
-		catalogue,
-		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
-		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
-	);
-	RequestHandler handler(catalogue, map, router);
-	handler.SetZoom();
-	handler.AddBusesData();
-	handler.DrawMap();
-
-	//RequestHandler handler = MakeBase(file_name, strm);
-	//TransportCatalogue& catalogue = handler.GetCatalogue();
 
 	TC_Proto::TransportCatalogue tc;
 
@@ -41,6 +90,9 @@ void Serialization(std::istream& strm) {
 	for (const auto& stop : catalogue.GetStops()) {
 		TC_Proto::StopInfo stop_info;
 		stop_info.set_stop_name(stop.stop_name.data());
+		stop_info.set_lat(stop.coodinates.lat);
+		stop_info.set_lng(stop.coodinates.lng);
+
 		Stop* stop_finded = catalogue.FindStop(stop.stop_name);
 		auto stop_info_finded = catalogue.GetStopInfo().find(stop_finded);
 		if (stop_info_finded != catalogue.GetStopInfo().end()) {
@@ -51,6 +103,8 @@ void Serialization(std::istream& strm) {
 		}
 		tc.add_stops_info()->CopyFrom(stop_info);
 	}
+	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
+	
 
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
@@ -131,3 +185,17 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	result.EndArray();
 	json::Print(Document(result.Build()), output);
 }
+
+//TC_Proto::RenderSettings settings;
+//settings.set_width(map.GetSettings().width);
+//settings.set_height(map.GetSettings().height);
+//settings.set_padding(map.GetSettings().padding);
+//settings.set_stop_radius(map.GetSettings().stop_radius);
+//settings.set_line_width(map.GetSettings().line_width);
+//settings.set_underlayer_width(map.GetSettings().underlayer_width);
+//settings.set_bus_label_font_size(map.GetSettings().bus_label_font_size);
+//settings.set_stop_label_font_size(map.GetSettings().stop_label_font_size);
+//settings.mutable_stop_label_offset()->set_x(map.GetSettings().stop_label_offset.x);
+//settings.mutable_stop_label_offset()->set_y(map.GetSettings().stop_label_offset.y);
+//settings.mutable_bus_label_offset()->set_x(map.GetSettings().bus_label_offset.x);
+//settings.mutable_stop_label_offset()->set_y(map.GetSettings().bus_label_offset.y);

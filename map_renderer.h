@@ -72,6 +72,8 @@ namespace renderer {
 		void SetColorPalette(int r, int g, int b);
 		void SetColorPalette(int r, int g, int b, double o);
 
+		const RenderSettings& GetSettings()  { return settings_; }
+
 		void MakeSphereProjector(std::vector<geo::Coordinates> coordinates);
 		void AddBusWithStops(std::string bus_name, bool is_ring, std::string_view stop_name, const geo::Coordinates& coordinate);
 		void Sorting();
