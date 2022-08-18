@@ -58,6 +58,7 @@ message BusInfo {
 	uint32 unique_stops = 3;
 	uint64 route_length_on_road = 4;
 	double curvature = 5;
+	bool is_ring = 6;
 }
 
 message TransportCatalogue {

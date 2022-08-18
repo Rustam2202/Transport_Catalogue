@@ -35,6 +35,9 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 			rgba.set_opacity(color.AsArray()[3].AsDouble());
 			settings.mutable_underlayer_color()->mutable_color_rgba()->CopyFrom(rgba);
 		}
+		else if (base.AsDict().at("underlayer_color").IsString()) {
+			settings.mutable_underlayer_color()->set_color_str(color.AsString());
+		}
 	}
 
 	for (Node colors : base.AsDict().at("color_palette").AsArray()) {
@@ -85,6 +88,7 @@ void Serialization(std::istream& strm) {
 		bus_info.set_route_length_on_road(bus.second.route_length_on_road);
 		bus_info.set_stops_on_route(bus.second.stops_on_route);
 		bus_info.set_unique_stops(bus.second.unique_stops);
+		bus_info.set_is_ring(catalogue.FindBus(bus.second.bus_name)->is_ring);
 		tc.add_buses_info()->CopyFrom(bus_info);
 		index++;
 	}
@@ -120,12 +124,13 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 
 	tc.ParseFromIstream(&data_base_file);
 	MapRenderer render;
+	std::vector<geo::Coordinates> coords;
+
 	Builder result;
 	result.StartArray();
 	for (const auto& stat_data : base.AsDict().at("stat_requests").AsArray()) {
 		if (stat_data.AsDict().at("type").AsString() == "Stop") {
 			const std::string& stop_name = stat_data.AsDict().at("name").AsString();
-
 			auto it = tc.stops_info().begin();
 			while (it != tc.stops_info().end()) {
 				if ((*it).stop_name() == stop_name) {
@@ -153,6 +158,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
 					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
 					.EndDict();
+
 			}
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
@@ -206,30 +212,51 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_str());
 			}
 
-			for (const auto& color : tc.render_settings().color_palette()) {
-				auto a = color;
-				if (color.has_color_rgb()) {
-					auto b = tc.render_settings().underlayer_color().color_rgb().red();
-					render.SetColorPalette(tc.render_settings().underlayer_color().color_rgb().red(),
-						tc.render_settings().underlayer_color().color_rgb().green(),
-						tc.render_settings().underlayer_color().color_rgb().blue()
+			int i = 0;
+			for (auto it = tc.render_settings().color_palette().begin(); it != tc.render_settings().color_palette().end(); ++it, ++i) {
+				if ((*it).has_color_rgb()) {
+					render.SetColorPalette(
+						tc.render_settings().color_palette().Get(i).color_rgb().red(),
+						tc.render_settings().color_palette().Get(i).color_rgb().green(),
+						tc.render_settings().color_palette().Get(i).color_rgb().blue()
 					);
 				}
-				else if (color.has_color_rgba()) {
-					render.SetColorPalette(tc.render_settings().underlayer_color().color_rgba().red(),
-						tc.render_settings().underlayer_color().color_rgba().green(),
-						tc.render_settings().underlayer_color().color_rgba().blue(),
-						tc.render_settings().underlayer_color().color_rgba().opacity()
+				else if ((*it).has_color_rgba()) {
+					render.SetColorPalette(
+						tc.render_settings().color_palette().Get(i).color_rgba().red(),
+						tc.render_settings().color_palette().Get(i).color_rgba().green(),
+						tc.render_settings().color_palette().Get(i).color_rgba().blue(),
+						tc.render_settings().color_palette().Get(i).color_rgba().opacity()
 					);
 				}
-				else if (color.has_color_str()) {
-					auto s = tc.render_settings().underlayer_color().color_str();
-					render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_str().c_str());
+				else  {
+					render.SetColorPalette(tc.render_settings().color_palette().Get(i).color_str());
 				}
-
 			}
+
+			for (const auto& stop : tc.stops_info()) {
+				if (stop.bus_names_indexes_size() > 0) {
+					coords.push_back({ stop.lat(),stop.lng() });
+					for (const auto& bus_index : stop.bus_names_indexes()) {
+						render.AddBusWithStops(tc.buses_info().Get(bus_index).bus_name(), tc.buses_info().Get(bus_index).is_ring(), stop.stop_name(), { stop.lat(),stop.lng() });
+					}
+				}
+			}
+			render.MakeSphereProjector(coords);
+			render.Sorting();
+			render.RenderBusesLines();
+			render.RenderBusesNames();
+			render.RenderCircle();
+			render.RenderStopsNames();
+			std::stringstream s;
+			render.Rendering(s);
+			result.StartDict()
+				.Key("map"s).Value(s.str())
+				.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
+				.EndDict();
 		}
 	}
+
 	result.EndArray();
 	json::Print(Document(result.Build()), output);
 }
