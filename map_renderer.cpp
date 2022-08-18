@@ -54,13 +54,18 @@ namespace renderer {
 		sphere_projector_ = std::move(sp);
 	}
 
+	void MapRenderer::MakeSphereProjector(std::vector<geo::Coordinates> coordinates, double width, double height, double padding) {
+		SphereProjector sp(coordinates.begin(), coordinates.end(), width, height, padding);
+		sphere_projector_ = std::move(sp);
+	}
+
 	void MapRenderer::AddBusWithStops(std::string bus_name, bool is_ring, std::string_view stop_name, const geo::Coordinates& coordinate) {
 		buses_[{bus_name, is_ring}].push_back({ stop_name, sphere_projector_(coordinate) });
 		points_.push_back({ stop_name, sphere_projector_(coordinate) });
 	}
 
 	void MapRenderer::Sorting() {
-		std::sort(points_.begin(), points_.end(), [](PointOnMap lhs, PointOnMap rhs) {return lhs.stop_name < rhs.stop_name; }); // execution::par - no effect
+		std::sort(points_.begin(), points_.end(), [](PointOnMap lhs, PointOnMap rhs) {return lhs.stop_name < rhs.stop_name; });
 		auto last = std::unique(points_.begin(), points_.end(), [](const PointOnMap& lhs, const PointOnMap& rhs) {return lhs.stop_name == rhs.stop_name; });
 		points_.erase(last, points_.end());
 	}

@@ -26,8 +26,6 @@ package TC_Proto;
 	 RGB color_rgb = 2;
 	 RGBa color_rgba = 3;
 	 }
-	//optional string color_str = 1;
-	//optional RGBa color_rgba = 3;
  }
 
  message RenderSettings {
@@ -50,11 +48,13 @@ message StopInfo {
 	repeated uint32 bus_names_indexes = 2;
 	double lat = 3;
     double lng = 4;
+	uint32 index = 5;
 }
 
 message BusInfo {
 	string bus_name = 1;
-	uint32 stops_on_route = 2;
+	//uint32 stops_on_route = 2;
+	repeated uint32 stops_indexes = 2;
 	uint32 unique_stops = 3;
 	uint64 route_length_on_road = 4;
 	double curvature = 5;

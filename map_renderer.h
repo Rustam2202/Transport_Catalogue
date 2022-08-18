@@ -75,6 +75,8 @@ namespace renderer {
 		const RenderSettings& GetSettings()  { return settings_; }
 
 		void MakeSphereProjector(std::vector<geo::Coordinates> coordinates);
+		void MakeSphereProjector(std::vector<geo::Coordinates> coordinates, double width, double height, double padding);
+
 		void AddBusWithStops(std::string bus_name, bool is_ring, std::string_view stop_name, const geo::Coordinates& coordinate);
 		void Sorting();
 

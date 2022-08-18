@@ -1,5 +1,7 @@
 #include "serialization.h"
 
+#include <algorithm>
+
 TC_Proto::RenderSettings MakeRendersettings(Node base) {
 	TC_Proto::RenderSettings settings;
 	settings.set_width(base.AsDict().at("width").AsDouble());
@@ -79,24 +81,32 @@ void Serialization(std::istream& strm) {
 
 	TC_Proto::TransportCatalogue tc;
 
-	int index = 0;
+	int bus_index = 0;
+	int stop_index = 0;
 	for (auto& bus : catalogue.GetBusInfo()) {
 		TC_Proto::BusInfo bus_info;
-		bus.second.index = index;
+		bus.second.index = bus_index;
 		bus_info.set_bus_name(bus.second.bus_name.data());
 		bus_info.set_curvature(bus.second.curvature);
 		bus_info.set_route_length_on_road(bus.second.route_length_on_road);
-		bus_info.set_stops_on_route(bus.second.stops_on_route);
+
+		auto bus_ptr = catalogue.FindBus(bus.second.bus_name);
+		for (const auto& s : bus_ptr->stops_vector) {
+			bus_info.add_stops_indexes(s->index);
+		}
+
+		//bus_info.set_stops_on_route(bus.second.stops_on_route);
 		bus_info.set_unique_stops(bus.second.unique_stops);
 		bus_info.set_is_ring(catalogue.FindBus(bus.second.bus_name)->is_ring);
 		tc.add_buses_info()->CopyFrom(bus_info);
-		index++;
+		bus_index++;
 	}
 	for (const auto& stop : catalogue.GetStops()) {
 		TC_Proto::StopInfo stop_info;
 		stop_info.set_stop_name(stop.stop_name.data());
 		stop_info.set_lat(stop.coodinates.lat);
 		stop_info.set_lng(stop.coodinates.lng);
+		stop_info.set_index(stop_index);
 
 		Stop* stop_finded = catalogue.FindStop(stop.stop_name);
 		auto stop_info_finded = catalogue.GetStopInfo().find(stop_finded);
@@ -108,6 +118,7 @@ void Serialization(std::istream& strm) {
 		}
 		tc.add_stops_info()->CopyFrom(stop_info);
 	}
+
 	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
 
 	ofstream ostrm;
@@ -182,7 +193,8 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					.Key("curvature").Value(tc.buses_info().Get(i).curvature())
 					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
 					.Key("route_length").Value(static_cast<double>(tc.buses_info().Get(i).route_length_on_road()))
-					.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_on_route()))
+					//.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_on_route()))
+					.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_indexes_size()))
 					.Key("unique_stop_count").Value(static_cast<int>(tc.buses_info().Get(i).unique_stops()))
 					.EndDict();
 			}
@@ -229,7 +241,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 						tc.render_settings().color_palette().Get(i).color_rgba().opacity()
 					);
 				}
-				else  {
+				else {
 					render.SetColorPalette(tc.render_settings().color_palette().Get(i).color_str());
 				}
 			}
@@ -237,14 +249,18 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 			for (const auto& stop : tc.stops_info()) {
 				if (stop.bus_names_indexes_size() > 0) {
 					coords.push_back({ stop.lat(),stop.lng() });
+				}
+			}
+			render.MakeSphereProjector(coords);
+			for (const auto& stop : tc.stops_info()) {
+				if (stop.bus_names_indexes_size() > 0) {
 					for (const auto& bus_index : stop.bus_names_indexes()) {
 						render.AddBusWithStops(tc.buses_info().Get(bus_index).bus_name(), tc.buses_info().Get(bus_index).is_ring(), stop.stop_name(), { stop.lat(),stop.lng() });
 					}
 				}
 			}
-			render.MakeSphereProjector(coords);
-			render.Sorting();
 			render.RenderBusesLines();
+			render.Sorting();
 			render.RenderBusesNames();
 			render.RenderCircle();
 			render.RenderStopsNames();

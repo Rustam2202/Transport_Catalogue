@@ -7,13 +7,16 @@ using namespace json;
 using namespace renderer;
 
 void InsertStops(TransportCatalogue& catalogue, Array base) {
+	uint32_t index = 0;
 	for (Node base_data : base) {
 		if (base_data.AsDict().at("type").AsString() == "Stop") {
 			Stop stop;
+			stop.index = index;
 			stop.stop_name = base_data.AsDict().at("name").AsString();
 			stop.coodinates.lat = base_data.AsDict().at("latitude").AsDouble();
 			stop.coodinates.lng = base_data.AsDict().at("longitude").AsDouble();
 			catalogue.AddStop(std::move(stop));
+			index++;
 		}
 	}
 }

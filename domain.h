@@ -12,6 +12,7 @@ namespace transport_catalogue {
 
 	struct Stop
 	{
+		uint32_t index = 0;
 		std::string stop_name;
 		geo::Coordinates coodinates;
 	};
@@ -25,7 +26,7 @@ namespace transport_catalogue {
 	};
 
 	struct BusInfo {
-		int index = 0;
+		uint32_t index = 0;
 		std::string_view bus_name;
 		size_t stops_on_route = 0;
 		size_t unique_stops = 0;
