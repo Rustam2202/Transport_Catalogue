@@ -252,13 +252,16 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				}
 			}
 			render.MakeSphereProjector(coords);
-			for (const auto& stop : tc.stops_info()) {
-				if (stop.bus_names_indexes_size() > 0) {
-					for (const auto& bus_index : stop.bus_names_indexes()) {
-						render.AddBusWithStops(tc.buses_info().Get(bus_index).bus_name(), tc.buses_info().Get(bus_index).is_ring(), stop.stop_name(), { stop.lat(),stop.lng() });
+
+			for (const auto& bus : tc.buses_info()) {
+				if (bus.stops_indexes_size() > 0) {
+					for (uint32_t stop_index : bus.stops_indexes()) {
+						render.AddBusWithStops(bus.bus_name(), bus.is_ring(), tc.stops_info().Get(stop_index).stop_name()
+							, { tc.stops_info().Get(stop_index).lat(),tc.stops_info().Get(stop_index).lng() });
 					}
 				}
 			}
+
 			render.RenderBusesLines();
 			render.Sorting();
 			render.RenderBusesNames();
