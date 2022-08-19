@@ -12,10 +12,10 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 	settings.set_underlayer_width(base.AsDict().at("underlayer_width").AsDouble());
 	settings.set_bus_label_font_size(base.AsDict().at("bus_label_font_size").AsInt());
 	settings.set_stop_label_font_size(base.AsDict().at("stop_label_font_size").AsInt());
-	settings.mutable_stop_label_offset()->set_x(base.AsDict().at("bus_label_offset").AsArray()[0].AsDouble());
-	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("bus_label_offset").AsArray()[1].AsDouble());
-	settings.mutable_bus_label_offset()->set_x(base.AsDict().at("stop_label_offset").AsArray()[0].AsDouble());
-	settings.mutable_bus_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
+	settings.mutable_stop_label_offset()->set_x(base.AsDict().at("stop_label_offset").AsArray()[0].AsDouble());
+	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
+	settings.mutable_bus_label_offset()->set_x(base.AsDict().at("bus_label_offset").AsArray()[0].AsDouble());
+	settings.mutable_bus_label_offset()->set_y(base.AsDict().at("bus_label_offset").AsArray()[1].AsDouble());
 
 	if (base.AsDict().at("underlayer_color").IsString()) {
 		settings.mutable_underlayer_color()->set_color_str(base.AsDict().at("underlayer_color").AsString());
@@ -95,7 +95,7 @@ void Serialization(std::istream& strm) {
 			bus_info.add_stops_indexes(s->index);
 		}
 
-		//bus_info.set_stops_on_route(bus.second.stops_on_route);
+		bus_info.set_stops_on_route(bus.second.stops_on_route);
 		bus_info.set_unique_stops(bus.second.unique_stops);
 		bus_info.set_is_ring(catalogue.FindBus(bus.second.bus_name)->is_ring);
 		tc.add_buses_info()->CopyFrom(bus_info);
@@ -193,8 +193,8 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					.Key("curvature").Value(tc.buses_info().Get(i).curvature())
 					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
 					.Key("route_length").Value(static_cast<double>(tc.buses_info().Get(i).route_length_on_road()))
-					//.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_on_route()))
-					.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_indexes_size()))
+					.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_on_route()))
+					//.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_indexes_size()))
 					.Key("unique_stop_count").Value(static_cast<int>(tc.buses_info().Get(i).unique_stops()))
 					.EndDict();
 			}
@@ -220,7 +220,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					tc.render_settings().underlayer_color().color_rgba().opacity()
 				);
 			}
-			else if (tc.render_settings().underlayer_color().has_color_rgba()) {
+			else /*if (tc.render_settings().underlayer_color().has_color_rgba())*/ {
 				render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_str());
 			}
 

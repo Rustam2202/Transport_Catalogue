@@ -123,7 +123,9 @@ namespace svg {
 
 	void Text::RenderObject(const RenderContext& context) const {
 		auto& out = context.out;
-		out << "<text x=\""sv << center_.x << "\" y=\""sv << center_.y << "\" dx=\""sv << offset_.x << "\" dy=\""sv << offset_.y;
+		out << "<text"sv;
+		RenderAttrs(context.out);
+		out << " x=\""sv << center_.x << "\" y=\""sv << center_.y << "\" dx=\""sv << offset_.x << "\" dy=\""sv << offset_.y;
 		out << "\" font-size=\""sv << font_size_ << "\""sv;
 		if (!font_family_.empty()) {
 			out << " font-family=\""sv << font_family_ << "\""sv;
@@ -131,7 +133,6 @@ namespace svg {
 		if (!font_weight_.empty()) {
 			out << " font-weight=\""sv << font_weight_ << "\""sv;
 		}
-		RenderAttrs(context.out);
 
 		out << ">"sv;
 
