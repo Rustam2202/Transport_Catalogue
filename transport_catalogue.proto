@@ -2,6 +2,24 @@ syntax = "proto3";
 
 package TC_Proto;
 
+//import "graph.proto";
+
+message Weight{
+	double wait = 1;
+	double movement = 2;
+}
+
+message Edge{
+	uint64 from = 1;
+	uint64 to = 2;
+	Weight weight = 3;
+	int32 span_count = 4;
+}
+
+message Graph {
+	repeated Edge edges = 1;
+}
+
  message Offset {
     double x = 1;
     double y = 2;
@@ -65,6 +83,7 @@ message TransportCatalogue {
 	repeated StopInfo stops_info = 1;
 	repeated BusInfo buses_info = 2;
 	RenderSettings render_settings = 3;
+	Graph graph = 4;
 }
 
 // C:/dev/ProtoBuf/path/to/protobuf/package/bin/protoc --cpp_out . transport_catalogue.proto

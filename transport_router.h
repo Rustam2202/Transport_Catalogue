@@ -84,6 +84,8 @@ public:
 		router_(GetGraph())
 	{}
 
+	const graph::Router<WeightInfo> GetRouter() { return router_; }
+
 	Routes BuildRoute(std::string_view from, std::string_view to);
 
 private:

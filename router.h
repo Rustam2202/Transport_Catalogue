@@ -27,6 +27,8 @@ namespace graph {
 			std::vector<EdgeId> edges;
 		};
 
+		const Graph& GetGraph() { return graph_; }
+
 		std::optional<RouteInfo> BuildRoute(VertexId from, VertexId to) const;
 
 	private:

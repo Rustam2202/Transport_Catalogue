@@ -36,17 +36,6 @@ TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int
 			double route_length = 0;
 			for (int j = k + 1; j < bus.stops_vector.size(); ++j) {
 				CalculateAndAddEdge(bus, catalogue, route_length, k, j, true);
-
-				/*graph::Edge<WeightInfo> temp;
-				temp.from = stops_name_to_id_.at(bus.stops_vector[k]->stop_name);
-				temp.to = stops_name_to_id_.at(bus.stops_vector[j]->stop_name);
-				uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j - 1]->stop_name, bus.stops_vector[j]->stop_name);
-				route_length += dist;
-				temp.weight.movement = CalculateMoveWeight(route_length);
-				temp.weight.wait = bus_wait_time_;
-				temp.span_count = j - k;
-				graph_.AddEdge(temp);
-				id_to_bus_name_.push_back(bus.bus_name);*/
 			}
 		}
 
@@ -57,24 +46,6 @@ TransportGraph::TransportGraph(TransportCatalogue& catalogue, int wait_time, int
 					CalculateAndAddEdge(bus, catalogue, route_length, k, j, false);
 				}
 			}
-
-			//if (!bus.is_ring) {
-			//	for (int k = bus.stops_vector.size() - 1; k > -1; --k) {
-			//		double route_length = 0;
-			//		for (int j = k - 1; j > -1; --j) {
-			//			graph::Edge<WeightInfo> temp;
-			//			temp.from = stops_name_to_id_.at(bus.stops_vector[k]->stop_name);
-			//			temp.to = stops_name_to_id_.at(bus.stops_vector[j]->stop_name);
-			//			uint64_t dist = catalogue.GetDistanceBetweenStops(bus.stops_vector[j + 1]->stop_name, bus.stops_vector[j]->stop_name);
-			//			route_length += dist;
-			//			temp.weight.movement = CalculateMoveWeight(route_length);
-			//			temp.weight.wait = bus_wait_time_;
-			//			temp.span_count = k - j;
-			//			graph_.AddEdge(temp);
-			//			id_to_bus_name_.push_back(bus.bus_name);
-			//		}
-			//	}
-			//}
 		}
 	}
 }

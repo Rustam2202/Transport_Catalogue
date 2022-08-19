@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+//package TC_Proto;
+
+message RGB {
+	uint32 red = 1;
+	uint32 green = 2;
+	uint32 blue = 3;
+ }
+
+ message RGBa {
+	uint32 red = 1;
+	uint32 green = 2;
+	uint32 blue = 3;
+	double opacity = 4;
+ }
+
+ message Color{
+	 oneof color{
+	 string color_str = 1;
+	 RGB color_rgb = 2;
+	 RGBa color_rgba = 3;
+	 }
+ }

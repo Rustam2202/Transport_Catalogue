@@ -2,71 +2,7 @@
 
 #include <algorithm>
 
-TC_Proto::RenderSettings MakeRendersettings(Node base) {
-	TC_Proto::RenderSettings settings;
-	settings.set_width(base.AsDict().at("width").AsDouble());
-	settings.set_height(base.AsDict().at("height").AsDouble());
-	settings.set_padding(base.AsDict().at("padding").AsDouble());
-	settings.set_stop_radius(base.AsDict().at("stop_radius").AsDouble());
-	settings.set_line_width(base.AsDict().at("line_width").AsDouble());
-	settings.set_underlayer_width(base.AsDict().at("underlayer_width").AsDouble());
-	settings.set_bus_label_font_size(base.AsDict().at("bus_label_font_size").AsInt());
-	settings.set_stop_label_font_size(base.AsDict().at("stop_label_font_size").AsInt());
-	settings.mutable_stop_label_offset()->set_x(base.AsDict().at("stop_label_offset").AsArray()[0].AsDouble());
-	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
-	settings.mutable_bus_label_offset()->set_x(base.AsDict().at("bus_label_offset").AsArray()[0].AsDouble());
-	settings.mutable_bus_label_offset()->set_y(base.AsDict().at("bus_label_offset").AsArray()[1].AsDouble());
-
-	if (base.AsDict().at("underlayer_color").IsString()) {
-		settings.mutable_underlayer_color()->set_color_str(base.AsDict().at("underlayer_color").AsString());
-	}
-	else if (base.AsDict().at("underlayer_color").IsArray()) {
-		Node color = base.AsDict().at("underlayer_color").AsArray();
-		if (color.AsArray().size() == 3) {
-			TC_Proto::RGB rgb;
-			rgb.set_red(color.AsArray()[0].AsInt());
-			rgb.set_green(color.AsArray()[1].AsInt());
-			rgb.set_blue(color.AsArray()[2].AsInt());
-			settings.mutable_underlayer_color()->mutable_color_rgb()->CopyFrom(rgb);
-		}
-		else if (color.AsArray().size() == 4) {
-			TC_Proto::RGBa rgba;
-			rgba.set_red(color.AsArray()[0].AsInt());
-			rgba.set_green(color.AsArray()[1].AsInt());
-			rgba.set_blue(color.AsArray()[2].AsInt());
-			rgba.set_opacity(color.AsArray()[3].AsDouble());
-			settings.mutable_underlayer_color()->mutable_color_rgba()->CopyFrom(rgba);
-		}
-		else if (base.AsDict().at("underlayer_color").IsString()) {
-			settings.mutable_underlayer_color()->set_color_str(color.AsString());
-		}
-	}
-
-	for (Node colors : base.AsDict().at("color_palette").AsArray()) {
-		if (colors.IsArray()) {
-			if (colors.AsArray().size() == 3) {
-				TC_Proto::RGB rgb;
-				rgb.set_red(colors.AsArray()[0].AsInt());
-				rgb.set_green(colors.AsArray()[1].AsInt());
-				rgb.set_blue(colors.AsArray()[2].AsInt());
-
-				settings.add_color_palette()->mutable_color_rgb()->CopyFrom(rgb);
-			}
-			else if (colors.AsArray().size() == 4) {
-				TC_Proto::RGBa rgba;
-				rgba.set_red(colors.AsArray()[0].AsInt());
-				rgba.set_green(colors.AsArray()[1].AsInt());
-				rgba.set_blue(colors.AsArray()[2].AsInt());
-				rgba.set_opacity(colors.AsArray()[3].AsDouble());
-				settings.add_color_palette()->mutable_color_rgba()->CopyFrom(rgba);
-			}
-		}
-		else if (colors.IsString()) {
-			settings.add_color_palette()->set_color_str(colors.AsString());
-		}
-	}
-	return settings;
-}
+TC_Proto::RenderSettings MakeRendersettings(Node base);
 
 void Serialization(std::istream& strm) {
 	Node base = Load(strm).GetRoot();
@@ -78,6 +14,11 @@ void Serialization(std::istream& strm) {
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
 	SetMapRender(map, base.AsDict().at("render_settings"));
+	TransportRoter router(
+		catalogue,
+		base.AsDict().at("routing_settings").AsDict().at("bus_wait_time").AsInt(),
+		base.AsDict().at("routing_settings").AsDict().at("bus_velocity").AsInt()
+	);
 
 	TC_Proto::TransportCatalogue tc;
 
@@ -118,8 +59,11 @@ void Serialization(std::istream& strm) {
 		}
 		tc.add_stops_info()->CopyFrom(stop_info);
 	}
-
 	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
+
+	router.GetRouter();
+
+	tc.mutable_graph()->add_edges();
 
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
@@ -274,8 +218,78 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
 				.EndDict();
 		}
+		else if (stat_data.AsDict().at("type").AsString() == "Route") {
+
+		}
 	}
 
 	result.EndArray();
 	json::Print(Document(result.Build()), output);
 }
+
+TC_Proto::RenderSettings MakeRendersettings(Node base) {
+	TC_Proto::RenderSettings settings;
+	settings.set_width(base.AsDict().at("width").AsDouble());
+	settings.set_height(base.AsDict().at("height").AsDouble());
+	settings.set_padding(base.AsDict().at("padding").AsDouble());
+	settings.set_stop_radius(base.AsDict().at("stop_radius").AsDouble());
+	settings.set_line_width(base.AsDict().at("line_width").AsDouble());
+	settings.set_underlayer_width(base.AsDict().at("underlayer_width").AsDouble());
+	settings.set_bus_label_font_size(base.AsDict().at("bus_label_font_size").AsInt());
+	settings.set_stop_label_font_size(base.AsDict().at("stop_label_font_size").AsInt());
+	settings.mutable_stop_label_offset()->set_x(base.AsDict().at("stop_label_offset").AsArray()[0].AsDouble());
+	settings.mutable_stop_label_offset()->set_y(base.AsDict().at("stop_label_offset").AsArray()[1].AsDouble());
+	settings.mutable_bus_label_offset()->set_x(base.AsDict().at("bus_label_offset").AsArray()[0].AsDouble());
+	settings.mutable_bus_label_offset()->set_y(base.AsDict().at("bus_label_offset").AsArray()[1].AsDouble());
+
+	if (base.AsDict().at("underlayer_color").IsString()) {
+		settings.mutable_underlayer_color()->set_color_str(base.AsDict().at("underlayer_color").AsString());
+	}
+	else if (base.AsDict().at("underlayer_color").IsArray()) {
+		Node color = base.AsDict().at("underlayer_color").AsArray();
+		if (color.AsArray().size() == 3) {
+			TC_Proto::RGB rgb;
+			rgb.set_red(color.AsArray()[0].AsInt());
+			rgb.set_green(color.AsArray()[1].AsInt());
+			rgb.set_blue(color.AsArray()[2].AsInt());
+			settings.mutable_underlayer_color()->mutable_color_rgb()->CopyFrom(rgb);
+		}
+		else if (color.AsArray().size() == 4) {
+			TC_Proto::RGBa rgba;
+			rgba.set_red(color.AsArray()[0].AsInt());
+			rgba.set_green(color.AsArray()[1].AsInt());
+			rgba.set_blue(color.AsArray()[2].AsInt());
+			rgba.set_opacity(color.AsArray()[3].AsDouble());
+			settings.mutable_underlayer_color()->mutable_color_rgba()->CopyFrom(rgba);
+		}
+		else if (base.AsDict().at("underlayer_color").IsString()) {
+			settings.mutable_underlayer_color()->set_color_str(color.AsString());
+		}
+	}
+
+	for (Node colors : base.AsDict().at("color_palette").AsArray()) {
+		if (colors.IsArray()) {
+			if (colors.AsArray().size() == 3) {
+				TC_Proto::RGB rgb;
+				rgb.set_red(colors.AsArray()[0].AsInt());
+				rgb.set_green(colors.AsArray()[1].AsInt());
+				rgb.set_blue(colors.AsArray()[2].AsInt());
+
+				settings.add_color_palette()->mutable_color_rgb()->CopyFrom(rgb);
+			}
+			else if (colors.AsArray().size() == 4) {
+				TC_Proto::RGBa rgba;
+				rgba.set_red(colors.AsArray()[0].AsInt());
+				rgba.set_green(colors.AsArray()[1].AsInt());
+				rgba.set_blue(colors.AsArray()[2].AsInt());
+				rgba.set_opacity(colors.AsArray()[3].AsDouble());
+				settings.add_color_palette()->mutable_color_rgba()->CopyFrom(rgba);
+			}
+		}
+		else if (colors.IsString()) {
+			settings.add_color_palette()->set_color_str(colors.AsString());
+		}
+	}
+	return settings;
+}
+

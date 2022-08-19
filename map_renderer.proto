@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+//package TC_Proto;
+
+import "svg.proto";
+
+message Offset {
+    double x = 1;
+    double y = 2;
+ }
+
+ message RenderSettings {
+	double width = 1;
+	double height = 2;
+	double padding = 3;
+	double stop_radius = 4;
+	double line_width = 5;
+	double underlayer_width = 6;
+	int32 bus_label_font_size = 7;
+	int32 stop_label_font_size = 8;
+	Offset stop_label_offset = 9;
+	Offset bus_label_offset = 10;
+	Color underlayer_color = 11;
+	repeated Color color_palette = 12;
+}
