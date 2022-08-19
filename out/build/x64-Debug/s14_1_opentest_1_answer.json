@@ -1,0 +1,79 @@
+[
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 618688611
+    },
+    {
+        "curvature": 1.93751,
+        "request_id": 115843268,
+        "route_length": 1.59486e+06,
+        "stop_count": 3,
+        "unique_stop_count": 2
+    },
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 1332127185
+    },
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 1332127185
+    },
+    {
+        "curvature": 1.93751,
+        "request_id": 115843268,
+        "route_length": 1.59486e+06,
+        "stop_count": 3,
+        "unique_stop_count": 2
+    },
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 618688611
+    },
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 1332127185
+    },
+    {
+        "curvature": 1.93751,
+        "request_id": 115843268,
+        "route_length": 1.59486e+06,
+        "stop_count": 3,
+        "unique_stop_count": 2
+    },
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 1332127185
+    },
+    {
+        "buses": [
+            "C",
+            "LZcwNjKHeIIQr3",
+            "lZ8EVeIz4J7ut"
+        ],
+        "request_id": 1332127185
+    }
+]

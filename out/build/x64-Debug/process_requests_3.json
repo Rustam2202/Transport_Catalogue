@@ -1,0 +1,28 @@
+{
+  "serialization_settings": {
+    "file": "transport_catalogue.db"
+  },
+  "stat_requests": [
+    {
+      "id": 1,
+      "name": "289",
+      "type": "Bus"
+    },
+    {
+      "id": 2,
+      "name": "Lipetskaya ulitsa 46",
+      "type": "Stop"
+    },
+    {
+      "id": 3,
+      "name": "Lipetskaya ulitsa 40",
+      "type": "Stop"
+    },
+    {
+      "id": 4,
+      "name": "Moskvorechye",
+      "type": "Stop"
+    }
+  ]
+}
+  

@@ -1,0 +1,28 @@
+{
+  "serialization_settings": {
+    "file": "transport_catalogue.db"
+  },
+  "stat_requests": [
+    {
+      "id": 1,
+      "name": "297",
+      "type": "Bus"
+    },
+    {
+      "id": 2,
+      "name": "635",
+      "type": "Bus"
+    },
+    {
+      "id": 3,
+      "name": "828",
+      "type": "Bus"
+    },
+    {
+      "id": 4,
+      "name": "Universam",
+      "type": "Stop"
+    }
+  ]
+}
+  

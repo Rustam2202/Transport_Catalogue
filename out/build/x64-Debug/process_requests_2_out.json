@@ -1,0 +1,32 @@
+[
+  {
+    "curvature": 1.36159,
+    "request_id": 1,
+    "route_length": 5880,
+    "stop_count": 6,
+    "unique_stop_count": 5
+  },
+  {
+    "curvature": 1.12195,
+    "request_id": 2,
+    "route_length": 14810,
+    "stop_count": 11,
+    "unique_stop_count": 6
+  },
+  {
+    "curvature": 1.31245,
+    "request_id": 3,
+    "route_length": 15790,
+    "stop_count": 11,
+    "unique_stop_count": 6
+  },
+  {
+    "buses": [
+      "297",
+      "635",
+      "828"
+    ],
+    "request_id": 4
+  }
+]
+  

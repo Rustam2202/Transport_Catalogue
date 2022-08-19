@@ -1,0 +1,170 @@
+{
+  "serialization_settings": {
+    "file": "transport_catalogue.db"
+  },
+  "routing_settings": {
+    "bus_wait_time": 2,
+    "bus_velocity": 30
+  },
+  "render_settings": {
+    "width": 1200,
+    "height": 500,
+    "padding": 50,
+    "stop_radius": 5,
+    "line_width": 14,
+    "bus_label_font_size": 20,
+    "bus_label_offset": [
+      7,
+      15
+    ],
+    "stop_label_font_size": 18,
+    "stop_label_offset": [
+      7,
+      -3
+    ],
+    "underlayer_color": [
+      255,
+      255,
+      255,
+      0.85
+    ],
+    "underlayer_width": 3,
+    "color_palette": [
+      "green",
+      [
+        255,
+        160,
+        0
+      ],
+      "red"
+    ]
+  },
+  "base_requests": [
+    {
+      "type": "Bus",
+      "name": "14",
+      "stops": [
+        "Lisa Chaykin st",
+        "Elecktronets",
+        "River bridge",
+        "Sochi hotel",
+        "Kuban st",
+        "Request stop",
+        "Dokuchaev st",
+        "Lisa Chaykin st"
+      ],
+      "is_roundtrip": true
+    },
+    {
+      "type": "Bus",
+      "name": "24",
+      "stops": [
+        "Dokuchaev st",
+        "Parallel st",
+        "Elecktronets",
+        "MOTHERLANd sanatory"
+      ],
+      "is_roundtrip": false
+    },
+    {
+      "type": "Bus",
+      "name": "114",
+      "stops": [
+        "Sea gate",
+        "River bridge"
+      ],
+      "is_roundtrip": false
+    },
+    {
+      "type": "Stop",
+      "name": "Lisa Chaykin st",
+      "latitude": 43.590317,
+      "longitude": 39.746833,
+      "road_distances": {
+        "Elecktronets": 4300,
+        "Dokuchaev st": 2000
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Sea gate",
+      "latitude": 43.581969,
+      "longitude": 39.719848,
+      "road_distances": {
+        "River bridge": 850
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Elecktronets",
+      "latitude": 43.598701,
+      "longitude": 39.730623,
+      "road_distances": {
+        "MOTHERLANd sanatory": 4500,
+        "Parallel st": 1200,
+        "River bridge": 1900
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "River bridge",
+      "latitude": 43.587795,
+      "longitude": 39.716901,
+      "road_distances": {
+        "Sea gate": 850,
+        "Sochi hotel": 1740
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Sochi hotel",
+      "latitude": 43.578079,
+      "longitude": 39.728068,
+      "road_distances": {
+        "Kuban st": 320
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Kuban st",
+      "latitude": 43.578509,
+      "longitude": 39.730959,
+      "road_distances": {
+        "Request stop": 370
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Request stop",
+      "latitude": 43.579285,
+      "longitude": 39.733742,
+      "road_distances": {
+        "Dokuchaev st": 600
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Dokuchaev st",
+      "latitude": 43.585586,
+      "longitude": 39.733879,
+      "road_distances": {
+        "Parallel st": 1100
+      }
+    },
+    {
+      "type": "Stop",
+      "name": "Parallel st",
+      "latitude": 43.590041,
+      "longitude": 39.732886,
+      "road_distances": {}
+    },
+    {
+      "type": "Stop",
+      "name": "MOTHERLANd sanatory",
+      "latitude": 43.601202,
+      "longitude": 39.715498,
+      "road_distances": {}
+    }
+  ]
+}
+  

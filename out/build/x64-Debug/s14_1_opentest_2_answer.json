@@ -1,0 +1,65 @@
+[
+    {
+        "buses": [
+
+        ],
+        "request_id": 544020320
+    },
+    {
+        "buses": [
+
+        ],
+        "request_id": 328184451
+    },
+    {
+        "curvature": 1.92616,
+        "request_id": 1213240777,
+        "route_length": 6.45779e+07,
+        "stop_count": 92,
+        "unique_stop_count": 87
+    },
+    {
+        "buses": [
+            "f4"
+        ],
+        "request_id": 794042813
+    },
+    {
+        "error_message": "not found",
+        "request_id": 911170866
+    },
+    {
+        "curvature": 3.42859,
+        "request_id": 1722953564,
+        "route_length": 3.71587e+06,
+        "stop_count": 5,
+        "unique_stop_count": 3
+    },
+    {
+        "buses": [
+
+        ],
+        "request_id": 1690101582
+    },
+    {
+        "buses": [
+            "KX8lv90kw",
+            "fG9Khu7"
+        ],
+        "request_id": 803108957
+    },
+    {
+        "curvature": 1.92616,
+        "request_id": 1213240777,
+        "route_length": 6.45779e+07,
+        "stop_count": 92,
+        "unique_stop_count": 87
+    },
+    {
+        "buses": [
+            "7YM4bOnLHZ3APWI",
+            "BJ"
+        ],
+        "request_id": 1225964629
+    }
+]
