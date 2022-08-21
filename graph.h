@@ -28,6 +28,7 @@ namespace graph {
 		DirectedWeightedGraph() = default;
 		explicit DirectedWeightedGraph(size_t vertex_count);
 		EdgeId AddEdge(const Edge<Weight>& edge);
+		const std::vector<Edge<Weight>>& GetEdges() { return edges_; }
 
 		size_t GetVertexCount() const;
 		size_t GetEdgeCount() const;

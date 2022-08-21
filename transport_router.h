@@ -49,7 +49,6 @@ struct Routes {
 	double weight;
 };
 
-
 class TransportGraph {
 	using StopIdInfo = std::unordered_map<std::string_view, int, Hasher>;
 	using GraphType = graph::DirectedWeightedGraph<WeightInfo>;
@@ -84,7 +83,7 @@ public:
 		router_(GetGraph())
 	{}
 
-	const graph::Router<WeightInfo> GetRouter() { return router_; }
+	const graph::Router<WeightInfo>& GetRouter() { return router_; }
 
 	Routes BuildRoute(std::string_view from, std::string_view to);
 

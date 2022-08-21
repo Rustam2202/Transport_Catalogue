@@ -16,8 +16,20 @@ message Edge{
 	int32 span_count = 4;
 }
 
+message RouteInternalData {
+	Weight weight = 1;
+	oneof edge{
+		uint64 prev_edge = 2;
+	}
+}
+
+message Routes {
+	repeated RouteInternalData routes = 1;
+}
+
 message Graph {
 	repeated Edge edges = 1;
+	repeated Routes routes_internal_data = 2;
 }
 
  message Offset {

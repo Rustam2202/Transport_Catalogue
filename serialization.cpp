@@ -1,6 +1,5 @@
 #include "serialization.h"
-
-#include <algorithm>
+#include "router.h"
 
 TC_Proto::RenderSettings MakeRendersettings(Node base);
 
@@ -61,10 +60,26 @@ void Serialization(std::istream& strm) {
 	}
 	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
 
-	router.GetRouter();
+	auto route = router.GetRouter();
+	auto graphs = route.GetGraph();
+	auto edges = graphs.GetEdges();
+	for (const auto& e : edges) {
+		TC_Proto::Edge edge;
+		edge.set_from(e.from);
+		edge.set_to(e.to);
+		edge.set_span_count(e.span_count);
+		edge.mutable_weight()->set_wait(e.weight.wait);
+		edge.mutable_weight()->set_movement(e.weight.movement);
+		tc.mutable_graph()->add_edges()->CopyFrom(edge);
+	}
+	auto internal_data = route.GetInternalData();
+	for (const auto& r : internal_data) {
+		TC_Proto::Routes routes;
+		for (const auto& data : r) {
 
-	tc.mutable_graph()->add_edges();
-
+		}
+	}
+	
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
 	tc.SerializeToOstream(&ostrm);
