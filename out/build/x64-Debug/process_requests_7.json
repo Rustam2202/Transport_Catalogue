@@ -1,0 +1,28 @@
+{
+  "serialization_settings": {
+    "file": "transport_catalogue.db"
+  },
+  "stat_requests": [
+    {
+      "id": 80146768,
+      "type": "Bus",
+      "name": "13"
+    },
+    {
+      "id": 1571442892,
+      "type": "Stop",
+      "name": "Морской вокзал"
+    },
+    {
+      "id": 1490699931,
+      "type": "Route",
+      "from": "Пансионат Нева",
+      "to": "Улица Лысая Гора"
+    },
+    {
+      "id": 684758285,
+      "type": "Map"
+    }
+  ]
+}
+  

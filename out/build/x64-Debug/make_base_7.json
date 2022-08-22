@@ -42,21 +42,21 @@
       "type": "Bus",
       "name": "23",
       "stops": [
-        "Санаторий Салют",
-        "Санаторная улица",
-        "Пансионат Нева",
-        "Санаторий Радуга",
-        "Санаторий Родина",
-        "Спортивная",
-        "Парк Ривьера",
-        "Морской вокзал",
-        "Органный зал",
-        "Театральная",
-        "Пансионат Светлана",
-        "Цирк",
-        "Стадион",
-        "Санаторий Металлург",
-        "Улица Бытха"
+        "Sanatory Salut",
+        "Sanatory st",
+        "Neva pansion",
+        "Rainbow sanatory",
+        "Motherland sanatory",
+        "Sport station",
+        "River park",
+        "Sea gate",
+        "Organy hall",
+        "Teatral",
+        "Svetlana pansion",
+        "Cyrcus",
+        "Stadion",
+        "Metall sanatory",
+        "Bytyha st"
       ],
       "is_roundtrip": false
     },
@@ -67,7 +67,7 @@
         "Улица Лизы Чайкиной",
         "Пионерская улица, 111",
         "Садовая",
-        "Театральная"
+        "Teatral"
       ],
       "is_roundtrip": false
     },
@@ -75,7 +75,7 @@
       "type": "Bus",
       "name": "36",
       "stops": [
-        "Морской вокзал",
+        "Sea gate",
         "Сбербанк",
         "Автовокзал",
         "Отель Звёздный",
@@ -94,7 +94,7 @@
       "type": "Bus",
       "name": "44к",
       "stops": [
-        "Пансионат Светлана",
+        "Svetlana pansion",
         "Улица Лысая Гора",
         "Улица В. Лысая Гора"
       ],
@@ -105,7 +105,7 @@
       "name": "90",
       "stops": [
         "Краево-Греческая улица",
-        "Улица Бытха",
+        "Bytyha st",
         "Санаторий им. Ворошилова",
         "Санаторий Приморье",
         "Санаторий Заря",
@@ -120,7 +120,7 @@
       "latitude": 43.565551,
       "longitude": 39.776858,
       "road_distances": {
-        "Улица Бытха": 1780
+        "Bytyha st": 1780
       }
     },
     {
@@ -184,12 +184,12 @@
     },
     {
       "type": "Stop",
-      "name": "Морской вокзал",
+      "name": "Sea gate",
       "latitude": 43.581969,
       "longitude": 39.719848,
       "road_distances": {
         "Сбербанк": 870,
-        "Органный зал": 570
+        "Organy hall": 570
       }
     },
     {
@@ -291,116 +291,116 @@
     },
     {
       "type": "Stop",
-      "name": "Санаторий Салют",
+      "name": "Sanatory Salut",
       "latitude": 43.623238,
       "longitude": 39.704646,
       "road_distances": {
-        "Санаторная улица": 1500
+        "Sanatory st": 1500
       }
     },
     {
       "type": "Stop",
-      "name": "Санаторная улица",
+      "name": "Sanatory st",
       "latitude": 43.620766,
       "longitude": 39.719058,
       "road_distances": {
-        "Пансионат Нева": 670
+        "Neva pansion": 670
       }
     },
     {
       "type": "Stop",
-      "name": "Пансионат Нева",
+      "name": "Neva pansion",
       "latitude": 43.614288,
       "longitude": 39.718674,
       "road_distances": {
-        "Санаторий Радуга": 520
+        "Rainbow sanatory": 520
       }
     },
     {
       "type": "Stop",
-      "name": "Санаторий Радуга",
+      "name": "Rainbow sanatory",
       "latitude": 43.609951,
       "longitude": 39.72143,
       "road_distances": {
-        "Санаторий Родина": 1190
+        "Motherland sanatory": 1190
       }
     },
     {
       "type": "Stop",
-      "name": "Санаторий Родина",
+      "name": "Motherland sanatory",
       "latitude": 43.601202,
       "longitude": 39.715498,
       "road_distances": {
-        "Спортивная": 1100
+        "Sport station": 1100
       }
     },
     {
       "type": "Stop",
-      "name": "Спортивная",
+      "name": "Sport station",
       "latitude": 43.593689,
       "longitude": 39.717642,
       "road_distances": {
-        "Парк Ривьера": 640
+        "River park": 640
       }
     },
     {
       "type": "Stop",
-      "name": "Парк Ривьера",
+      "name": "River park",
       "latitude": 43.588296,
       "longitude": 39.715956,
       "road_distances": {
-        "Морской вокзал": 730
+        "Sea gate": 730
       }
     },
     {
       "type": "Stop",
-      "name": "Органный зал",
+      "name": "Organy hall",
       "latitude": 43.57926,
       "longitude": 39.725574,
       "road_distances": {
-        "Театральная": 770
+        "Teatral": 770
       }
     },
     {
       "type": "Stop",
-      "name": "Пансионат Светлана",
+      "name": "Svetlana pansion",
       "latitude": 43.571807,
       "longitude": 39.735866,
       "road_distances": {
-        "Цирк": 520,
+        "Cyrcus": 520,
         "Улица Лысая Гора": 1070
       }
     },
     {
       "type": "Stop",
-      "name": "Цирк",
+      "name": "Cyrcus",
       "latitude": 43.569207,
       "longitude": 39.739869,
       "road_distances": {
-        "Стадион": 860
+        "Stadion": 860
       }
     },
     {
       "type": "Stop",
-      "name": "Стадион",
+      "name": "Stadion",
       "latitude": 43.565301,
       "longitude": 39.749485,
       "road_distances": {
-        "Санаторий Металлург": 950
+        "Metall sanatory": 950
       }
     },
     {
       "type": "Stop",
-      "name": "Санаторий Металлург",
+      "name": "Metall sanatory",
       "latitude": 43.561005,
       "longitude": 39.760511,
       "road_distances": {
-        "Улица Бытха": 900
+        "Bytyha st": 900
       }
     },
     {
       "type": "Stop",
-      "name": "Улица Бытха",
+      "name": "Bytyha st",
       "latitude": 43.566135,
       "longitude": 39.762109,
       "road_distances": {
@@ -431,16 +431,16 @@
       "latitude": 43.58395,
       "longitude": 39.736938,
       "road_distances": {
-        "Театральная": 1300
+        "Teatral": 1300
       }
     },
     {
       "type": "Stop",
-      "name": "Театральная",
+      "name": "Teatral",
       "latitude": 43.57471,
       "longitude": 39.731954,
       "road_distances": {
-        "Пансионат Светлана": 390
+        "Svetlana pansion": 390
       }
     }
   ]

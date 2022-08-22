@@ -14,6 +14,7 @@ message Edge{
 	uint64 to = 2;
 	Weight weight = 3;
 	int32 span_count = 4;
+	uint32 bus_name_index = 5;
 }
 
 message RouteInternalData {
