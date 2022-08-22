@@ -21,6 +21,7 @@ message RouteInternalData {
 	Weight weight = 1;
 	oneof stop_from {
 		uint64 prev_edge = 2;
+		bool prev_edge_null = 3;
 	}
 }
 

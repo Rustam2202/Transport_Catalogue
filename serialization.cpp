@@ -64,7 +64,6 @@ void Serialization(std::istream& strm) {
 	auto router_data = router.GetRouter();
 	auto graphs = router_data.GetGraph();
 	auto edges = graphs.GetEdges();
-
 	for (int i = 0; i < edges.size(); ++i) {
 		TC_Proto::Edge edge;
 		edge.set_from(edges[i].from);
@@ -89,6 +88,9 @@ void Serialization(std::istream& strm) {
 			TC_Proto::RouteInternalData intern_data_ser;
 			if (stop_from.value().prev_edge) {
 				intern_data_ser.set_prev_edge(stop_from.value().prev_edge.value());
+			}
+			else {
+				intern_data_ser.set_prev_edge_null(true);
 			}
 			intern_data_ser.mutable_weight()->set_movement(stop_from.value().weight.movement);
 			intern_data_ser.mutable_weight()->set_wait(stop_from.value().weight.wait);
@@ -261,11 +263,14 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 			for (const auto& stop : tc.stops_info()) {
 				if (stop.stop_name().data() == stop_from) {
 					index_from = stop.index();
-					//finded_from = true;
+					finded_from = true;
 				}
 				if (stop.stop_name().data() == stop_to) {
 					index_to = stop.index();
-					//finded_to = true;
+					finded_to = true;
+				}
+				if (finded_from && finded_to) {
+					break;
 				}
 			}
 
@@ -274,7 +279,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 
 			std::vector<uint64_t> edges;
 			for (std::optional<uint64_t> edge_id = route_internal_data.prev_edge();
-				tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).has_prev_edge();
+				!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null();
 				edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge()) {
 				edges.push_back(*edge_id);
 			}

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
 	ifstream request_input("process_requests_6.json"s); // s14_3_opentest_1_process_requests   process_requests_6
 	ofstream of("output.json");
-	DeSerialization(request_input, of /*std::cout*/);
+	DeSerialization(request_input, /*of*/ std::cout);
 
 	//if (argc != 2) {
 	//	PrintUsage();
