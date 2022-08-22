@@ -44,14 +44,14 @@
       "type": "Bus",
       "name": "14",
       "stops": [
-        "Улица Лизы Чайкиной",
-        "Электросети",
-        "Ривьерский мост",
-        "Гостиница Сочи",
-        "Кубанская улица",
-        "По требованию",
-        "Улица Докучаева",
-        "Улица Лизы Чайкиной"
+        "Liza Chaykin st",
+        "Elektronets",
+        "River Bridge",
+        "Sochi hotel",
+        "Kuban st",
+        "On request",
+        "Dokuchaev st",
+        "Liza Chaykin st"
       ],
       "is_roundtrip": true
     },
@@ -59,10 +59,10 @@
       "type": "Bus",
       "name": "24",
       "stops": [
-        "Улица Докучаева",
-        "Параллельная улица",
-        "Электросети",
-        "Санаторий Родина"
+        "Dokuchaev st",
+        "Parallel st",
+        "Elektronets",
+        "Motherland sanatory"
       ],
       "is_roundtrip": false
     },
@@ -70,97 +70,97 @@
       "type": "Bus",
       "name": "114",
       "stops": [
-        "Морской вокзал",
-        "Ривьерский мост"
+        "Sea gate",
+        "River Bridge"
       ],
       "is_roundtrip": false
     },
     {
       "type": "Stop",
-      "name": "Улица Лизы Чайкиной",
+      "name": "Liza Chaykin st",
       "latitude": 43.590317,
       "longitude": 39.746833,
       "road_distances": {
-        "Электросети": 4300,
-        "Улица Докучаева": 2000
+        "Elektronets": 4300,
+        "Dokuchaev st": 2000
       }
     },
     {
       "type": "Stop",
-      "name": "Морской вокзал",
+      "name": "Sea gate",
       "latitude": 43.581969,
       "longitude": 39.719848,
       "road_distances": {
-        "Ривьерский мост": 850
+        "River Bridge": 850
       }
     },
     {
       "type": "Stop",
-      "name": "Электросети",
+      "name": "Elektronets",
       "latitude": 43.598701,
       "longitude": 39.730623,
       "road_distances": {
-        "Санаторий Родина": 4500,
-        "Параллельная улица": 1200,
-        "Ривьерский мост": 1900
+        "Motherland sanatory": 4500,
+        "Parallel st": 1200,
+        "River Bridge": 1900
       }
     },
     {
       "type": "Stop",
-      "name": "Ривьерский мост",
+      "name": "River Bridge",
       "latitude": 43.587795,
       "longitude": 39.716901,
       "road_distances": {
-        "Морской вокзал": 850,
-        "Гостиница Сочи": 1740
+        "Sea gate": 850,
+        "Sochi hotel": 1740
       }
     },
     {
       "type": "Stop",
-      "name": "Гостиница Сочи",
+      "name": "Sochi hotel",
       "latitude": 43.578079,
       "longitude": 39.728068,
       "road_distances": {
-        "Кубанская улица": 320
+        "Kuban st": 320
       }
     },
     {
       "type": "Stop",
-      "name": "Кубанская улица",
+      "name": "Kuban st",
       "latitude": 43.578509,
       "longitude": 39.730959,
       "road_distances": {
-        "По требованию": 370
+        "On request": 370
       }
     },
     {
       "type": "Stop",
-      "name": "По требованию",
+      "name": "On request",
       "latitude": 43.579285,
       "longitude": 39.733742,
       "road_distances": {
-        "Улица Докучаева": 600
+        "Dokuchaev st": 600
       }
     },
     {
       "type": "Stop",
-      "name": "Улица Докучаева",
+      "name": "Dokuchaev st",
       "latitude": 43.585586,
       "longitude": 39.733879,
       "road_distances": {
-        "Параллельная улица": 1100
+        "Parallel st": 1100
       }
     },
     {
       "type": "Stop",
-      "name": "Параллельная улица",
+      "name": "Parallel st",
       "latitude": 43.590041,
       "longitude": 39.732886,
       "road_distances": {}
     },
     {
       "type": "Stop",
-      "name": "Санаторий Родина",
+      "name": "Motherland sanatory",
       "latitude": 43.601202,
       "longitude": 39.715498,
       "road_distances": {}

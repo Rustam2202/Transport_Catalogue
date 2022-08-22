@@ -1,28 +1,28 @@
-  {
-      "serialization_settings": {
-          "file": "transport_catalogue.db"
-      },
-      "stat_requests": [
-          {
-              "id": 218563507,
-              "type": "Bus",
-              "name": "14"
-          },
-          {
-              "id": 508658276,
-              "type": "Stop",
-              "name": "Электросети"
-          },
-          {
-              "id": 1964680131,
-              "type": "Route",
-              "from": "Морской вокзал",
-              "to": "Параллельная улица"
-          },
-          {
-              "id": 1359372752,
-              "type": "Map"
-          }
-      ]
-  }
+{
+  "serialization_settings": {
+    "file": "transport_catalogue.db"
+  },
+  "stat_requests": [
+    {
+      "id": 218563507,
+      "type": "Bus",
+      "name": "14"
+    },
+    {
+      "id": 508658276,
+      "type": "Stop",
+      "name": "Elektronets"
+    },
+    {
+      "id": 1964680131,
+      "type": "Route",
+      "from": "Sea gate",
+      "to": "Parallel st"
+    },
+    {
+      "id": 1359372752,
+      "type": "Map"
+    }
+  ]
+}
   

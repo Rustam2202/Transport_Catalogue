@@ -18,18 +18,18 @@ message Edge{
 
 message RouteInternalData {
 	Weight weight = 1;
-	oneof edge{
+	oneof stop_from {
 		uint64 prev_edge = 2;
 	}
 }
 
-message Routes {
-	repeated RouteInternalData routes = 1;
+message StopsTo {
+	repeated RouteInternalData stops_to = 1;
 }
 
-message Graph {
+message RoutesData {
 	repeated Edge edges = 1;
-	repeated Routes routes_internal_data = 2;
+	repeated StopsTo routes_internal_data = 2;
 }
 
  message Offset {
@@ -95,7 +95,7 @@ message TransportCatalogue {
 	repeated StopInfo stops_info = 1;
 	repeated BusInfo buses_info = 2;
 	RenderSettings render_settings = 3;
-	Graph graph = 4;
+	RoutesData router = 4;
 }
 
 // C:/dev/ProtoBuf/path/to/protobuf/package/bin/protoc --cpp_out . transport_catalogue.proto

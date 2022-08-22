@@ -60,8 +60,8 @@ void Serialization(std::istream& strm) {
 	}
 	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
 
-	auto route = router.GetRouter();
-	auto graphs = route.GetGraph();
+	auto router_data = router.GetRouter();
+	auto graphs = router_data.GetGraph();
 	auto edges = graphs.GetEdges();
 	for (const auto& e : edges) {
 		TC_Proto::Edge edge;
@@ -70,16 +70,23 @@ void Serialization(std::istream& strm) {
 		edge.set_span_count(e.span_count);
 		edge.mutable_weight()->set_wait(e.weight.wait);
 		edge.mutable_weight()->set_movement(e.weight.movement);
-		tc.mutable_graph()->add_edges()->CopyFrom(edge);
+		tc.mutable_router()->add_edges()->CopyFrom(edge);
 	}
-	auto internal_data = route.GetInternalData();
-	for (const auto& r : internal_data) {
-		TC_Proto::Routes routes;
-		for (const auto& data : r) {
-
+	auto internal_data = router_data.GetInternalData();
+	for (const auto& stops_to : internal_data) {
+		TC_Proto::StopsTo stops_to_serializ;
+		for (const auto& stop_from : stops_to) {
+			TC_Proto::RouteInternalData intern_data_ser;
+			if (stop_from.value().prev_edge) {
+				intern_data_ser.set_prev_edge(stop_from.value().prev_edge.value());
+			}
+			intern_data_ser.mutable_weight()->set_movement(stop_from.value().weight.movement);
+			intern_data_ser.mutable_weight()->set_wait(stop_from.value().weight.wait);
+			stops_to_serializ.add_stops_to()->CopyFrom(intern_data_ser);
 		}
+		tc.mutable_router()->add_routes_internal_data()->CopyFrom(stops_to_serializ);
 	}
-	
+
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
 	tc.SerializeToOstream(&ostrm);
@@ -234,6 +241,39 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				.EndDict();
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Route") {
+			const std::string& stop_from = stat_data.AsDict().at("from").AsString();
+			const std::string& stop_to = stat_data.AsDict().at("to").AsString();
+			uint64_t index_from = 0;
+			uint64_t index_to = 0;
+			bool finded_from = false;
+			bool finded_to = false;
+
+			for (const auto& stop : tc.stops_info()) {
+				if (stop.stop_name() == stop_from) {
+					index_from = stop.index();
+					//finded_from = true;
+				}
+				if (stop.stop_name() == stop_to) {
+					index_to = stop.index();
+					//finded_to = true;
+				}
+			}
+
+			auto route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
+			auto b = route_internal_data.has_prev_edge();
+
+			WeightInfo weight;
+			weight.movement = route_internal_data.weight().movement();
+			weight.wait = route_internal_data.weight().wait();
+
+			std::vector<uint64_t> edges;
+			for (std::optional<uint64_t> edge_id = route_internal_data.prev_edge();
+				edge_id;
+				//edge_id = routes_internal_data_[from][graph_.GetEdge(*edge_id).from]->prev_edge
+				) {
+				edges.push_back(*edge_id);
+			}
+			std::reverse(edges.begin(), edges.end());
 
 		}
 	}
