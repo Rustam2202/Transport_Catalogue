@@ -279,20 +279,27 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 
 			std::vector<uint64_t> edges;
 			for (std::optional<uint64_t> edge_id = route_internal_data.prev_edge();
-				!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null();
-				edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge()) {
+				//	!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null();
+				edge_id;
+				//edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge()
+				) {
 				edges.push_back(*edge_id);
+				if (!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null()) {
+					edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge();
+				}
+				else {
+					edge_id = nullopt;
+				}
 			}
 			if (edges.empty()) {
 				result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
 			}
 			else {
 				std::reverse(edges.begin(), edges.end());
-
 				result.StartDict().Key("items").StartArray();
 				for (auto edge : edges) {
 					result.StartDict()
-						.Key("stop_name").Value(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name()) //
+						.Key("stop_name").Value(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name())
 						.Key("time").Value(tc.router().edges().Get(edge).weight().wait())
 						.Key("type").Value("Wait"s)
 						.EndDict();
