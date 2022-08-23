@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package TC_Proto;
 
-//import "graph.proto";
-
 message Weight{
 	double wait = 1;
 	double movement = 2;
@@ -25,8 +23,15 @@ message RouteInternalData {
 	}
 }
 
+message Route {
+	oneof route_data {
+		bool is_null = 1;
+		RouteInternalData internal_data = 2;
+	}
+}
+
 message StopsTo {
-	repeated RouteInternalData stops_to = 1;
+	repeated Route stops_to = 1;
 }
 
 message RoutesData {

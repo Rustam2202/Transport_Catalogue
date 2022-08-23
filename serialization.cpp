@@ -81,31 +81,28 @@ void Serialization(std::istream& strm) {
 		tc.mutable_router()->add_edges()->CopyFrom(edge);
 	}
 
-	auto internal_data = router_data.GetInternalData();
-	for (const auto& stops_from : internal_data) {
-		TC_Proto::StopsTo stops_to_serializ;
-		for (const auto& stop_to : stops_from) {
-			TC_Proto::RouteInternalData intern_data_ser;
-			if (stop_to.has_value()) {
-				if (stop_to.value().prev_edge.has_value()) {
-					intern_data_ser.set_prev_edge(stop_to.value().prev_edge.value());
+	const auto& internal_data = router_data.GetInternalData();
+
+	for (int index_from = 0; index_from < internal_data.size(); ++index_from) {
+		TC_Proto::StopsTo s;
+		for (int index_to = 0; index_to < internal_data[index_from].size(); ++index_to) {
+			TC_Proto::Route r;
+			if (internal_data.at(index_from).at(index_to).has_value()) {
+				r.mutable_internal_data()->mutable_weight()->set_movement(internal_data.at(index_from).at(index_to).value().weight.movement);
+				r.mutable_internal_data()->mutable_weight()->set_wait(internal_data.at(index_from).at(index_to).value().weight.wait);
+				if (internal_data.at(index_from).at(index_to).value().prev_edge.has_value()) {
+					r.mutable_internal_data()->set_prev_edge(internal_data.at(index_from).at(index_to).value().prev_edge.value());
 				}
 				else {
-					intern_data_ser.set_prev_edge_null(true);
+					r.mutable_internal_data()->set_prev_edge_null(true);
 				}
-				intern_data_ser.mutable_weight()->set_movement(stop_to.value().weight.movement);
-				intern_data_ser.mutable_weight()->set_wait(stop_to.value().weight.wait);
-				stops_to_serializ.add_stops_to()->CopyFrom(intern_data_ser);
 			}
 			else {
-				intern_data_ser.set_prev_edge_null(true);
-				intern_data_ser.mutable_weight()->set_movement(0);
-				intern_data_ser.mutable_weight()->set_wait(0);
-				stops_to_serializ.add_stops_to()->CopyFrom(intern_data_ser);
+				r.set_is_null(true);
 			}
-
+			s.add_stops_to()->CopyFrom(r);
 		}
-		tc.mutable_router()->add_routes_internal_data()->CopyFrom(stops_to_serializ);
+		tc.mutable_router()->add_routes_internal_data()->CopyFrom(s);
 	}
 
 	ofstream ostrm;
@@ -283,24 +280,24 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				}
 			}
 
-			const auto& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
-			if (route_internal_data.prev_edge_null()) {
+			const TC_Proto::Route& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
+			if (route_internal_data.is_null()) {
 				result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
 			}
 			else {
-				double total_time = route_internal_data.weight().movement() + route_internal_data.weight().wait();
+				double total_time = route_internal_data.internal_data().weight().movement() + route_internal_data.internal_data().weight().wait();
 				std::vector<uint64_t> edges;
 				std::optional<uint64_t> edge_id;
-				if (route_internal_data.prev_edge_null()) {
+				if (route_internal_data.internal_data().prev_edge_null()) {
 					edge_id = nullopt;
 				}
 				else {
-					edge_id = route_internal_data.prev_edge();
+					edge_id = route_internal_data.internal_data().prev_edge();
 				}
 				while (edge_id != nullopt) {
 					edges.push_back(*edge_id);
-					if (!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null()) {
-						edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge();
+					if (!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).internal_data().prev_edge_null()) {
+						edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).internal_data().prev_edge();
 					}
 					else {
 						edge_id = nullopt;
@@ -324,7 +321,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				result.EndArray();
 				result.Key("request_id").Value(stat_data.AsDict().at("id").AsInt());
 				result.Key("total_time").Value(total_time).EndDict();
-			}
+			}			
 		}
 	}
 
