@@ -82,19 +82,28 @@ void Serialization(std::istream& strm) {
 	}
 
 	auto internal_data = router_data.GetInternalData();
-	for (const auto& stops_to : internal_data) {
+	for (const auto& stops_from : internal_data) {
 		TC_Proto::StopsTo stops_to_serializ;
-		for (const auto& stop_from : stops_to) {
+		for (const auto& stop_to : stops_from) {
 			TC_Proto::RouteInternalData intern_data_ser;
-			if (stop_from.value().prev_edge) {
-				intern_data_ser.set_prev_edge(stop_from.value().prev_edge.value());
+			if (stop_to.has_value()) {
+				if (stop_to.value().prev_edge.has_value()) {
+					intern_data_ser.set_prev_edge(stop_to.value().prev_edge.value());
+				}
+				else {
+					intern_data_ser.set_prev_edge_null(true);
+				}
+				intern_data_ser.mutable_weight()->set_movement(stop_to.value().weight.movement);
+				intern_data_ser.mutable_weight()->set_wait(stop_to.value().weight.wait);
+				stops_to_serializ.add_stops_to()->CopyFrom(intern_data_ser);
 			}
 			else {
 				intern_data_ser.set_prev_edge_null(true);
+				intern_data_ser.mutable_weight()->set_movement(0);
+				intern_data_ser.mutable_weight()->set_wait(0);
+				stops_to_serializ.add_stops_to()->CopyFrom(intern_data_ser);
 			}
-			intern_data_ser.mutable_weight()->set_movement(stop_from.value().weight.movement);
-			intern_data_ser.mutable_weight()->set_wait(stop_from.value().weight.wait);
-			stops_to_serializ.add_stops_to()->CopyFrom(intern_data_ser);
+
 		}
 		tc.mutable_router()->add_routes_internal_data()->CopyFrom(stops_to_serializ);
 	}
@@ -274,27 +283,29 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				}
 			}
 
-			auto route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
-			double total_time = route_internal_data.weight().movement() + route_internal_data.weight().wait();
-
-			std::vector<uint64_t> edges;
-			for (std::optional<uint64_t> edge_id = route_internal_data.prev_edge();
-				//	!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null();
-				edge_id;
-				//edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge()
-				) {
-				edges.push_back(*edge_id);
-				if (!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null()) {
-					edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge();
-				}
-				else {
-					edge_id = nullopt;
-				}
-			}
-			if (edges.empty()) {
+			const auto& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
+			if (route_internal_data.prev_edge_null()) {
 				result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
 			}
 			else {
+				double total_time = route_internal_data.weight().movement() + route_internal_data.weight().wait();
+				std::vector<uint64_t> edges;
+				std::optional<uint64_t> edge_id;
+				if (route_internal_data.prev_edge_null()) {
+					edge_id = nullopt;
+				}
+				else {
+					edge_id = route_internal_data.prev_edge();
+				}
+				while (edge_id != nullopt) {
+					edges.push_back(*edge_id);
+					if (!tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge_null()) {
+						edge_id = tc.router().routes_internal_data().Get(index_from).stops_to().Get(tc.router().edges().Get(*edge_id).from()).prev_edge();
+					}
+					else {
+						edge_id = nullopt;
+					}
+				}
 				std::reverse(edges.begin(), edges.end());
 				result.StartDict().Key("items").StartArray();
 				for (auto edge : edges) {
