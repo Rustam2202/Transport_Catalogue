@@ -1,14 +1,18 @@
 #include "serialization.h"
 #include "router.h"
 
-TC_Proto::RenderSettings MakeRendersettings(Node base);
+TC_Proto::RenderSettings MakeRenderSettings(Node base);
+
+void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& catalogue, TC_Proto::TransportCatalogue& tc);
+
+void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogue& tc);
 
 void Serialization(std::istream& strm) {
 	Node base = Load(strm).GetRoot();
 	TransportCatalogue catalogue;
 	MapRenderer map;
-
 	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
+
 	InsertStops(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertStopsDistances(catalogue, base.AsDict().at("base_requests").AsArray());
 	InsertBuses(catalogue, base.AsDict().at("base_requests").AsArray());
@@ -20,90 +24,9 @@ void Serialization(std::istream& strm) {
 	);
 
 	TC_Proto::TransportCatalogue tc;
-
-	int bus_index = 0;
-	int stop_index = 0;
-	for (auto& bus : catalogue.GetBusInfo()) {
-		TC_Proto::BusInfo bus_info;
-		bus.second.index = bus_index;
-		bus_info.set_bus_name(bus.second.bus_name.data());
-		bus_info.set_curvature(bus.second.curvature);
-		bus_info.set_route_length_on_road(bus.second.route_length_on_road);
-
-		auto bus_ptr = catalogue.FindBus(bus.second.bus_name);
-		for (const auto& s : bus_ptr->stops_vector) {
-			bus_info.add_stops_indexes(s->index);
-		}
-
-		bus_info.set_stops_on_route(bus.second.stops_on_route);
-		bus_info.set_unique_stops(bus.second.unique_stops);
-		bus_info.set_is_ring(catalogue.FindBus(bus.second.bus_name)->is_ring);
-		tc.add_buses_info()->CopyFrom(bus_info);
-		bus_index++;
-	}
-	for (const auto& stop : catalogue.GetStops()) {
-		TC_Proto::StopInfo stop_info;
-		stop_info.set_stop_name(stop.stop_name.data());
-		stop_info.set_lat(stop.coodinates.lat);
-		stop_info.set_lng(stop.coodinates.lng);
-		stop_info.set_index(stop_index);
-
-		Stop* stop_finded = catalogue.FindStop(stop.stop_name);
-		auto stop_info_finded = catalogue.GetStopInfo().find(stop_finded);
-		if (stop_info_finded != catalogue.GetStopInfo().end()) {
-			for (auto s : catalogue.GetStopInfo().at(stop_finded)) {
-				const auto& bus_info = catalogue.GetBusInfo().at(s->bus_name);
-				stop_info.add_bus_names_indexes(bus_info.index);
-			}
-		}
-		tc.add_stops_info()->CopyFrom(stop_info);
-		stop_index++;
-	}
-	tc.mutable_render_settings()->CopyFrom(MakeRendersettings(base.AsDict().at("render_settings")));
-
-	auto router_data = router.GetRouter();
-	auto graphs = router_data.GetGraph();
-	auto edges = graphs.GetEdges();
-	for (int i = 0; i < edges.size(); ++i) {
-		TC_Proto::Edge edge;
-		edge.set_from(edges[i].from);
-		edge.set_to(edges[i].to);
-		edge.set_span_count(edges[i].span_count);
-		edge.mutable_weight()->set_wait(edges[i].weight.wait);
-		edge.mutable_weight()->set_movement(edges[i].weight.movement);
-
-		for (int j = 0; j < tc.buses_info().size(); ++j) {
-			if (router.GetBusNameById(i) == tc.buses_info().Get(j).bus_name()) {
-				edge.set_bus_name_index(j);
-				break;
-			}
-		}
-		tc.mutable_router()->add_edges()->CopyFrom(edge);
-	}
-
-	const auto& internal_data = router_data.GetInternalData();
-
-	for (int index_from = 0; index_from < internal_data.size(); ++index_from) {
-		TC_Proto::StopsTo s;
-		for (int index_to = 0; index_to < internal_data[index_from].size(); ++index_to) {
-			TC_Proto::Route r;
-			if (internal_data.at(index_from).at(index_to).has_value()) {
-				r.mutable_internal_data()->mutable_weight()->set_movement(internal_data.at(index_from).at(index_to).value().weight.movement);
-				r.mutable_internal_data()->mutable_weight()->set_wait(internal_data.at(index_from).at(index_to).value().weight.wait);
-				if (internal_data.at(index_from).at(index_to).value().prev_edge.has_value()) {
-					r.mutable_internal_data()->set_prev_edge(internal_data.at(index_from).at(index_to).value().prev_edge.value());
-				}
-				else {
-					r.mutable_internal_data()->set_prev_edge_null(true);
-				}
-			}
-			else {
-				r.set_is_null(true);
-			}
-			s.add_stops_to()->CopyFrom(r);
-		}
-		tc.mutable_router()->add_routes_internal_data()->CopyFrom(s);
-	}
+	SerializationBusesAndStopsInfo(catalogue, tc);
+	tc.mutable_render_settings()->CopyFrom(MakeRenderSettings(base.AsDict().at("render_settings")));
+	SerializationRouterData(router, tc);
 
 	ofstream ostrm;
 	ostrm.open(file_name, ios::binary);
@@ -116,10 +39,10 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	string file_name = base.AsDict().at("serialization_settings").AsDict().at("file").AsString();
 	const auto& requests = base.AsDict().at("stat_requests");
 	ifstream data_base_file(file_name, ios::binary);
-
 	tc.ParseFromIstream(&data_base_file);
 	MapRenderer render;
 	std::vector<geo::Coordinates> coords;
+
 
 	Builder result;
 	result.StartArray();
@@ -329,7 +252,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	json::Print(Document(result.Build()), output);
 }
 
-TC_Proto::RenderSettings MakeRendersettings(Node base) {
+TC_Proto::RenderSettings MakeRenderSettings(Node base) {
 	TC_Proto::RenderSettings settings;
 	settings.set_width(base.AsDict().at("width").AsDouble());
 	settings.set_height(base.AsDict().at("height").AsDouble());
@@ -393,5 +316,89 @@ TC_Proto::RenderSettings MakeRendersettings(Node base) {
 		}
 	}
 	return settings;
+}
+
+void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& catalogue, TC_Proto::TransportCatalogue& tc) {
+	int bus_index = 0;
+	int stop_index = 0;
+	for (auto& bus : catalogue.GetBusInfo()) {
+		TC_Proto::BusInfo bus_info;
+		bus.second.index = bus_index;
+		bus_info.set_bus_name(bus.second.bus_name.data());
+		bus_info.set_curvature(bus.second.curvature);
+		bus_info.set_route_length_on_road(bus.second.route_length_on_road);
+
+		auto bus_ptr = catalogue.FindBus(bus.second.bus_name);
+		for (const auto& s : bus_ptr->stops_vector) {
+			bus_info.add_stops_indexes(s->index);
+		}
+
+		bus_info.set_stops_on_route(bus.second.stops_on_route);
+		bus_info.set_unique_stops(bus.second.unique_stops);
+		bus_info.set_is_ring(catalogue.FindBus(bus.second.bus_name)->is_ring);
+		tc.add_buses_info()->CopyFrom(bus_info);
+		bus_index++;
+	}
+	for (const auto& stop : catalogue.GetStops()) {
+		TC_Proto::StopInfo stop_info;
+		stop_info.set_stop_name(stop.stop_name.data());
+		stop_info.set_lat(stop.coodinates.lat);
+		stop_info.set_lng(stop.coodinates.lng);
+		stop_info.set_index(stop_index);
+
+		Stop* stop_finded = catalogue.FindStop(stop.stop_name);
+		auto stop_info_finded = catalogue.GetStopInfo().find(stop_finded);
+		if (stop_info_finded != catalogue.GetStopInfo().end()) {
+			for (auto s : catalogue.GetStopInfo().at(stop_finded)) {
+				const auto& bus_info = catalogue.GetBusInfo().at(s->bus_name);
+				stop_info.add_bus_names_indexes(bus_info.index);
+			}
+		}
+		tc.add_stops_info()->CopyFrom(stop_info);
+		stop_index++;
+	}
+}
+
+void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogue& tc) {
+	auto router_data = router.GetRouter();
+	auto graphs = router_data.GetGraph();
+	auto edges = graphs.GetEdges();
+	for (int i = 0; i < edges.size(); ++i) {
+		TC_Proto::Edge edge;
+		edge.set_from(edges[i].from);
+		edge.set_to(edges[i].to);
+		edge.set_span_count(edges[i].span_count);
+		edge.mutable_weight()->set_wait(edges[i].weight.wait);
+		edge.mutable_weight()->set_movement(edges[i].weight.movement);
+		for (int j = 0; j < tc.buses_info().size(); ++j) {
+			if (router.GetBusNameById(i) == tc.buses_info().Get(j).bus_name()) {
+				edge.set_bus_name_index(j);
+				break;
+			}
+		}
+		tc.mutable_router()->add_edges()->CopyFrom(edge);
+	}
+	const auto& internal_data = router_data.GetInternalData();
+	for (int index_from = 0; index_from < internal_data.size(); ++index_from) {
+		TC_Proto::StopsTo s;
+		for (int index_to = 0; index_to < internal_data[index_from].size(); ++index_to) {
+			TC_Proto::Route r;
+			if (internal_data.at(index_from).at(index_to).has_value()) {
+				r.mutable_internal_data()->mutable_weight()->set_movement(internal_data.at(index_from).at(index_to).value().weight.movement);
+				r.mutable_internal_data()->mutable_weight()->set_wait(internal_data.at(index_from).at(index_to).value().weight.wait);
+				if (internal_data.at(index_from).at(index_to).value().prev_edge.has_value()) {
+					r.mutable_internal_data()->set_prev_edge(internal_data.at(index_from).at(index_to).value().prev_edge.value());
+				}
+				else {
+					r.mutable_internal_data()->set_prev_edge_null(true);
+				}
+			}
+			else {
+				r.set_is_null(true);
+			}
+			s.add_stops_to()->CopyFrom(r);
+		}
+		tc.mutable_router()->add_routes_internal_data()->CopyFrom(s);
+	}
 }
 
