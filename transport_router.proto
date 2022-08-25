@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package Router_proto;
+
+import "graph.proto";
+
+message RouteInternalData {
+	Graph_proto.Weight weight = 1;
+	oneof stop_from {
+		uint64 prev_edge = 2;
+		bool prev_edge_null = 3;
+	}
+}
+
+message Route {
+	oneof route_data {
+		bool is_null = 1;
+		RouteInternalData internal_data = 2;
+	}
+}
+
+message StopsTo {
+	repeated Route stops_to = 1;
+}
+
+message RoutesData {
+	repeated Graph_proto.Edge edges = 1;
+	repeated StopsTo routes_internal_data = 2;
+}

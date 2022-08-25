@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-//package TC_Proto;
+package MR_Proto;
 
 import "svg.proto";
 
@@ -20,6 +20,6 @@ message Offset {
 	int32 stop_label_font_size = 8;
 	Offset stop_label_offset = 9;
 	Offset bus_label_offset = 10;
-	Color underlayer_color = 11;
-	repeated Color color_palette = 12;
+	SVG_Proto.Color underlayer_color = 11;
+	repeated SVG_Proto.Color color_palette = 12;
 }

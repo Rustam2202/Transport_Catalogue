@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-//package TC_Proto;
+package SVG_Proto;
 
 message RGB {
 	uint32 red = 1;

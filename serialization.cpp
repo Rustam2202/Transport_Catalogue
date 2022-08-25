@@ -1,7 +1,9 @@
 #include "serialization.h"
 #include "router.h"
 
-TC_Proto::RenderSettings MakeRenderSettings(Node base);
+#include <google/protobuf/util/json_util.h>
+
+MR_Proto::RenderSettings MakeRenderSettings(Node base);
 
 void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& catalogue, TC_Proto::TransportCatalogue& tc);
 
@@ -42,7 +44,6 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	tc.ParseFromIstream(&data_base_file);
 	MapRenderer render;
 	std::vector<geo::Coordinates> coords;
-
 
 	Builder result;
 	result.StartArray();
@@ -101,7 +102,6 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
 					.Key("route_length").Value(static_cast<double>(tc.buses_info().Get(i).route_length_on_road()))
 					.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_on_route()))
-					//.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_indexes_size()))
 					.Key("unique_stop_count").Value(static_cast<int>(tc.buses_info().Get(i).unique_stops()))
 					.EndDict();
 			}
@@ -127,7 +127,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					tc.render_settings().underlayer_color().color_rgba().opacity()
 				);
 			}
-			else /*if (tc.render_settings().underlayer_color().has_color_rgba())*/ {
+			else {
 				render.SetUnderlayerColor(tc.render_settings().underlayer_color().color_str());
 			}
 
@@ -203,7 +203,8 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				}
 			}
 
-			const TC_Proto::Route& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
+			
+			const Router_proto::Route& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
 			if (route_internal_data.is_null()) {
 				result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
 			}
@@ -244,7 +245,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				result.EndArray();
 				result.Key("request_id").Value(stat_data.AsDict().at("id").AsInt());
 				result.Key("total_time").Value(total_time).EndDict();
-			}			
+			}
 		}
 	}
 
@@ -252,8 +253,8 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	json::Print(Document(result.Build()), output);
 }
 
-TC_Proto::RenderSettings MakeRenderSettings(Node base) {
-	TC_Proto::RenderSettings settings;
+MR_Proto::RenderSettings MakeRenderSettings(Node base) {
+	MR_Proto::RenderSettings settings;
 	settings.set_width(base.AsDict().at("width").AsDouble());
 	settings.set_height(base.AsDict().at("height").AsDouble());
 	settings.set_padding(base.AsDict().at("padding").AsDouble());
@@ -273,14 +274,14 @@ TC_Proto::RenderSettings MakeRenderSettings(Node base) {
 	else if (base.AsDict().at("underlayer_color").IsArray()) {
 		Node color = base.AsDict().at("underlayer_color").AsArray();
 		if (color.AsArray().size() == 3) {
-			TC_Proto::RGB rgb;
+			SVG_Proto::RGB rgb;
 			rgb.set_red(color.AsArray()[0].AsInt());
 			rgb.set_green(color.AsArray()[1].AsInt());
 			rgb.set_blue(color.AsArray()[2].AsInt());
 			settings.mutable_underlayer_color()->mutable_color_rgb()->CopyFrom(rgb);
 		}
 		else if (color.AsArray().size() == 4) {
-			TC_Proto::RGBa rgba;
+			SVG_Proto::RGBa rgba;
 			rgba.set_red(color.AsArray()[0].AsInt());
 			rgba.set_green(color.AsArray()[1].AsInt());
 			rgba.set_blue(color.AsArray()[2].AsInt());
@@ -295,7 +296,7 @@ TC_Proto::RenderSettings MakeRenderSettings(Node base) {
 	for (Node colors : base.AsDict().at("color_palette").AsArray()) {
 		if (colors.IsArray()) {
 			if (colors.AsArray().size() == 3) {
-				TC_Proto::RGB rgb;
+				SVG_Proto::RGB rgb;
 				rgb.set_red(colors.AsArray()[0].AsInt());
 				rgb.set_green(colors.AsArray()[1].AsInt());
 				rgb.set_blue(colors.AsArray()[2].AsInt());
@@ -303,7 +304,7 @@ TC_Proto::RenderSettings MakeRenderSettings(Node base) {
 				settings.add_color_palette()->mutable_color_rgb()->CopyFrom(rgb);
 			}
 			else if (colors.AsArray().size() == 4) {
-				TC_Proto::RGBa rgba;
+				SVG_Proto::RGBa rgba;
 				rgba.set_red(colors.AsArray()[0].AsInt());
 				rgba.set_green(colors.AsArray()[1].AsInt());
 				rgba.set_blue(colors.AsArray()[2].AsInt());
@@ -364,7 +365,7 @@ void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogu
 	auto graphs = router_data.GetGraph();
 	auto edges = graphs.GetEdges();
 	for (int i = 0; i < edges.size(); ++i) {
-		TC_Proto::Edge edge;
+		Graph_proto::Edge edge;
 		edge.set_from(edges[i].from);
 		edge.set_to(edges[i].to);
 		edge.set_span_count(edges[i].span_count);
@@ -380,9 +381,9 @@ void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogu
 	}
 	const auto& internal_data = router_data.GetInternalData();
 	for (int index_from = 0; index_from < internal_data.size(); ++index_from) {
-		TC_Proto::StopsTo s;
+		Router_proto::StopsTo s;
 		for (int index_to = 0; index_to < internal_data[index_from].size(); ++index_to) {
-			TC_Proto::Route r;
+			Router_proto::Route r;
 			if (internal_data.at(index_from).at(index_to).has_value()) {
 				r.mutable_internal_data()->mutable_weight()->set_movement(internal_data.at(index_from).at(index_to).value().weight.movement);
 				r.mutable_internal_data()->mutable_weight()->set_wait(internal_data.at(index_from).at(index_to).value().weight.wait);
@@ -401,4 +402,3 @@ void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogu
 		tc.mutable_router()->add_routes_internal_data()->CopyFrom(s);
 	}
 }
-

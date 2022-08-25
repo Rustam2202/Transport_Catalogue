@@ -1,5 +1,18 @@
 syntax = "proto3";
 
-message Graph {
+package Graph_proto;
 
+message Weight{
+	double wait = 1;
+	double movement = 2;
 }
+
+message Edge{
+	uint64 from = 1;
+	uint64 to = 2;
+	Weight weight = 3;
+	int32 span_count = 4;
+	uint32 bus_name_index = 5;
+}
+
+// C:/dev/ProtoBuf/path/to/protobuf/package/bin/protoc --cpp_out . graph.proto

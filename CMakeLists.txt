@@ -7,14 +7,20 @@ set (CMAKE_PREFIX_PATH "C:/dev/ProtoBuf/path/to/protobuf/package")
 
 file(GLOB HEADERS "*.h")
 file(GLOB SOURCES "*.cpp" "*.cc")
-#file(GLOB PROTO_FILES "*.proto")
+file(GLOB PROTO_FILES "*.proto")
 
 # source_group("Proto Files" ${PROTO_FILES})
 
 find_package(Protobuf REQUIRED)
 find_package(Threads REQUIRED)
 
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS transport_catalogue.proto)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS 
+    svg.proto 
+    map_renderer.proto 
+    graph.proto 
+    transport_router.proto 
+    transport_catalogue.proto
+)
 
 # add_executable(transport_catalogue ${PROTO_SRCS} ${PROTO_HDRS} main.cpp)
 add_executable(transport_catalogue
