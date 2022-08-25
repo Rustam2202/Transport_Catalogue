@@ -3,6 +3,8 @@
 
 #include <google/protobuf/util/json_util.h>
 
+#include <sstream>
+
 MR_Proto::RenderSettings MakeRenderSettings(Node base);
 
 void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& catalogue, TC_Proto::TransportCatalogue& tc);
@@ -45,6 +47,13 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	MapRenderer render;
 	std::vector<geo::Coordinates> coords;
 
+	string str;
+	google::protobuf::Message* m = new TC_Proto::BusInfo();
+	m->CopyFrom(tc.buses_info().Get(0));
+	google::protobuf::util::MessageToJsonString(*m, &str);
+	istringstream iss(str);
+	output << iss.str();
+
 	Builder result;
 	result.StartArray();
 	for (const auto& stat_data : base.AsDict().at("stat_requests").AsArray()) {
@@ -77,7 +86,6 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
 					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
 					.EndDict();
-
 			}
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
@@ -203,7 +211,7 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				}
 			}
 
-			
+
 			const Router_proto::Route& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
 			if (route_internal_data.is_null()) {
 				result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
