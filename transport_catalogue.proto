@@ -5,15 +5,6 @@ package TC_Proto;
 import "map_renderer.proto"; 
 import "transport_router.proto";
 
-import "google/protobuf/any.proto";
-import "google/protobuf/struct.proto";
-
-
-message Status {
-    // ...
-    google.protobuf.Value data = 3;
-}
-
 message StopInfo {
 	string stop_name = 1;
 	repeated uint32 bus_names_indexes = 2;
@@ -70,7 +61,9 @@ message RouteInfo {
 		}
 		double time = 3;
 		string type = 4;
-		optional int32 span_count = 5;
+		oneof has_span {
+			int32 span_count = 5;
+		}
 	}
 	repeated Item items = 1;
 	int32 request_id = 2;
