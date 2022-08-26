@@ -158,7 +158,7 @@ void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& cat
 		bus_info.set_stops_on_route(bus.second.stops_on_route);
 		bus_info.set_unique_stops(bus.second.unique_stops);
 		bus_info.set_is_ring(catalogue.FindBus(bus.second.bus_name)->is_ring);
-		tc.add_buses_info()->CopyFrom(bus_info);
+		tc.mutable_transport_info()->add_buses_info()->CopyFrom(bus_info);
 		bus_index++;
 	}
 	for (const auto& stop : catalogue.GetStops()) {
@@ -176,7 +176,7 @@ void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& cat
 				stop_info.add_bus_names_indexes(bus_info.index);
 			}
 		}
-		tc.add_stops_info()->CopyFrom(stop_info);
+		tc.mutable_transport_info()->add_stops_info()->CopyFrom(stop_info);
 		stop_index++;
 	}
 }
@@ -192,8 +192,8 @@ void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogu
 		edge.set_span_count(edges[i].span_count);
 		edge.mutable_weight()->set_wait(edges[i].weight.wait);
 		edge.mutable_weight()->set_movement(edges[i].weight.movement);
-		for (int j = 0; j < tc.buses_info().size(); ++j) {
-			if (router.GetBusNameById(i) == tc.buses_info().Get(j).bus_name()) {
+		for (int j = 0; j < tc.transport_info().buses_info().size(); ++j) {
+			if (router.GetBusNameById(i) == tc.transport_info().buses_info().Get(j).bus_name()) {
 				edge.set_bus_name_index(j);
 				break;
 			}
@@ -236,14 +236,14 @@ void MessageToJson(string& answer, google::protobuf::Message* m) {
 
 void CalculateStopRequest(string& answer, Node stat_data, TC_Proto::TransportCatalogue& tc) {
 	const std::string& stop_name = stat_data.AsDict().at("name").AsString();
-	auto it = tc.stops_info().begin();
-	while (it != tc.stops_info().end()) {
+	auto it = tc.transport_info().stops_info().begin();
+	while (it != tc.transport_info().stops_info().end()) {
 		if ((*it).stop_name() == stop_name) {
 			break;
 		}
 		++it;
 	}
-	if (it == tc.stops_info().end()) {
+	if (it == tc.transport_info().stops_info().end()) {
 		TC_Proto::NotFound not_found;
 		not_found.set_request_id(stat_data.AsDict().at("id").AsInt());
 		not_found.set_error_message("not found"s);
@@ -251,9 +251,9 @@ void CalculateStopRequest(string& answer, Node stat_data, TC_Proto::TransportCat
 	}
 	else {
 		Array buses_arr;
-		if (tc.buses_info_size() > 0) {
+		if (tc.transport_info().buses_info_size() > 0) {
 			for (uint32_t bus_index : (*it).bus_names_indexes()) {
-				buses_arr.push_back(tc.buses_info().Get(bus_index).bus_name());
+				buses_arr.push_back(tc.transport_info().buses_info().Get(bus_index).bus_name());
 			}
 			std::sort(buses_arr.begin(), buses_arr.end(),
 				[](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
@@ -271,7 +271,7 @@ void CalculateBusRequest(string& answer, Node stat_data, TC_Proto::TransportCata
 	size_t i = 0;
 	bool founded = false;
 
-	for (auto it = tc.buses_info().begin(); it != tc.buses_info().end(); ++it, ++i) {
+	for (auto it = tc.transport_info().buses_info().begin(); it != tc.transport_info().buses_info().end(); ++it, ++i) {
 		if (stat_data.AsDict().at("name").AsString() == (*it).bus_name()) {
 			founded = true;
 			break;
@@ -285,11 +285,11 @@ void CalculateBusRequest(string& answer, Node stat_data, TC_Proto::TransportCata
 	}
 	else {
 		TC_Proto::BusInfoFinded b;
-		b.set_curvature(tc.buses_info().Get(i).curvature());
+		b.set_curvature(tc.transport_info().buses_info().Get(i).curvature());
 		b.set_request_id(stat_data.AsDict().at("id").AsInt());
-		b.set_route_length(static_cast<double>(tc.buses_info().Get(i).route_length_on_road()));
-		b.set_stop_count(static_cast<int>(tc.buses_info().Get(i).stops_on_route()));
-		b.set_unique_stop_count(static_cast<int>(tc.buses_info().Get(i).unique_stops()));
+		b.set_route_length(static_cast<double>(tc.transport_info().buses_info().Get(i).route_length_on_road()));
+		b.set_stop_count(static_cast<int>(tc.transport_info().buses_info().Get(i).stops_on_route()));
+		b.set_unique_stop_count(static_cast<int>(tc.transport_info().buses_info().Get(i).unique_stops()));
 		MessageToJson(answer, &b);
 	}
 }
@@ -343,18 +343,18 @@ void CalculateMapRequest(string& answer, MapRenderer& render, Node stat_data, TC
 		}
 	}
 
-	for (const auto& stop : tc.stops_info()) {
+	for (const auto& stop : tc.transport_info().stops_info()) {
 		if (stop.bus_names_indexes_size() > 0) {
 			coords.push_back({ stop.lat(),stop.lng() });
 		}
 	}
 	render.MakeSphereProjector(coords);
 
-	for (const auto& bus : tc.buses_info()) {
+	for (const auto& bus : tc.transport_info().buses_info()) {
 		if (bus.stops_indexes_size() > 0) {
 			for (uint32_t stop_index : bus.stops_indexes()) {
-				render.AddBusWithStops(bus.bus_name(), bus.is_ring(), tc.stops_info().Get(stop_index).stop_name()
-					, { tc.stops_info().Get(stop_index).lat(),tc.stops_info().Get(stop_index).lng() });
+				render.AddBusWithStops(bus.bus_name(), bus.is_ring(), tc.transport_info().stops_info().Get(stop_index).stop_name()
+					, { tc.transport_info().stops_info().Get(stop_index).lat(),tc.transport_info().stops_info().Get(stop_index).lng()});
 			}
 		}
 	}
@@ -380,7 +380,7 @@ void CalculateRouteRequest(string& answer, Node stat_data, TC_Proto::TransportCa
 	uint64_t index_to = 0;
 	bool finded_from = false;
 	bool finded_to = false;
-	for (const auto& stop : tc.stops_info()) {
+	for (const auto& stop : tc.transport_info().stops_info()) {
 		if (stop.stop_name().data() == stop_from) {
 			index_from = stop.index();
 			finded_from = true;
@@ -423,12 +423,12 @@ void CalculateRouteRequest(string& answer, Node stat_data, TC_Proto::TransportCa
 		TC_Proto::RouteInfo r;
 		for (auto edge : edges) {
 			TC_Proto::RouteInfo::Item item_stop;
-			item_stop.set_stop_name(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name());
+			item_stop.set_stop_name(tc.transport_info().stops_info().Get(tc.router().edges().Get(edge).from()).stop_name());
 			item_stop.set_time(tc.router().edges().Get(edge).weight().wait());
 			item_stop.set_type("Wait"s);
 			r.add_items()->CopyFrom(item_stop);
 			TC_Proto::RouteInfo::Item item_bus;
-			item_bus.set_bus(tc.buses_info().Get(tc.router().edges().Get(edge).bus_name_index()).bus_name());
+			item_bus.set_bus(tc.transport_info().buses_info().Get(tc.router().edges().Get(edge).bus_name_index()).bus_name());
 			item_bus.set_time(static_cast<double>(tc.router().edges().Get(edge).weight().movement()));
 			item_bus.set_type("Bus"s);
 			item_bus.set_span_count(tc.router().edges().Get(edge).span_count());
@@ -439,4 +439,3 @@ void CalculateRouteRequest(string& answer, Node stat_data, TC_Proto::TransportCa
 		MessageToJson(answer, &r);
 	}
 }
-

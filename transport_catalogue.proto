@@ -23,9 +23,13 @@ message BusInfo {
 	bool is_ring = 6;
 }
 
-message TransportCatalogue {
+message StopAndBusInfo {
 	repeated StopInfo stops_info = 1;
 	repeated BusInfo buses_info = 2;
+}
+
+message TransportCatalogue {
+	StopAndBusInfo transport_info = 1;
 	MR_Proto.RenderSettings render_settings = 3;
 	Router_proto.RoutesData router = 4;
 }
