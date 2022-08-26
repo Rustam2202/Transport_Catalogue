@@ -5,6 +5,15 @@ package TC_Proto;
 import "map_renderer.proto"; 
 import "transport_router.proto";
 
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+
+
+message Status {
+    // ...
+    google.protobuf.Value data = 3;
+}
+
 message StopInfo {
 	string stop_name = 1;
 	repeated uint32 bus_names_indexes = 2;
@@ -28,6 +37,44 @@ message TransportCatalogue {
 	repeated BusInfo buses_info = 2;
 	MR_Proto.RenderSettings render_settings = 3;
 	Router_proto.RoutesData router = 4;
+}
+
+message Map {
+	string map = 1;
+	int32 request_id = 2;
+}
+
+message StopWithBuses {
+ 	repeated string buses = 1;
+	int32 request_id = 2;
+}
+
+message BusInfoFinded {
+	double curvature = 1;
+    int32 request_id = 2;
+    double route_length = 3;
+    int32 stop_count = 4;
+    int32 unique_stop_count = 5;
+}
+
+message NotFound {
+	int32 request_id = 1;
+	string error_message = 2;
+}
+
+message RouteInfo {
+	message Item {
+		oneof name {
+			string stop_name = 1;
+			string bus = 2;
+		}
+		double time = 3;
+		string type = 4;
+		optional int32 span_count = 5;
+	}
+	repeated Item items = 1;
+	int32 request_id = 2;
+	double total_time = 3;
 }
 
 // C:/dev/ProtoBuf/path/to/protobuf/package/bin/protoc --cpp_out . transport_catalogue.proto

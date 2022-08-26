@@ -3,6 +3,7 @@
 
 #include <google/protobuf/util/json_util.h>
 
+#include <iomanip>
 #include <sstream>
 
 MR_Proto::RenderSettings MakeRenderSettings(Node base);
@@ -10,6 +11,18 @@ MR_Proto::RenderSettings MakeRenderSettings(Node base);
 void SerializationBusesAndStopsInfo(transport_catalogue::TransportCatalogue& catalogue, TC_Proto::TransportCatalogue& tc);
 
 void SerializationRouterData(TransportRoter& router, TC_Proto::TransportCatalogue& tc);
+
+void MessageToJson(string& answer, google::protobuf::Message* m) {
+	string answer_str;
+	google::protobuf::util::JsonPrintOptions opt;
+	opt.add_whitespace = true;
+	opt.preserve_proto_field_names = true;
+	opt.always_print_primitive_fields = true;
+	google::protobuf::util::MessageToJsonString(*m, &answer, opt);
+	answer.push_back(',');
+	//istringstream iss(answer_str);
+	//output << iss.str() << ',';
+}
 
 void Serialization(std::istream& strm) {
 	Node base = Load(strm).GetRoot();
@@ -46,16 +59,11 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 	tc.ParseFromIstream(&data_base_file);
 	MapRenderer render;
 	std::vector<geo::Coordinates> coords;
+	string answer;
+	answer.push_back('[');
 
-	string str;
-	google::protobuf::Message* m = new TC_Proto::BusInfo();
-	m->CopyFrom(tc.buses_info().Get(0));
-	google::protobuf::util::MessageToJsonString(*m, &str);
-	istringstream iss(str);
-	output << iss.str();
-
-	Builder result;
-	result.StartArray();
+	//Builder result;
+	//result.StartArray();
 	for (const auto& stat_data : base.AsDict().at("stat_requests").AsArray()) {
 		if (stat_data.AsDict().at("type").AsString() == "Stop") {
 			const std::string& stop_name = stat_data.AsDict().at("name").AsString();
@@ -67,10 +75,10 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				++it;
 			}
 			if (it == tc.stops_info().end()) {
-				result.StartDict()
-					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
-					.Key("error_message"s).Value("not found"s)
-					.EndDict();
+				TC_Proto::NotFound not_found;
+				not_found.set_request_id(stat_data.AsDict().at("id").AsInt());
+				not_found.set_error_message("not found"s);
+				MessageToJson(answer, &not_found);
 			}
 			else {
 				Array buses_arr;
@@ -81,16 +89,19 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					std::sort(buses_arr.begin(), buses_arr.end(),
 						[](const Node& lhs, const Node& rhs) {return lhs.AsString() < rhs.AsString(); });
 				}
-				result.StartDict()
-					.Key("buses"s).Value(buses_arr)
-					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
-					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
-					.EndDict();
+				TC_Proto::StopWithBuses s;
+				for (const auto& bus : buses_arr) {
+					s.add_buses(bus.AsString());
+				}
+				s.set_request_id(stat_data.AsDict().at("id").AsInt());
+				MessageToJson(answer, &s);
 			}
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Bus") {
 			size_t i = 0;
 			bool founded = false;
+			TC_Proto::Dict dict;
+			TC_Proto::ValueType val;
 
 			for (auto it = tc.buses_info().begin(); it != tc.buses_info().end(); ++it, ++i) {
 				if (stat_data.AsDict().at("name").AsString() == (*it).bus_name()) {
@@ -99,19 +110,19 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 				}
 			}
 			if (founded == false) {
-				result.StartDict()
-					.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
-					.Key("error_message").Value("not found"s)
-					.EndDict();
+				TC_Proto::NotFound not_found;
+				not_found.set_request_id(stat_data.AsDict().at("id").AsInt());
+				not_found.set_error_message("not found"s);
+				MessageToJson(answer, &not_found);
 			}
 			else {
-				result.StartDict()
-					.Key("curvature").Value(tc.buses_info().Get(i).curvature())
-					.Key("request_id").Value(stat_data.AsDict().at("id").AsInt())
-					.Key("route_length").Value(static_cast<double>(tc.buses_info().Get(i).route_length_on_road()))
-					.Key("stop_count").Value(static_cast<int>(tc.buses_info().Get(i).stops_on_route()))
-					.Key("unique_stop_count").Value(static_cast<int>(tc.buses_info().Get(i).unique_stops()))
-					.EndDict();
+				TC_Proto::BusInfoFinded b;
+				b.set_curvature(tc.buses_info().Get(i).curvature());
+				b.set_request_id(stat_data.AsDict().at("id").AsInt());
+				b.set_route_length(static_cast<double>(tc.buses_info().Get(i).route_length_on_road()));
+				b.set_stop_count(static_cast<int>(tc.buses_info().Get(i).stops_on_route()));
+				b.set_unique_stop_count(static_cast<int>(tc.buses_info().Get(i).unique_stops()));
+				MessageToJson(answer, &b);
 			}
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Map") {
@@ -184,10 +195,11 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 			render.RenderStopsNames();
 			std::stringstream s;
 			render.Rendering(s);
-			result.StartDict()
-				.Key("map"s).Value(s.str())
-				.Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt())
-				.EndDict();
+
+			TC_Proto::Map m;
+			m.set_map(s.str());
+			m.set_request_id(stat_data.AsDict().at("id").AsInt());
+			MessageToJson(answer, &m);
 		}
 		else if (stat_data.AsDict().at("type").AsString() == "Route") {
 			const std::string& stop_from = stat_data.AsDict().at("from").AsString();
@@ -214,7 +226,11 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 
 			const Router_proto::Route& route_internal_data = tc.router().routes_internal_data().Get(index_from).stops_to().Get(index_to);
 			if (route_internal_data.is_null()) {
-				result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
+				TC_Proto::NotFound not_found;
+				not_found.set_request_id(stat_data.AsDict().at("id").AsInt());
+				not_found.set_error_message("not found"s);
+				MessageToJson(answer, &not_found);
+				//result.StartDict().Key("request_id"s).Value(stat_data.AsDict().at("id").AsInt()).Key("error_message"s).Value("not found"s).EndDict();
 			}
 			else {
 				double total_time = route_internal_data.internal_data().weight().movement() + route_internal_data.internal_data().weight().wait();
@@ -236,29 +252,105 @@ void DeSerialization(std::istream& strm, std::ostream& output) {
 					}
 				}
 				std::reverse(edges.begin(), edges.end());
-				result.StartDict().Key("items").StartArray();
+
+				/*	TC_Proto::Dict items;
+					TC_Proto::Array items_array;
+					TC_Proto::ValueType val;*/
+					//result.StartDict().Key("items").StartArray();
+
+				TC_Proto::RouteInfo r;
 				for (auto edge : edges) {
-					result.StartDict()
-						.Key("stop_name").Value(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name())
-						.Key("time").Value(tc.router().edges().Get(edge).weight().wait())
-						.Key("type").Value("Wait"s)
-						.EndDict();
-					result.StartDict()
-						.Key("bus").Value(tc.buses_info().Get(tc.router().edges().Get(edge).bus_name_index()).bus_name())
-						.Key("span_count").Value(tc.router().edges().Get(edge).span_count())
-						.Key("time").Value(tc.router().edges().Get(edge).weight().movement())
-						.Key("type").Value("Bus"s)
-						.EndDict();
+					TC_Proto::RouteInfo::Item item_stop;
+					item_stop.set_stop_name(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name());
+					item_stop.set_time(tc.router().edges().Get(edge).weight().wait());
+					item_stop.set_type("Wait"s);
+					r.add_items()->CopyFrom(item_stop);
+					TC_Proto::RouteInfo::Item item_bus;
+					item_bus.set_bus(tc.buses_info().Get(tc.router().edges().Get(edge).bus_name_index()).bus_name());
+					item_bus.set_time(static_cast<double>(tc.router().edges().Get(edge).weight().movement()));
+					item_bus.set_type("Bus"s);
+					item_bus.set_span_count(tc.router().edges().Get(edge).span_count());
+					r.add_items()->CopyFrom(item_bus);
+
+					//TC_Proto::Dict dict_to_items;
+
+					//val.set_as_string(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name());
+					//dict_to_items.mutable_data()->insert({ "stop_name"s ,val });
+					//val.set_as_double(tc.router().edges().Get(edge).weight().wait());
+					//dict_to_items.mutable_data()->insert({ "time"s ,val });
+					//val.set_as_string("Wait"s);
+					//dict_to_items.mutable_data()->insert({ "type"s ,val });
+					//items_array.add_values()->mutable_asdict()->CopyFrom(dict_to_items);
+					////		->set_allocated_asdict(&dict_to_items);
+					//dict_to_items.clear_data();
+
+					//val.set_as_string(tc.buses_info().Get(tc.router().edges().Get(edge).bus_name_index()).bus_name());
+					//dict_to_items.mutable_data()->insert({ "bus"s ,val });
+					//val.set_as_int(tc.router().edges().Get(edge).span_count());
+					//dict_to_items.mutable_data()->insert({ "span_count"s ,val });
+					//val.set_as_double(tc.router().edges().Get(edge).weight().movement());
+					//dict_to_items.mutable_data()->insert({ "time"s ,val });
+					//val.set_as_string("Bus"s);
+					//dict_to_items.mutable_data()->insert({ "type"s ,val });
+
+					//	results_proto.mutable_results()->add_values()->set_allocated_asdict(&dict_to_items);
+
+						/*result.StartDict()
+							.Key("stop_name").Value(tc.stops_info().Get(tc.router().edges().Get(edge).from()).stop_name())
+							.Key("time").Value(tc.router().edges().Get(edge).weight().wait())
+							.Key("type").Value("Wait"s)
+							.EndDict();
+						result.StartDict()
+							.Key("bus").Value(tc.buses_info().Get(tc.router().edges().Get(edge).bus_name_index()).bus_name())
+							.Key("span_count").Value(tc.router().edges().Get(edge).span_count())
+							.Key("time").Value(tc.router().edges().Get(edge).weight().movement())
+							.Key("type").Value("Bus"s)
+							.EndDict();*/
 				}
-				result.EndArray();
-				result.Key("request_id").Value(stat_data.AsDict().at("id").AsInt());
-				result.Key("total_time").Value(total_time).EndDict();
+				r.set_request_id(stat_data.AsDict().at("id").AsInt());
+				r.set_total_time(total_time);
+				MessageToJson(answer, &r);
+
+				/*	string answer_str;
+					google::protobuf::util::JsonPrintOptions opt;
+					opt.preserve_proto_field_names = true;
+					opt.add_whitespace = true;
+					google::protobuf::util::MessageToJsonString(r, &answer_str, opt);
+					istringstream iss(answer_str);
+					output << iss.str();*/
+
+					/*	val.mutable_as_array()->CopyFrom(items_array);
+						items.mutable_data()->insert({ "items" ,val });
+						val.set_as_int(stat_data.AsDict().at("id").AsInt());
+						items.mutable_data()->insert({ "request_id" ,val });
+						val.set_as_double(total_time);
+						items.mutable_data()->insert({ "total_time" ,val });*/
+						//results_proto.mutable_results()->add_values()->set_allocated_asdict(&items);
+					//	results_proto.mutable_results()->add_values()->mutable_asdict()->CopyFrom(items);
+
+						/*result.EndArray();
+						result.Key("request_id").Value(stat_data.AsDict().at("id").AsInt());
+						result.Key("total_time").Value(total_time).EndDict();*/
 			}
 		}
 	}
 
-	result.EndArray();
-	json::Print(Document(result.Build()), output);
+	answer.pop_back(); // delete last ','
+	answer.push_back(']');
+	istringstream iss(answer);
+	output << iss.str();
+
+	/*string answer_str;
+	google::protobuf::util::JsonPrintOptions opt;
+	opt.preserve_proto_field_names = true;
+	opt.add_whitespace = true;
+	google::protobuf::util::MessageToJsonString(results_proto, &answer_str, opt);
+	istringstream iss(answer_str);
+	output << iss.str();*/
+
+	//results_proto.PrintDebugString();
+	//result.EndArray();
+	//json::Print(Document(result.Build()), output);
 }
 
 MR_Proto::RenderSettings MakeRenderSettings(Node base) {
